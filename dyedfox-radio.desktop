@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Dyedfox Radio
+Comment=Internet radio player
+Exec=dyedfox-radio
+Icon=dyedfox-radio
+Terminal=false
+Type=Application
+Categories=Audio;Network;Qt;
+Keywords=radio;internet;streaming;music;

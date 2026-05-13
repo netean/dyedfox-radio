@@ -1,0 +1,19 @@
+# makepkg artifacts
+pkg/
+src/
+*.pkg.tar.zst
+*.pkg.tar.xz
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Claude Code
+CLAUDE.md
+
+# Editor / OS
+.DS_Store
+*~
+*.swp
+*.swo

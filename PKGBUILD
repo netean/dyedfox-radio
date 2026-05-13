@@ -38,8 +38,6 @@ package() {
         "$pkgdir/usr/share/icons/hicolor/256x256/apps/$pkgname.png"
     install -Dm644 "$startdir/assets/icons/$pkgname-tray.svg" \
         "$pkgdir/usr/share/icons/hicolor/scalable/apps/$pkgname-tray.svg"
-    install -Dm644 "$startdir/assets/icons/$pkgname.svg" \
-        "$pkgdir/usr/share/icons/hicolor/scalable/apps/$pkgname.svg"
 
     install -Dm644 "$startdir/$pkgname.desktop" \
         "$pkgdir/usr/share/applications/$pkgname.desktop"

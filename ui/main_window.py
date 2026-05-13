@@ -11,6 +11,7 @@ from ui.info_panel import InfoPanel
 from ui.now_playing import NowPlayingBar
 from ui.controls import ControlBar
 from ui.settings_dialog import SettingsDialog
+from ui.about_dialog import AboutDialog
 from player.backend import GStreamerBackend
 from api.radio_browser import RadioBrowserClient
 from data.favourites import FavouritesManager, RecentManager
@@ -35,6 +36,8 @@ class MainWindow(QMainWindow):
         self._current_station: dict | None = None
         self._current_view = "all"
         self._top_stations: list = []
+        self._search_results: list = []
+        self._last_search_word: str = ""
         self._tray = None
         self._mpris = None
 
@@ -134,9 +137,19 @@ class MainWindow(QMainWindow):
 
         self._settings_btn = QPushButton("Settings")
         self._settings_btn.setFlat(True)
+        self._settings_btn.setIcon(QIcon.fromTheme("preferences-system"))
+        self._settings_btn.setIconSize(QSize(16, 16))
         self._settings_btn.setStyleSheet("QPushButton { text-align: left; padding: 4px 8px; }")
         self._settings_btn.clicked.connect(self._open_settings)
         layout.addWidget(self._settings_btn)
+
+        self._about_btn = QPushButton("About")
+        self._about_btn.setFlat(True)
+        self._about_btn.setIcon(QIcon.fromTheme("help-about"))
+        self._about_btn.setIconSize(QSize(16, 16))
+        self._about_btn.setStyleSheet("QPushButton { text-align: left; padding: 4px 8px; }")
+        self._about_btn.clicked.connect(self._open_about)
+        layout.addWidget(self._about_btn)
 
         return sidebar
 
@@ -191,8 +204,13 @@ class MainWindow(QMainWindow):
         dlg = SettingsDialog(self._settings, self)
         dlg.exec()
 
+    def _open_about(self):
+        AboutDialog(self).exec()
+
     def _switch_view(self, view: str):
         self._current_view = view
+        self._search_results = []
+        self._last_search_word = ""
         for v, btn in self._nav_btns.items():
             btn.setChecked(v == view)
         self._clear_recent_btn.setVisible(view == "recent")
@@ -335,9 +353,39 @@ class MainWindow(QMainWindow):
             self._info_panel.set_favourite(is_fav)
 
     def _on_search(self, text: str):
+        words = text.lower().split()
+        if not words:
+            return
+
+        def _filter(stations: list) -> list:
+            if len(words) == 1:
+                return stations
+            return [
+                s for s in stations
+                if all(
+                    w in (
+                        s.get("name", "") + " " +
+                        s.get("tags", "") + " " +
+                        s.get("country", "") + " " +
+                        s.get("language", "")
+                    ).lower()
+                    for w in words
+                )
+            ]
+
+        if words[0] == self._last_search_word and self._search_results:
+            self._station_list.set_stations(_filter(self._search_results))
+            return
+
+        self._last_search_word = words[0]
+
+        def _on_result(stations: list):
+            self._search_results = stations
+            self._station_list.set_stations(_filter(stations))
+
         self._api.search(
-            text,
-            on_result=self._station_list.set_stations,
+            words[0],
+            on_result=_on_result,
             on_error=lambda e: print(f"radiox: search error: {e}", flush=True),
         )
 

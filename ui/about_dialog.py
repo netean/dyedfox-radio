@@ -1,0 +1,58 @@
+from pathlib import Path
+from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon, QPixmap
+
+
+class AboutDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("About Dyedfox Radio")
+        self.setModal(True)
+        self.setFixedWidth(320)
+
+        layout = QVBoxLayout(self)
+        layout.setSpacing(8)
+        layout.setContentsMargins(24, 24, 24, 16)
+
+        icon_path = Path(__file__).parent.parent / "assets" / "icons" / "dyedfox-radio.png"
+        icon_label = QLabel()
+        icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        pix = QPixmap(str(icon_path))
+        if not pix.isNull():
+            icon_label.setPixmap(pix.scaled(72, 72, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+        layout.addWidget(icon_label)
+
+        name = QLabel("Dyedfox Radio")
+        name.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        f = name.font()
+        f.setPointSize(f.pointSize() + 4)
+        f.setBold(True)
+        name.setFont(f)
+        layout.addWidget(name)
+
+        version = QLabel("Version 0.1.0")
+        version.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        version.setEnabled(False)
+        layout.addWidget(version)
+
+        layout.addSpacing(4)
+
+        desc = QLabel("Desktop internet radio player.\nPowered by radio-browser.info.")
+        desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        desc.setWordWrap(True)
+        layout.addWidget(desc)
+
+        layout.addSpacing(4)
+
+        license_label = QLabel("Released under the GPL-3.0 license.")
+        license_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        license_label.setEnabled(False)
+        layout.addWidget(license_label)
+
+        layout.addSpacing(8)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        buttons.rejected.connect(self.accept)
+        buttons.accepted.connect(self.accept)
+        layout.addWidget(buttons)

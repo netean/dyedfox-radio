@@ -1,3 +1,4 @@
+import os
 import sys
 
 import gi
@@ -28,6 +29,14 @@ from ui.main_window import MainWindow
 def main():
     Gst.init(None)
 
+    # Load settings before QApplication so we can suppress the KDE startup
+    # notification when starting minimized. Qt reads DESKTOP_STARTUP_ID in
+    # QApplication.__init__; removing it beforehand prevents KDE from showing
+    # a launcher indicator that would linger alongside the tray icon.
+    settings = Settings()
+    if settings["start_minimized"]:
+        os.environ.pop("DESKTOP_STARTUP_ID", None)
+
     app = QApplication(sys.argv)
     app.setApplicationName("Dyedfox Radio")
     app.setDesktopFileName("dyedfox-radio")
@@ -36,7 +45,6 @@ def main():
     _icon_path = str(Path(__file__).parent / "assets" / "icons" / "dyedfox-radio.png")
     app.setWindowIcon(QIcon(_icon_path))
 
-    settings = Settings()
     favourites = FavouritesManager()
     recent = RecentManager()
     backend = GStreamerBackend()

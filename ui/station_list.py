@@ -328,7 +328,7 @@ class StationListWidget(QWidget):
             self.search_requested.emit(text)
 
     def _apply_filter(self):
-        search = self._search_input.text().lower().strip()
+        words = self._search_input.text().lower().split()
         recent_set = set(self._recent_uuids)
 
         for i in range(self._list.count()):
@@ -337,7 +337,6 @@ class StationListWidget(QWidget):
             if not station:
                 continue
             uuid = station.get("stationuuid", "")
-            name = station.get("name", "").lower()
 
             visible = True
             if self._current_view == "favourites":
@@ -345,7 +344,14 @@ class StationListWidget(QWidget):
             elif self._current_view == "recent":
                 visible = uuid in recent_set
 
-            if search and search not in name:
-                visible = False
+            if words:
+                combined = (
+                    station.get("name", "") + " " +
+                    station.get("tags", "") + " " +
+                    station.get("country", "") + " " +
+                    station.get("language", "")
+                ).lower()
+                if not all(w in combined for w in words):
+                    visible = False
 
             item.setHidden(not visible)

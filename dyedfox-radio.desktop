@@ -5,5 +5,6 @@ Exec=dyedfox-radio
 Icon=dyedfox-radio
 Terminal=false
 Type=Application
+StartupNotify=false
 Categories=Audio;Network;Qt;
 Keywords=radio;internet;streaming;music;

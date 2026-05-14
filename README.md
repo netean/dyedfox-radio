@@ -6,16 +6,18 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 
 ## Contents
 
-- [Screenshot](#screenshot)
+- [Screenshots](#screenshots)
 - [Features](#features)
 - [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Install on Arch Linux (AUR)](#install-on-arch-linux-aur)
 - [Build from source (PKGBUILD)](#build-from-source-pkgbuild)
 - [Dependencies](#dependencies)
 
-## Screenshot
+## Screenshots
 
 ![Main window](screenshots/main.png)
+![System tray](screenshots/systray.png)
+![MPRIS2 support](screenshots/mpris2.png)
 
 ## Features
 

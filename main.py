@@ -15,6 +15,7 @@ except ImportError:
 from pathlib import Path
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QTimer
+from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 from PyQt6.QtGui import QIcon
 
 from player.backend import GStreamerBackend
@@ -24,6 +25,21 @@ from data.favourites import FavouritesManager, RecentManager
 from data.settings import Settings
 from tray.tray_icon import SystemTrayIcon
 from ui.main_window import MainWindow
+
+_INSTANCE_KEY = "dyedfox-radio-instance"
+
+
+def _try_raise_existing() -> bool:
+    """Return True if another instance was found and signalled."""
+    sock = QLocalSocket()
+    sock.connectToServer(_INSTANCE_KEY)
+    if sock.waitForConnected(500):
+        sock.write(b"raise")
+        sock.flush()
+        sock.waitForBytesWritten(500)
+        sock.disconnectFromServer()
+        return True
+    return False
 
 
 def main():
@@ -42,6 +58,9 @@ def main():
     app.setDesktopFileName("dyedfox-radio")
     app.setQuitOnLastWindowClosed(False)
 
+    if _try_raise_existing():
+        sys.exit(0)
+
     _icon_path = str(Path(__file__).parent / "assets" / "icons" / "dyedfox-radio.png")
     app.setWindowIcon(QIcon(_icon_path))
 
@@ -58,6 +77,20 @@ def main():
 
     mpris = setup_mpris(backend, window)
     window.set_mpris(mpris)
+
+    server = QLocalServer()
+    QLocalServer.removeServer(_INSTANCE_KEY)
+    server.listen(_INSTANCE_KEY)
+
+    def _on_new_connection():
+        conn = server.nextPendingConnection()
+        conn.waitForReadyRead(200)
+        window.showNormal()
+        window.raise_()
+        window.activateWindow()
+        conn.deleteLater()
+
+    server.newConnection.connect(_on_new_connection)
 
     if not settings["start_minimized"]:
         window.show()

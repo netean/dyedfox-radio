@@ -185,6 +185,11 @@ class MainWindow(QMainWindow):
                 match = next((s for s in stations if s.get("stationuuid") == autoplay_uuid), None)
                 if match:
                     self._on_station_play(match)
+                else:
+                    self._api.stations_by_uuids(
+                        [autoplay_uuid],
+                        on_result=lambda result: self._on_station_play(result[0]) if result else None,
+                    )
 
         self._api.top_stations(
             limit=self._settings["station_limit"],

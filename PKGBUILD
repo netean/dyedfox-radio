@@ -2,8 +2,9 @@
 pkgname=dyedfox-radio
 pkgver=0.1.0
 pkgrel=1
-pkgdesc="Desktop internet radio player"
+pkgdesc="Desktop internet radio player for KDE Plasma"
 arch=('any')
+url="https://github.com/dyedfox/dyedfox-radio"
 license=('GPL-3.0-or-later')
 depends=(
     'python'
@@ -19,28 +20,25 @@ optdepends=(
     'gst-plugins-bad: additional codec support'
     'gst-libav: AAC and other codec support'
 )
-source=()
-sha256sums=()
+makedepends=('git')
+source=("$pkgname-$pkgver::git+${url}.git#tag=v${pkgver}")
+sha256sums=('SKIP')
 
 package() {
-    install -dm755 "$pkgdir/usr/lib/$pkgname"
-    cp -r "$startdir"/api \
-          "$startdir"/data \
-          "$startdir"/player \
-          "$startdir"/tray \
-          "$startdir"/ui \
-          "$startdir"/assets \
-          "$startdir"/main.py \
-          "$pkgdir/usr/lib/$pkgname/"
-    find "$pkgdir/usr/lib/$pkgname" -type d -name __pycache__ -exec rm -rf {} +
+    cd "$srcdir/$pkgname-$pkgver"
 
-    install -Dm644 "$startdir/assets/icons/$pkgname.png" \
+    install -dm755 "$pkgdir/usr/lib/$pkgname"
+    cp -r api data player tray ui assets main.py "$pkgdir/usr/lib/$pkgname/"
+
+    install -Dm644 "assets/icons/$pkgname.png" \
         "$pkgdir/usr/share/icons/hicolor/256x256/apps/$pkgname.png"
-    install -Dm644 "$startdir/assets/icons/$pkgname-tray.svg" \
+    install -Dm644 "assets/icons/$pkgname-tray.svg" \
         "$pkgdir/usr/share/icons/hicolor/scalable/apps/$pkgname-tray.svg"
 
-    install -Dm644 "$startdir/$pkgname.desktop" \
+    install -Dm644 "$pkgname.desktop" \
         "$pkgdir/usr/share/applications/$pkgname.desktop"
+
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 
     install -dm755 "$pkgdir/usr/bin"
     cat > "$pkgdir/usr/bin/$pkgname" << 'LAUNCHER'

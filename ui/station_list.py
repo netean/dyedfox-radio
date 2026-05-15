@@ -105,7 +105,7 @@ class StationRowWidget(QWidget):
     play_requested = pyqtSignal(dict)
     favourite_toggled = pyqtSignal(str, bool)  # uuid, new state
 
-    def __init__(self, station: dict, favourites: FavouritesManager, parent=None):
+    def __init__(self, station: dict, favourites: FavouritesManager, parent=None, on_delete=None):
         super().__init__(parent)
         self._station = station
         uuid = station.get("stationuuid", "")
@@ -153,15 +153,28 @@ class StationRowWidget(QWidget):
 
         layout.addWidget(text, 1)
 
-        self._heart_btn = QPushButton()
-        self._heart_btn.setFlat(True)
-        self._heart_btn.setFixedSize(24, 24)
-        self._heart_btn.setCheckable(True)
-        is_fav = favourites.is_favourite(uuid)
-        self._heart_btn.setChecked(is_fav)
-        self._update_heart(is_fav)
-        self._heart_btn.toggled.connect(lambda checked, u=uuid: self._on_heart(u, checked))
-        layout.addWidget(self._heart_btn)
+        if on_delete is not None:
+            self._heart_btn = None
+            del_btn = QPushButton()
+            del_btn.setFlat(True)
+            del_btn.setFixedSize(24, 24)
+            icon = QIcon.fromTheme("edit-delete")
+            if icon.isNull():
+                del_btn.setText("✕")
+            else:
+                del_btn.setIcon(icon)
+            del_btn.clicked.connect(lambda: on_delete(uuid))
+            layout.addWidget(del_btn)
+        else:
+            self._heart_btn = QPushButton()
+            self._heart_btn.setFlat(True)
+            self._heart_btn.setFixedSize(24, 24)
+            self._heart_btn.setCheckable(True)
+            is_fav = favourites.is_favourite(uuid)
+            self._heart_btn.setChecked(is_fav)
+            self._update_heart(is_fav)
+            self._heart_btn.toggled.connect(lambda checked, u=uuid: self._on_heart(u, checked))
+            layout.addWidget(self._heart_btn)
 
     def set_favicon(self, data: bytes):
         pix = QPixmap()
@@ -187,12 +200,16 @@ class StationRowWidget(QWidget):
         self.setPalette(p)
 
     def update_favourite(self, is_fav: bool):
+        if self._heart_btn is None:
+            return
         self._heart_btn.blockSignals(True)
         self._heart_btn.setChecked(is_fav)
         self._heart_btn.blockSignals(False)
         self._update_heart(is_fav)
 
     def _update_heart(self, is_fav: bool):
+        if self._heart_btn is None:
+            return
         icon = QIcon.fromTheme("emblem-favorite" if is_fav else "emblem-favorite-symbolic")
         if icon.isNull():
             self._heart_btn.setText("♥" if is_fav else "♡")
@@ -215,6 +232,7 @@ class StationListWidget(QWidget):
     station_play_requested = pyqtSignal(dict)
     favourite_toggled = pyqtSignal(str, bool)
     search_requested = pyqtSignal(str)
+    station_delete_requested = pyqtSignal(str)
 
     def __init__(self, favourites: FavouritesManager, parent=None):
         super().__init__(parent)
@@ -257,7 +275,7 @@ class StationListWidget(QWidget):
         self._search_timer.timeout.connect(self._on_search_debounced)
         self._search_input.textChanged.connect(lambda: self._search_timer.start(350))
 
-    def set_stations(self, stations: list[dict]):
+    def set_stations(self, stations: list[dict], deletable: bool = False):
         self._error_label.hide()
         self._list.show()
         self._list.clear()
@@ -269,14 +287,16 @@ class StationListWidget(QWidget):
             item.setSizeHint(QSize(0, 56))
             item.setData(Qt.ItemDataRole.UserRole, station)
 
-            row = StationRowWidget(station, self._favourites)
+            on_delete = (lambda u: self.station_delete_requested.emit(u)) if deletable else None
+            row = StationRowWidget(station, self._favourites, on_delete=on_delete)
             self._list.setItemWidget(item, row)
             self._row_widgets[uuid] = row
 
             row.play_requested.connect(
                 lambda s=station, i=item: self._on_row_play(s, i)
             )
-            row.favourite_toggled.connect(self.favourite_toggled)
+            if not deletable:
+                row.favourite_toggled.connect(self.favourite_toggled)
 
             favicon_url = station.get("favicon", "")
             if favicon_url:

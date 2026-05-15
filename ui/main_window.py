@@ -12,10 +12,12 @@ from ui.now_playing import NowPlayingBar
 from ui.controls import ControlBar
 from ui.settings_dialog import SettingsDialog
 from ui.about_dialog import AboutDialog
+from ui.add_station_dialog import AddStationDialog
 from player.backend import GStreamerBackend
 from api.radio_browser import RadioBrowserClient
 from data.favourites import FavouritesManager, RecentManager
 from data.settings import Settings
+from data.custom_stations import CustomStationsManager
 
 
 class MainWindow(QMainWindow):
@@ -33,6 +35,7 @@ class MainWindow(QMainWindow):
         self._favourites = favourites
         self._recent = recent
         self._settings = settings
+        self._custom = CustomStationsManager()
         self._current_station: dict | None = None
         self._current_view = "all"
         self._top_stations: list = []
@@ -102,27 +105,54 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(4, 8, 4, 8)
         layout.setSpacing(2)
 
+        _sub_style = "QPushButton { text-align: left; padding: 2px 8px 2px 20px; font-size: small; }"
+        _nav_style = "QPushButton { text-align: left; padding: 4px 8px; }"
         self._nav_btns: dict[str, QPushButton] = {}
+
         for label, view, icon_name in [
             ("All stations", "all",        "network-wireless"),
             ("Favourites",   "favourites", "emblem-favorite"),
-            ("Recent",       "recent",     "document-open-recent"),
         ]:
             btn = QPushButton(label)
             btn.setFlat(True)
             btn.setCheckable(True)
             btn.setIcon(QIcon.fromTheme(icon_name))
             btn.setIconSize(QSize(16, 16))
-            btn.setStyleSheet("QPushButton { text-align: left; padding: 4px 8px; }")
+            btn.setStyleSheet(_nav_style)
             btn.clicked.connect(lambda _, v=view: self._switch_view(v))
             layout.addWidget(btn)
             self._nav_btns[view] = btn
 
+        custom_btn = QPushButton("Custom")
+        custom_btn.setFlat(True)
+        custom_btn.setCheckable(True)
+        custom_btn.setIcon(QIcon.fromTheme("document-edit"))
+        custom_btn.setIconSize(QSize(16, 16))
+        custom_btn.setStyleSheet(_nav_style)
+        custom_btn.clicked.connect(lambda: self._switch_view("custom"))
+        layout.addWidget(custom_btn)
+        self._nav_btns["custom"] = custom_btn
+
+        self._add_station_btn = QPushButton("+ Add station")
+        self._add_station_btn.setFlat(True)
+        self._add_station_btn.setStyleSheet(_sub_style)
+        self._add_station_btn.clicked.connect(self._on_add_custom_station)
+        self._add_station_btn.hide()
+        layout.addWidget(self._add_station_btn)
+
+        recent_btn = QPushButton("Recent")
+        recent_btn.setFlat(True)
+        recent_btn.setCheckable(True)
+        recent_btn.setIcon(QIcon.fromTheme("document-open-recent"))
+        recent_btn.setIconSize(QSize(16, 16))
+        recent_btn.setStyleSheet(_nav_style)
+        recent_btn.clicked.connect(lambda: self._switch_view("recent"))
+        layout.addWidget(recent_btn)
+        self._nav_btns["recent"] = recent_btn
+
         self._clear_recent_btn = QPushButton("Clear recent")
         self._clear_recent_btn.setFlat(True)
-        self._clear_recent_btn.setStyleSheet(
-            "QPushButton { text-align: left; padding: 2px 8px 2px 20px; font-size: small; }"
-        )
+        self._clear_recent_btn.setStyleSheet(_sub_style)
         self._clear_recent_btn.clicked.connect(self._on_clear_recent)
         self._clear_recent_btn.hide()
         layout.addWidget(self._clear_recent_btn)
@@ -162,6 +192,7 @@ class MainWindow(QMainWindow):
         self._station_list.station_play_requested.connect(self._on_station_play)
         self._station_list.favourite_toggled.connect(self._on_favourite_toggled)
         self._station_list.search_requested.connect(self._on_search)
+        self._station_list.station_delete_requested.connect(self._on_custom_delete)
 
         self._controls.playback_toggled.connect(self._on_playback_toggled)
         self._controls.volume_changed.connect(self._on_volume_changed)
@@ -219,9 +250,14 @@ class MainWindow(QMainWindow):
         for v, btn in self._nav_btns.items():
             btn.setChecked(v == view)
         self._clear_recent_btn.setVisible(view == "recent")
+        self._add_station_btn.setVisible(view == "custom")
 
         # Set the filter mode first so it's in place when async stations arrive.
         self._station_list.set_view(view, self._favourites.uuids(), self._recent.uuids())
+
+        if view == "custom":
+            self._station_list.set_stations(self._custom.all(), deletable=True)
+            return
 
         if view == "favourites":
             uuids = list(self._favourites.uuids())
@@ -393,6 +429,17 @@ class MainWindow(QMainWindow):
             on_result=_on_result,
             on_error=lambda e: print(f"radiox: search error: {e}", flush=True),
         )
+
+    def _on_add_custom_station(self):
+        dlg = AddStationDialog(self)
+        if dlg.exec():
+            name, url, favicon = dlg.values()
+            self._custom.add(name, url, favicon)
+            self._station_list.set_stations(self._custom.all(), deletable=True)
+
+    def _on_custom_delete(self, uuid: str):
+        self._custom.remove(uuid)
+        self._station_list.set_stations(self._custom.all(), deletable=True)
 
     def closeEvent(self, event):
         event.ignore()

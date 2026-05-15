@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QPushButton
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QIcon, QPalette, QPixmap
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QPushButton, QApplication
+from PyQt6.QtCore import Qt, QUrl, pyqtSignal
+from PyQt6.QtGui import QIcon, QPalette, QPixmap, QDesktopServices
 
 
 class InfoPanel(QWidget):
@@ -10,6 +10,8 @@ class InfoPanel(QWidget):
         super().__init__(parent)
         self.setFixedWidth(200)
         self._uuid = ""
+        self._station_name = ""
+        self._homepage_url = ""
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 8, 8, 8)
@@ -27,16 +29,53 @@ class InfoPanel(QWidget):
 
         layout.addSpacing(4)
 
-        name_row = QHBoxLayout()
-        name_row.setContentsMargins(0, 0, 0, 0)
-        name_row.setSpacing(4)
-
         self._name = QLabel()
         self._name.setWordWrap(True)
         f = self._name.font()
         f.setBold(True)
         self._name.setFont(f)
-        name_row.addWidget(self._name, 1)
+        layout.addWidget(self._name)
+
+        self._country = self._muted_label()
+        layout.addWidget(self._country)
+
+        btn_row = QHBoxLayout()
+        btn_row.setContentsMargins(0, 2, 0, 0)
+        btn_row.setSpacing(2)
+
+        self._copy_name_btn = self._copy_button()
+        self._copy_name_btn.setEnabled(False)
+        self._copy_name_btn.setToolTip("Copy station name")
+        self._copy_name_btn.clicked.connect(lambda: QApplication.clipboard().setText(self._station_name))
+        btn_row.addWidget(self._copy_name_btn)
+
+        self._homepage_btn = QPushButton()
+        self._homepage_btn.setFlat(True)
+        self._homepage_btn.setFixedSize(20, 20)
+        self._homepage_btn.setToolTip("Open station website")
+        self._homepage_btn.setEnabled(False)
+        self._homepage_btn.hide()
+        _home_icon = QIcon.fromTheme("go-home")
+        if _home_icon.isNull():
+            self._homepage_btn.setText("🏠")
+        else:
+            self._homepage_btn.setIcon(_home_icon)
+        self._homepage_btn.clicked.connect(self._open_homepage)
+        btn_row.addWidget(self._homepage_btn)
+
+        self._info_btn = QPushButton()
+        self._info_btn.setFlat(True)
+        self._info_btn.setFixedSize(20, 20)
+        self._info_btn.setToolTip("Open on radio-browser.info")
+        self._info_btn.setEnabled(False)
+        self._info_btn.hide()
+        _info_icon = QIcon.fromTheme("web-browser")
+        if _info_icon.isNull():
+            self._info_btn.setText("↗")
+        else:
+            self._info_btn.setIcon(_info_icon)
+        self._info_btn.clicked.connect(self._open_info_url)
+        btn_row.addWidget(self._info_btn)
 
         self._fav_btn = QPushButton()
         self._fav_btn.setFlat(True)
@@ -45,21 +84,30 @@ class InfoPanel(QWidget):
         self._fav_btn.setEnabled(False)
         self._update_heart(False)
         self._fav_btn.toggled.connect(self._on_fav_toggled)
-        name_row.addWidget(self._fav_btn, 0, Qt.AlignmentFlag.AlignTop)
+        btn_row.addWidget(self._fav_btn)
 
-        layout.addLayout(name_row)
-
-        self._country = self._muted_label()
-        layout.addWidget(self._country)
+        btn_row.addStretch()
+        layout.addLayout(btn_row)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
         layout.addWidget(sep)
 
+        self._now_playing_text = ""
+        now_row = QHBoxLayout()
+        now_row.setContentsMargins(0, 0, 0, 0)
+        now_row.setSpacing(4)
         self._now_playing = QLabel()
         self._now_playing.setWordWrap(True)
-        self._now_playing.hide()
-        layout.addWidget(self._now_playing)
+        now_row.addWidget(self._now_playing, 1)
+        self._copy_song_btn = self._copy_button()
+        self._copy_song_btn.setToolTip("Copy song info")
+        self._copy_song_btn.clicked.connect(lambda: QApplication.clipboard().setText(self._now_playing_text))
+        now_row.addWidget(self._copy_song_btn, 0, Qt.AlignmentFlag.AlignTop)
+        self._now_playing_row = QWidget()
+        self._now_playing_row.setLayout(now_row)
+        self._now_playing_row.hide()
+        layout.addWidget(self._now_playing_row)
 
         self._bitrate = self._muted_label()
         layout.addWidget(self._bitrate)
@@ -78,10 +126,21 @@ class InfoPanel(QWidget):
 
     def set_station(self, station: dict, is_favourite: bool = False):
         self._uuid = station.get("stationuuid", "")
-        self._name.setText(station.get("name", ""))
+        self._station_name = station.get("name", "")
+        self._homepage_url = station.get("homepage", "")
+        self._name.setText(self._station_name)
         self._country.setText(station.get("country", ""))
-        self._fav_btn.setEnabled(True)
-        self.set_favourite(is_favourite)
+        is_custom = bool(station.get("custom"))
+        self._fav_btn.setVisible(not is_custom)
+        self._fav_btn.setEnabled(not is_custom)
+        has_homepage = bool(self._homepage_url) and not is_custom
+        self._homepage_btn.setVisible(has_homepage)
+        self._homepage_btn.setEnabled(has_homepage)
+        self._info_btn.setVisible(not is_custom)
+        self._info_btn.setEnabled(not is_custom)
+        self._copy_name_btn.setEnabled(True)
+        if not is_custom:
+            self.set_favourite(is_favourite)
 
         bitrate = station.get("bitrate", 0)
         codec = station.get("codec", "")
@@ -97,8 +156,9 @@ class InfoPanel(QWidget):
         votes = station.get("votes", 0)
         self._votes.setText(f"▲ {votes:,}" if votes else "")
 
-        self._now_playing.hide()
+        self._now_playing_row.hide()
         self._now_playing.clear()
+        self._now_playing_text = ""
 
         favicon_url = station.get("favicon", "")
         if favicon_url:
@@ -116,16 +176,26 @@ class InfoPanel(QWidget):
 
     def set_now_playing(self, title: str):
         if title:
+            self._now_playing_text = title
             self._now_playing.setText(title)
-            self._now_playing.show()
+            self._now_playing_row.show()
         else:
-            self._now_playing.hide()
+            self._now_playing_row.hide()
+            self._now_playing_text = ""
 
     def set_favourite(self, is_fav: bool):
         self._fav_btn.blockSignals(True)
         self._fav_btn.setChecked(is_fav)
         self._fav_btn.blockSignals(False)
         self._update_heart(is_fav)
+
+    def _open_homepage(self):
+        if self._homepage_url:
+            QDesktopServices.openUrl(QUrl(self._homepage_url))
+
+    def _open_info_url(self):
+        if self._uuid:
+            QDesktopServices.openUrl(QUrl(f"https://www.radio-browser.info/history/{self._uuid}"))
 
     def _on_fav_toggled(self, checked: bool):
         self._update_heart(checked)
@@ -140,6 +210,18 @@ class InfoPanel(QWidget):
         else:
             self._fav_btn.setText("")
             self._fav_btn.setIcon(icon)
+
+    @staticmethod
+    def _copy_button() -> QPushButton:
+        btn = QPushButton()
+        btn.setFlat(True)
+        btn.setFixedSize(20, 20)
+        icon = QIcon.fromTheme("edit-copy")
+        if icon.isNull():
+            btn.setText("⧉")
+        else:
+            btn.setIcon(icon)
+        return btn
 
     @staticmethod
     def _muted_label() -> QLabel:

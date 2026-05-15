@@ -16,6 +16,7 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 ## Screenshots
 
 ![Main window](screenshots/main.png)
+![Main window - Light Theme](screenshots/main-light.png)
 ![System tray](screenshots/systray.png)
 ![MPRIS2 support](screenshots/mpris2.png)
 

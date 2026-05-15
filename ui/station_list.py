@@ -105,7 +105,7 @@ class StationRowWidget(QWidget):
     play_requested = pyqtSignal(dict)
     favourite_toggled = pyqtSignal(str, bool)  # uuid, new state
 
-    def __init__(self, station: dict, favourites: FavouritesManager, parent=None, on_delete=None):
+    def __init__(self, station: dict, favourites: FavouritesManager, parent=None, on_delete=None, on_edit=None):
         super().__init__(parent)
         self._station = station
         uuid = station.get("stationuuid", "")
@@ -155,6 +155,17 @@ class StationRowWidget(QWidget):
 
         if on_delete is not None:
             self._heart_btn = None
+            if on_edit is not None:
+                edit_btn = QPushButton()
+                edit_btn.setFlat(True)
+                edit_btn.setFixedSize(24, 24)
+                edit_icon = QIcon.fromTheme("document-edit")
+                if edit_icon.isNull():
+                    edit_btn.setText("✎")
+                else:
+                    edit_btn.setIcon(edit_icon)
+                edit_btn.clicked.connect(lambda: on_edit(uuid))
+                layout.addWidget(edit_btn)
             del_btn = QPushButton()
             del_btn.setFlat(True)
             del_btn.setFixedSize(24, 24)
@@ -233,6 +244,7 @@ class StationListWidget(QWidget):
     favourite_toggled = pyqtSignal(str, bool)
     search_requested = pyqtSignal(str)
     station_delete_requested = pyqtSignal(str)
+    station_edit_requested = pyqtSignal(str)
 
     def __init__(self, favourites: FavouritesManager, parent=None):
         super().__init__(parent)
@@ -288,7 +300,8 @@ class StationListWidget(QWidget):
             item.setData(Qt.ItemDataRole.UserRole, station)
 
             on_delete = (lambda u: self.station_delete_requested.emit(u)) if deletable else None
-            row = StationRowWidget(station, self._favourites, on_delete=on_delete)
+            on_edit = (lambda u: self.station_edit_requested.emit(u)) if deletable else None
+            row = StationRowWidget(station, self._favourites, on_delete=on_delete, on_edit=on_edit)
             self._list.setItemWidget(item, row)
             self._row_widgets[uuid] = row
 

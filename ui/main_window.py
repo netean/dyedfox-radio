@@ -41,6 +41,7 @@ class MainWindow(QMainWindow):
         self._top_stations: list = []
         self._search_results: list = []
         self._last_search_word: str = ""
+        self._last_title: str = ""
         self._tray = None
         self._mpris = None
 
@@ -193,6 +194,7 @@ class MainWindow(QMainWindow):
         self._station_list.favourite_toggled.connect(self._on_favourite_toggled)
         self._station_list.search_requested.connect(self._on_search)
         self._station_list.station_delete_requested.connect(self._on_custom_delete)
+        self._station_list.station_edit_requested.connect(self._on_custom_edit)
 
         self._controls.playback_toggled.connect(self._on_playback_toggled)
         self._controls.volume_changed.connect(self._on_volume_changed)
@@ -293,6 +295,7 @@ class MainWindow(QMainWindow):
         if not url:
             return
         self._current_station = station
+        self._last_title = ""
         self._backend.play(url)
         self._now_playing.set_station(station.get("name", ""))
         self._now_playing.clear_song()
@@ -335,6 +338,9 @@ class MainWindow(QMainWindow):
         self._info_panel.set_now_playing(title)
         if self._tray and self._current_station:
             self._tray.update_status(self._current_station.get("name", ""), title)
+        if title == self._last_title:
+            return
+        self._last_title = title
         if self._settings["notifications"] and self._tray and self._current_station:
             self._tray.showMessage(
                 self._current_station.get("name", "RadioX"),
@@ -435,6 +441,21 @@ class MainWindow(QMainWindow):
         if dlg.exec():
             name, url, favicon = dlg.values()
             self._custom.add(name, url, favicon)
+            self._station_list.set_stations(self._custom.all(), deletable=True)
+
+    def _on_custom_edit(self, uuid: str):
+        station = next((s for s in self._custom.all() if s.get("stationuuid") == uuid), None)
+        if not station:
+            return
+        dlg = AddStationDialog(
+            self,
+            name=station.get("name", ""),
+            url=station.get("url_resolved", ""),
+            favicon=station.get("favicon", ""),
+        )
+        if dlg.exec():
+            name, url, favicon = dlg.values()
+            self._custom.update(uuid, name, url, favicon)
             self._station_list.set_stations(self._custom.all(), deletable=True)
 
     def _on_custom_delete(self, uuid: str):

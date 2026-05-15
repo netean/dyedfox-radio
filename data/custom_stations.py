@@ -32,6 +32,15 @@ class CustomStationsManager:
         self._save()
         return station
 
+    def update(self, station_uuid: str, name: str, url: str, favicon: str):
+        for s in self._stations:
+            if s.get("stationuuid") == station_uuid:
+                s["name"] = name
+                s["url_resolved"] = url
+                s["favicon"] = favicon
+                break
+        self._save()
+
     def remove(self, station_uuid: str):
         self._stations = [s for s in self._stations if s.get("stationuuid") != station_uuid]
         self._save()

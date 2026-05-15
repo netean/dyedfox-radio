@@ -5,23 +5,24 @@ from PyQt6.QtWidgets import (
 
 
 class AddStationDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, name="", url="", favicon=""):
         super().__init__(parent)
-        self.setWindowTitle("Add custom station")
+        editing = bool(name or url)
+        self.setWindowTitle("Edit custom station" if editing else "Add custom station")
         self.setMinimumWidth(380)
 
         layout = QVBoxLayout(self)
         form = QFormLayout()
 
-        self._name = QLineEdit()
+        self._name = QLineEdit(name)
         self._name.setPlaceholderText("My Radio Station")
         form.addRow("Name:", self._name)
 
-        self._url = QLineEdit()
+        self._url = QLineEdit(url)
         self._url.setPlaceholderText("http://stream.example.com/live")
         form.addRow("Stream URL:", self._url)
 
-        self._favicon = QLineEdit()
+        self._favicon = QLineEdit(favicon)
         self._favicon.setPlaceholderText("https://example.com/logo.png  (optional)")
         form.addRow("Logo URL:", self._favicon)
 

@@ -23,7 +23,8 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 
 - Browse and search top stations from radio-browser.info
 - Multi-keyword search across name, tags, country, and language
-- Favourites and recently played lists
+- Favourites, recently played, and custom stations (add any stream by URL)
+
 - Station info panel with logo, codec, bitrate, and tags
 - Animated equalizer indicator on the playing station
 - Now playing bar with song/artist from stream metadata

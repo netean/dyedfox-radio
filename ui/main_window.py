@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import (
     QPushButton, QFrame, QSystemTrayIcon, QApplication,
 )
 from pathlib import Path
-from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtCore import Qt, QSize, QEvent
 from PyQt6.QtGui import QIcon, QShortcut, QKeySequence
 
 from ui.station_list import StationListWidget
@@ -218,6 +218,10 @@ class MainWindow(QMainWindow):
                 match = next((s for s in stations if s.get("stationuuid") == autoplay_uuid), None)
                 if match:
                     self._on_station_play(match)
+                elif autoplay_uuid.startswith("custom-"):
+                    custom_match = next((s for s in self._custom.all() if s.get("stationuuid") == autoplay_uuid), None)
+                    if custom_match:
+                        self._on_station_play(custom_match)
                 else:
                     self._api.stations_by_uuids(
                         [autoplay_uuid],
@@ -461,6 +465,14 @@ class MainWindow(QMainWindow):
     def _on_custom_delete(self, uuid: str):
         self._custom.remove(uuid)
         self._station_list.set_stations(self._custom.all(), deletable=True)
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.Type.PaletteChange:
+            for btn in self._nav_btns.values():
+                btn.setStyleSheet(btn.styleSheet())
+            self._clear_recent_btn.setStyleSheet(self._clear_recent_btn.styleSheet())
+            self._add_station_btn.setStyleSheet(self._add_station_btn.styleSheet())
+        super().changeEvent(event)
 
     def closeEvent(self, event):
         event.ignore()

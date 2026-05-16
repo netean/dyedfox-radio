@@ -45,14 +45,14 @@ python3 -c "import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)" \
 check_cmd pip3 || die "pip3 not found. Install python3-pip for your distro."
 
 # Warn about system-level deps that pip can't provide
-for pkg in dbus gobject; do
-    python3 -c "import $pkg" 2>/dev/null \
-        || warn "Python module '$pkg' not found. Install the system package (e.g. python3-dbus / python3-gi)."
-done
+python3 -c "import dbus" 2>/dev/null \
+    || warn "python-dbus not found. Install: python3-dbus (Debian/Ubuntu/Fedora)"
+python3 -c "import gobject" 2>/dev/null \
+    || warn "python-gobject not found. Install: python3-gi (Debian/Ubuntu) or python3-gobject (Fedora)"
 
 # Check GStreamer
 python3 -c "import gi; gi.require_version('Gst','1.0'); from gi.repository import Gst" 2>/dev/null \
-    || warn "GStreamer Python bindings not found. Install gstreamer1.0-tools and python3-gi."
+    || warn "GStreamer not found. Install: gstreamer1.0-plugins-base python3-gi (Debian/Ubuntu) or gstreamer1-plugins-base python3-gobject (Fedora)"
 
 # --- pip dependencies --------------------------------------------------------
 

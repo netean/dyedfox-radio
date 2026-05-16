@@ -2,7 +2,7 @@ import requests
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool
 
 BASE_URL = "https://de1.api.radio-browser.info/json"
-HEADERS = {"User-Agent": "RadioX/1.0"}
+HEADERS = {"User-Agent": "dyedfox-radio/1.0"}
 
 
 class _Signals(QObject):

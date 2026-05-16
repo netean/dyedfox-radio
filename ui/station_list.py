@@ -94,7 +94,7 @@ class _FaviconLoader(QRunnable):
 
     def run(self):
         try:
-            resp = requests.get(self._url, timeout=5, headers={"User-Agent": "RadioX/1.0"})
+            resp = requests.get(self._url, timeout=5, headers={"User-Agent": "dyedfox-radio/1.0"})
             if resp.ok and resp.content:
                 self.signals.loaded.emit(self._uuid, resp.content)
         except Exception:

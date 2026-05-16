@@ -11,6 +11,8 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 - [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Install on Arch Linux (AUR)](#install-on-arch-linux-aur)
 - [Build from source (PKGBUILD)](#build-from-source-pkgbuild)
+- [Install on other Linux distros](#install-on-other-linux-distros)
+- [Paths](#paths)
 - [Dependencies](#dependencies)
 
 ## Screenshots
@@ -25,7 +27,6 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 - Browse and search top stations from radio-browser.info
 - Multi-keyword search across name, tags, country, and language
 - Favourites, recently played, and custom stations (add any stream by URL)
-
 - Station info panel with logo, codec, bitrate, and tags
 - Animated equalizer indicator on the playing station
 - Now playing bar with song/artist from stream metadata
@@ -65,6 +66,16 @@ cd dyedfox-radio
 makepkg -si
 ```
 
+## Install on other Linux distros
+
+```bash
+git clone https://github.com/dyedfox/dyedfox-radio.git && cd dyedfox-radio && bash install.sh
+```
+
+Requires Python 3.10+, GStreamer, `python3-dbus`, and `python3-gi` from your distro's package manager.
+
+
+## Paths
 After installation the following files are placed automatically:
 
 - `/usr/bin/dyedfox-radio` — launcher script

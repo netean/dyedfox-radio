@@ -67,7 +67,7 @@ makepkg -si
 ```
 
 ## Install on other Linux distros
-(Debian/Ubuntu, Fedora)
+(Debian 12+, Ubuntu 22.04+, Fedora)
 
 ```bash
 git clone https://github.com/dyedfox/dyedfox-radio.git && cd dyedfox-radio && bash install.sh

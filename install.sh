@@ -44,6 +44,13 @@ python3 -c "import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)" \
 
 if check_cmd apt-get; then
     PKG_MANAGER="apt"
+    # python3-pyqt6 was added in Debian 12 (Bookworm); Ubuntu has it from 22.04
+    if [[ -f /etc/os-release ]]; then
+        source /etc/os-release
+        if [[ "${ID:-}" == "debian" && "${VERSION_ID:-0}" -lt 12 ]]; then
+            die "Debian ${VERSION_ID} is not supported. Debian 12 (Bookworm) or newer is required."
+        fi
+    fi
 elif check_cmd dnf; then
     PKG_MANAGER="dnf"
 else

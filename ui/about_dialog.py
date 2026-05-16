@@ -50,6 +50,11 @@ class AboutDialog(QDialog):
         license_label.setEnabled(False)
         layout.addWidget(license_label)
 
+        repo = QLabel('<a href="https://github.com/dyedfox/dyedfox-radio">github.com/dyedfox/dyedfox-radio</a>')
+        repo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        repo.setOpenExternalLinks(True)
+        layout.addWidget(repo)
+
         layout.addSpacing(8)
 
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)

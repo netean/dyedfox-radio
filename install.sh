@@ -42,22 +42,35 @@ check_cmd python3 || die "python3 not found."
 python3 -c "import sys; sys.exit(0 if sys.version_info >= (3,10) else 1)" \
     || die "Python 3.10 or newer required."
 
-check_cmd pip3 || die "pip3 not found. Install python3-pip for your distro."
+if check_cmd apt-get; then
+    PKG_MANAGER="apt"
+elif check_cmd dnf; then
+    PKG_MANAGER="dnf"
+else
+    die "No supported package manager found (apt-get or dnf). Install dependencies manually and re-run."
+fi
 
-# Warn about system-level deps that pip can't provide
-python3 -c "import dbus" 2>/dev/null \
-    || warn "python-dbus not found. Install: python3-dbus (Debian/Ubuntu/Fedora)"
-python3 -c "import gobject" 2>/dev/null \
-    || warn "python-gobject not found. Install: python3-gi (Debian/Ubuntu) or python3-gobject (Fedora)"
+# --- system dependencies -----------------------------------------------------
 
-# Check GStreamer
-python3 -c "import gi; gi.require_version('Gst','1.0'); from gi.repository import Gst" 2>/dev/null \
-    || warn "GStreamer not found. Install: gstreamer1.0-plugins-base python3-gi (Debian/Ubuntu) or gstreamer1-plugins-base python3-gobject (Fedora)"
+info "Installing system dependencies..."
 
-# --- pip dependencies --------------------------------------------------------
-
-info "Installing Python dependencies..."
-pip3 install --user -r "$SRC_DIR/requirements.txt"
+if [[ "$PKG_MANAGER" == "apt" ]]; then
+    sudo apt-get install -y \
+        python3-pyqt6 \
+        python3-requests \
+        python3-dbus \
+        python3-gi \
+        gstreamer1.0-plugins-base \
+        gstreamer1.0-plugins-good
+elif [[ "$PKG_MANAGER" == "dnf" ]]; then
+    sudo dnf install -y \
+        python3-pyqt6 \
+        python3-requests \
+        python3-dbus \
+        python3-gobject \
+        gstreamer1-plugins-base \
+        gstreamer1-plugins-good
+fi
 
 # --- copy files --------------------------------------------------------------
 

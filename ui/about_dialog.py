@@ -1,6 +1,6 @@
 from pathlib import Path
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtGui import QIcon, QPixmap
 
 
@@ -56,3 +56,9 @@ class AboutDialog(QDialog):
         buttons.rejected.connect(self.accept)
         buttons.accepted.connect(self.accept)
         layout.addWidget(buttons)
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.Type.PaletteChange:
+            for w in self.findChildren(QLabel):
+                w.update()
+        super().changeEvent(event)

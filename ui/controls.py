@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QSlider, QLabel
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import Qt, QEvent, pyqtSignal
 from PyQt6.QtGui import QIcon
 
 
@@ -22,9 +22,9 @@ class ControlBar(QWidget):
 
         layout.addStretch()
 
-        vol_icon = QLabel()
-        vol_icon.setPixmap(QIcon.fromTheme("audio-volume-medium").pixmap(16, 16))
-        layout.addWidget(vol_icon)
+        self._vol_icon = QLabel()
+        self._vol_icon.setPixmap(QIcon.fromTheme("audio-volume-medium").pixmap(16, 16))
+        layout.addWidget(self._vol_icon)
 
         self._slider = QSlider(Qt.Orientation.Horizontal)
         self._slider.setRange(0, 100)
@@ -45,6 +45,11 @@ class ControlBar(QWidget):
         self._slider.blockSignals(True)
         self._slider.setValue(value)
         self._slider.blockSignals(False)
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.Type.PaletteChange:
+            self._vol_icon.setPixmap(QIcon.fromTheme("audio-volume-medium").pixmap(16, 16))
+        super().changeEvent(event)
 
     @property
     def volume(self) -> int:

@@ -54,6 +54,11 @@ class MainWindow(QMainWindow):
         self._apply_settings()
         self._setup_shortcuts()
 
+    def _sep(self, vertical=False) -> QFrame:
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.VLine if vertical else QFrame.Shape.HLine)
+        return sep
+
     def _setup_ui(self):
         root = QWidget()
         self.setCentralWidget(root)
@@ -71,30 +76,22 @@ class MainWindow(QMainWindow):
         self._sidebar = self._build_sidebar()
         content_layout.addWidget(self._sidebar)
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.VLine)
-        content_layout.addWidget(sep)
+        content_layout.addWidget(self._sep(vertical=True))
 
         self._station_list = StationListWidget(self._favourites)
         content_layout.addWidget(self._station_list, 1)
 
-        sep2 = QFrame()
-        sep2.setFrameShape(QFrame.Shape.VLine)
-        content_layout.addWidget(sep2)
+        content_layout.addWidget(self._sep(vertical=True))
 
         self._info_panel = InfoPanel()
         content_layout.addWidget(self._info_panel)
 
-        sep3 = QFrame()
-        sep3.setFrameShape(QFrame.Shape.HLine)
-        root_layout.addWidget(sep3)
+        root_layout.addWidget(self._sep())
 
         self._now_playing = NowPlayingBar()
         root_layout.addWidget(self._now_playing)
 
-        sep4 = QFrame()
-        sep4.setFrameShape(QFrame.Shape.HLine)
-        root_layout.addWidget(sep4)
+        root_layout.addWidget(self._sep())
 
         self._controls = ControlBar()
         root_layout.addWidget(self._controls)
@@ -162,9 +159,7 @@ class MainWindow(QMainWindow):
 
         layout.addStretch()
 
-        sep = QFrame()
-        sep.setFrameShape(QFrame.Shape.HLine)
-        layout.addWidget(sep)
+        layout.addWidget(self._sep())
 
         self._settings_btn = QPushButton("Settings")
         self._settings_btn.setFlat(True)
@@ -468,10 +463,12 @@ class MainWindow(QMainWindow):
 
     def changeEvent(self, event):
         if event.type() == QEvent.Type.PaletteChange:
-            for btn in self._nav_btns.values():
+            for btn in [
+                *self._nav_btns.values(),
+                self._clear_recent_btn, self._add_station_btn,
+                self._settings_btn, self._about_btn,
+            ]:
                 btn.setStyleSheet(btn.styleSheet())
-            self._clear_recent_btn.setStyleSheet(self._clear_recent_btn.styleSheet())
-            self._add_station_btn.setStyleSheet(self._add_station_btn.styleSheet())
         super().changeEvent(event)
 
     def closeEvent(self, event):

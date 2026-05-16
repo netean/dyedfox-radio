@@ -323,7 +323,7 @@ class MainWindow(QMainWindow):
 
             def run(self_):
                 try:
-                    r = _req.get(self_._url, timeout=5, headers={"User-Agent": "RadioX/1.0"})
+                    r = _req.get(self_._url, timeout=5, headers={"User-Agent": "dyedfox-radio/1.0"})
                     if r.ok and r.content:
                         self_.signals.done.emit(r.content)
                 except Exception:
@@ -343,7 +343,7 @@ class MainWindow(QMainWindow):
         self._last_title = title
         if self._settings["notifications"] and self._tray and self._current_station:
             self._tray.showMessage(
-                self._current_station.get("name", "RadioX"),
+                self._current_station.get("name", "Dyedfox Radio"),
                 title,
                 QSystemTrayIcon.MessageIcon.NoIcon,
                 3000,
@@ -362,7 +362,7 @@ class MainWindow(QMainWindow):
         if self._tray:
             station = self._current_station.get("name", "the station") if self._current_station else "the station"
             self._tray.showMessage(
-                "RadioX",
+                "Dyedfox Radio",
                 f"Could not connect to {station}. The stream may be down or unavailable.",
                 QSystemTrayIcon.MessageIcon.Warning,
                 4000,

@@ -75,6 +75,7 @@ fi
 # --- copy files --------------------------------------------------------------
 
 info "Copying application files..."
+sudo rm -rf "$DEST_LIB"
 sudo install -dm755 "$DEST_LIB"
 sudo cp -r "$SRC_DIR"/api "$SRC_DIR"/data "$SRC_DIR"/player \
            "$SRC_DIR"/tray "$SRC_DIR"/ui "$SRC_DIR"/assets \

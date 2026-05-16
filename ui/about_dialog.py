@@ -1,6 +1,6 @@
 from pathlib import Path
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtGui import QIcon, QPixmap
 
 
@@ -31,7 +31,7 @@ class AboutDialog(QDialog):
         name.setFont(f)
         layout.addWidget(name)
 
-        version = QLabel("Version 0.2.1")
+        version = QLabel("Version 0.2.2")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         version.setEnabled(False)
         layout.addWidget(version)
@@ -50,9 +50,20 @@ class AboutDialog(QDialog):
         license_label.setEnabled(False)
         layout.addWidget(license_label)
 
+        repo = QLabel('<a href="https://github.com/dyedfox/dyedfox-radio">github.com/dyedfox/dyedfox-radio</a>')
+        repo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        repo.setOpenExternalLinks(True)
+        layout.addWidget(repo)
+
         layout.addSpacing(8)
 
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
         buttons.rejected.connect(self.accept)
         buttons.accepted.connect(self.accept)
         layout.addWidget(buttons)
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.Type.PaletteChange:
+            for w in self.findChildren(QLabel):
+                w.update()
+        super().changeEvent(event)

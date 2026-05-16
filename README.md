@@ -67,13 +67,19 @@ makepkg -si
 ```
 
 ## Install on other Linux distros
-(Debian/Ubuntu, Fedora)
+(Debian 12+, Ubuntu 22.04+, Fedora)
 
 ```bash
 git clone https://github.com/dyedfox/dyedfox-radio.git && cd dyedfox-radio && bash install.sh
 ```
 
 Requires Python 3.10+, GStreamer, `python3-dbus`, and `python3-gi` from your distro's package manager.
+
+To upgrade, just run the script again — it replaces the previous installation cleanly:
+
+```bash
+bash install.sh
+```
 
 To uninstall:
 

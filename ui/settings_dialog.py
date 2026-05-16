@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QFormLayout, QCheckBox, QComboBox,
     QDialogButtonBox, QGroupBox, QLabel,
 )
+from PyQt6.QtCore import QEvent
 
 from data.settings import Settings
 
@@ -66,6 +67,12 @@ class SettingsDialog(QDialog):
         buttons.accepted.connect(self._save)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.Type.PaletteChange:
+            for w in self.findChildren(QLabel | QGroupBox):
+                w.update()
+        super().changeEvent(event)
 
     def _save(self):
         self._settings["start_minimized"] = self._start_minimized.isChecked()

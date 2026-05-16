@@ -74,6 +74,12 @@ git clone https://github.com/dyedfox/dyedfox-radio.git && cd dyedfox-radio && ba
 
 Requires Python 3.10+, GStreamer, `python3-dbus`, and `python3-gi` from your distro's package manager.
 
+To uninstall:
+
+```bash
+bash install.sh uninstall
+```
+
 
 ## Paths
 After installation the following files are placed automatically:

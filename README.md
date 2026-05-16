@@ -12,6 +12,7 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 - [Install on Arch Linux (AUR)](#install-on-arch-linux-aur)
 - [Build from source (PKGBUILD)](#build-from-source-pkgbuild)
 - [Install on other Linux distros](#install-on-other-linux-distros)
+- [Manual installation](#manual-installation)
 - [Paths](#paths)
 - [Dependencies](#dependencies)
 
@@ -89,6 +90,33 @@ To uninstall:
 bash install.sh uninstall
 ```
 
+
+## Manual installation
+
+**1. Install dependencies** using your distro's package manager. You need:
+- Python 3.10+
+- PyQt6
+- python-requests
+- python-dbus
+- python-gobject
+- GStreamer + gst-plugins-base + gst-plugins-good
+
+**2. Copy application files:**
+
+```bash
+sudo mkdir -p /usr/lib/dyedfox-radio
+sudo cp -r api data player tray ui assets main.py /usr/lib/dyedfox-radio/
+sudo cp assets/icons/dyedfox-radio.png /usr/share/icons/hicolor/256x256/apps/
+sudo cp assets/icons/dyedfox-radio-tray.svg /usr/share/icons/hicolor/scalable/apps/
+sudo cp dyedfox-radio.desktop /usr/share/applications/
+```
+
+**3. Create a launcher:**
+
+```bash
+echo -e '#!/bin/sh\nexec python3 /usr/lib/dyedfox-radio/main.py "$@"' | sudo tee /usr/bin/dyedfox-radio > /dev/null
+sudo chmod 755 /usr/bin/dyedfox-radio
+```
 
 ## Paths
 After installation the following files are placed automatically:

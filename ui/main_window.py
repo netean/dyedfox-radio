@@ -380,11 +380,13 @@ class MainWindow(QMainWindow):
 
     def _on_stopped(self):
         self._controls.set_playing(False)
+        self._station_list.mark_stopped()
         if self._mpris:
             self._mpris.update_playback_status()
 
     def _on_started(self):
         self._controls.set_playing(True)
+        self._station_list.mark_resumed()
         if self._mpris:
             self._mpris.update_playback_status()
 

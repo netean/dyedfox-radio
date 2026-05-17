@@ -26,6 +26,9 @@ class _WaveWidget(QWidget):
         self._timer.start(60)
         self.show()
 
+    def freeze(self):
+        self._timer.stop()
+
     def stop(self):
         self._timer.stop()
         self.hide()
@@ -210,6 +213,9 @@ class StationRowWidget(QWidget):
             self._favicon.show()
         self.setPalette(p)
 
+    def freeze_wave(self):
+        self._wave.freeze()
+
     def update_favourite(self, is_fav: bool):
         if self._heart_btn is None:
             return
@@ -339,6 +345,14 @@ class StationListWidget(QWidget):
         self._playing_uuid = uuid
         if uuid in self._row_widgets:
             self._row_widgets[uuid].set_playing(True)
+
+    def mark_stopped(self):
+        if self._playing_uuid and self._playing_uuid in self._row_widgets:
+            self._row_widgets[self._playing_uuid].freeze_wave()
+
+    def mark_resumed(self):
+        if self._playing_uuid and self._playing_uuid in self._row_widgets:
+            self._row_widgets[self._playing_uuid].set_playing(True)
 
     def update_favourite(self, uuid: str, is_fav: bool):
         if uuid in self._row_widgets:

@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-_CONFIG = Path.home() / ".config" / "radiox"
+_CONFIG = Path.home() / ".config" / "dyedfox-radio"
 _FAV_FILE = _CONFIG / "favourites.json"
 _RECENT_FILE = _CONFIG / "recent.json"
 
@@ -36,7 +36,7 @@ class FavouritesManager:
         try:
             path.write_text(json.dumps(data, indent=2))
         except Exception as e:
-            print(f"radiox: failed to save {path}: {e}", flush=True)
+            print(f"dyedfox-radio: failed to save {path}: {e}", flush=True)
 
 
 class RecentManager:
@@ -72,4 +72,4 @@ class RecentManager:
         try:
             _RECENT_FILE.write_text(json.dumps(self._uuids, indent=2))
         except Exception as e:
-            print(f"radiox: failed to save recent: {e}", flush=True)
+            print(f"dyedfox-radio: failed to save recent: {e}", flush=True)

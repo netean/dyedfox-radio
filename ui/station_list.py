@@ -29,6 +29,10 @@ class _WaveWidget(QWidget):
     def freeze(self):
         self._timer.stop()
 
+    def show_frozen(self):
+        self._timer.stop()
+        self.show()
+
     def stop(self):
         self._timer.stop()
         self.hide()
@@ -214,7 +218,14 @@ class StationRowWidget(QWidget):
         self.setPalette(p)
 
     def freeze_wave(self):
-        self._wave.freeze()
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        highlight = QPalette().color(QPalette.ColorRole.Highlight)
+        highlight.setAlpha(40)
+        p.setColor(QPalette.ColorRole.Window, highlight)
+        self._favicon.hide()
+        self._wave.show_frozen()
+        self.setPalette(p)
 
     def update_favourite(self, is_fav: bool):
         if self._heart_btn is None:
@@ -260,6 +271,7 @@ class StationListWidget(QWidget):
         self._recent_uuids: list[str] = []
         self._row_widgets: dict[str, StationRowWidget] = {}
         self._playing_uuid: str | None = None
+        self._is_playing: bool = False
         self._pool = QThreadPool.globalInstance()
 
         layout = QVBoxLayout(self)
@@ -282,11 +294,35 @@ class StationListWidget(QWidget):
         self._list.setSpacing(0)
         layout.addWidget(self._list)
 
+        self._error_widget = QWidget()
+        self._error_widget.hide()
+        error_layout = QVBoxLayout(self._error_widget)
+        error_layout.setSpacing(8)
+
         self._error_label = QLabel()
         self._error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._error_label.setWordWrap(True)
-        self._error_label.hide()
-        layout.addWidget(self._error_label)
+        error_layout.addWidget(self._error_label)
+
+        self._error_hint = QLabel("This may be a temporary server-side issue.")
+        self._error_hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._error_hint.setEnabled(False)
+        error_layout.addWidget(self._error_hint)
+
+        self._retry_callback = None
+        self._retry_btn = QPushButton("Retry")
+        self._retry_btn.setFixedWidth(80)
+        self._retry_btn.clicked.connect(lambda: self._retry_callback and self._retry_callback())
+        self._retry_btn.hide()
+        retry_row = QWidget()
+        retry_row_layout = QHBoxLayout(retry_row)
+        retry_row_layout.setContentsMargins(0, 0, 0, 0)
+        retry_row_layout.addStretch()
+        retry_row_layout.addWidget(self._retry_btn)
+        retry_row_layout.addStretch()
+        error_layout.addWidget(retry_row)
+
+        layout.addWidget(self._error_widget)
 
         self._search_timer = QTimer(self)
         self._search_timer.setSingleShot(True)
@@ -294,7 +330,7 @@ class StationListWidget(QWidget):
         self._search_input.textChanged.connect(lambda: self._search_timer.start(350))
 
     def set_stations(self, stations: list[dict], deletable: bool = False):
-        self._error_label.hide()
+        self._error_widget.hide()
         self._list.show()
         self._list.clear()
         self._row_widgets.clear()
@@ -324,14 +360,19 @@ class StationListWidget(QWidget):
                 self._pool.start(loader)
 
         if self._playing_uuid and self._playing_uuid in self._row_widgets:
-            self._row_widgets[self._playing_uuid].set_playing(True)
+            if self._is_playing:
+                self._row_widgets[self._playing_uuid].set_playing(True)
+            else:
+                self._row_widgets[self._playing_uuid].freeze_wave()
 
         self._apply_filter()
 
-    def set_error(self, message: str):
+    def set_error(self, message: str, on_retry=None):
         self._list.hide()
         self._error_label.setText(message)
-        self._error_label.show()
+        self._retry_callback = on_retry
+        self._retry_btn.setVisible(on_retry is not None)
+        self._error_widget.show()
 
     def set_view(self, view: str, fav_uuids: set[str], recent_uuids: list[str]):
         self._current_view = view
@@ -343,14 +384,17 @@ class StationListWidget(QWidget):
         if self._playing_uuid and self._playing_uuid in self._row_widgets:
             self._row_widgets[self._playing_uuid].set_playing(False)
         self._playing_uuid = uuid
+        self._is_playing = True
         if uuid in self._row_widgets:
             self._row_widgets[uuid].set_playing(True)
 
     def mark_stopped(self):
+        self._is_playing = False
         if self._playing_uuid and self._playing_uuid in self._row_widgets:
             self._row_widgets[self._playing_uuid].freeze_wave()
 
     def mark_resumed(self):
+        self._is_playing = True
         if self._playing_uuid and self._playing_uuid in self._row_widgets:
             self._row_widgets[self._playing_uuid].set_playing(True)
 

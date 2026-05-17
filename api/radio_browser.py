@@ -1,8 +1,10 @@
+import time
 import requests
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool
 
 BASE_URL = "https://de1.api.radio-browser.info/json"
 HEADERS = {"User-Agent": "dyedfox-radio/1.0"}
+_RETRY_DELAYS = [1, 3]
 
 
 class _Signals(QObject):
@@ -19,12 +21,20 @@ class _ApiWorker(QRunnable):
         self.signals = _Signals()
 
     def run(self):
-        try:
-            resp = requests.get(self.url, params=self.params, headers=HEADERS, timeout=10)
-            resp.raise_for_status()
-            self.signals.result.emit(resp.json())
-        except Exception as e:
-            self.signals.error.emit(str(e))
+        last_error = "Empty response"
+        for delay in (0, *_RETRY_DELAYS):
+            if delay:
+                time.sleep(delay)
+            try:
+                resp = requests.get(self.url, params=self.params, headers=HEADERS, timeout=10)
+                resp.raise_for_status()
+                data = resp.json()
+                if data:
+                    self.signals.result.emit(data)
+                    return
+            except Exception as e:
+                last_error = str(e)
+        self.signals.error.emit(last_error)
 
 
 class _PostApiWorker(QRunnable):
@@ -36,12 +46,20 @@ class _PostApiWorker(QRunnable):
         self.signals = _Signals()
 
     def run(self):
-        try:
-            resp = requests.post(self.url, data=self.data, headers=HEADERS, timeout=10)
-            resp.raise_for_status()
-            self.signals.result.emit(resp.json())
-        except Exception as e:
-            self.signals.error.emit(str(e))
+        last_error = "Empty response"
+        for delay in (0, *_RETRY_DELAYS):
+            if delay:
+                time.sleep(delay)
+            try:
+                resp = requests.post(self.url, data=self.data, headers=HEADERS, timeout=10)
+                resp.raise_for_status()
+                data = resp.json()
+                if data:
+                    self.signals.result.emit(data)
+                    return
+            except Exception as e:
+                last_error = str(e)
+        self.signals.error.emit(last_error)
 
 
 class RadioBrowserClient:

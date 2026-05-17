@@ -42,7 +42,15 @@ def _try_raise_existing() -> bool:
     return False
 
 
+def _migrate_config():
+    old = Path.home() / ".config" / "radiox"
+    new = Path.home() / ".config" / "dyedfox-radio"
+    if old.exists() and not new.exists():
+        old.rename(new)
+
+
 def main():
+    _migrate_config()
     Gst.init(None)
 
     # Load settings before QApplication so we can suppress the KDE startup

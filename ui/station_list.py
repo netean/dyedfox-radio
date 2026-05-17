@@ -417,6 +417,8 @@ class StationListWidget(QWidget):
         self._apply_filter()
         if len(text) >= 2:
             self.search_requested.emit(text)
+        elif not text:
+            self.search_requested.emit("")
 
     def _apply_filter(self):
         words = self._search_input.text().lower().split()

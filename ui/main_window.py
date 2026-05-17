@@ -407,6 +407,9 @@ class MainWindow(QMainWindow):
             self._info_panel.set_favourite(is_fav)
 
     def _on_search(self, text: str):
+        if not text:
+            self._switch_view(self._current_view)
+            return
         words = text.lower().split()
         if not words:
             return

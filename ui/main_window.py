@@ -227,7 +227,8 @@ class MainWindow(QMainWindow):
             limit=self._settings["station_limit"],
             on_result=on_loaded,
             on_error=lambda e: self._station_list.set_error(
-                "Could not load stations — check your connection"
+                "Could not load stations — check your connection",
+                on_retry=lambda: self.load_top_stations(),
             ),
         )
 
@@ -266,7 +267,8 @@ class MainWindow(QMainWindow):
                 uuids,
                 on_result=self._station_list.set_stations,
                 on_error=lambda e: self._station_list.set_error(
-                    "Could not load favourites — check your connection"
+                    "Could not load favourites — check your connection",
+                    on_retry=lambda: self._switch_view("favourites"),
                 ),
             )
         elif view == "recent":
@@ -281,13 +283,17 @@ class MainWindow(QMainWindow):
                     uuids,
                     on_result=_on_recent_loaded,
                     on_error=lambda e: self._station_list.set_error(
-                        "Could not load recent — check your connection"
+                        "Could not load recent — check your connection",
+                        on_retry=lambda: self._switch_view("recent"),
                     ),
                 )
             else:
                 self._station_list.set_stations([])
         else:
-            self._station_list.set_stations(self._top_stations)
+            if self._top_stations:
+                self._station_list.set_stations(self._top_stations)
+            else:
+                self.load_top_stations()
 
     def _on_station_play(self, station: dict):
         url = station.get("url_resolved", "")
@@ -355,7 +361,7 @@ class MainWindow(QMainWindow):
             )
 
     def _on_stream_error(self, msg: str):
-        print(f"radiox: stream error: {msg}", flush=True)
+        print(f"dyedfox-radio: stream error: {msg}", flush=True)
         self._now_playing.set_error()
         self._controls.set_playing(False)
         if self._tray:
@@ -401,6 +407,9 @@ class MainWindow(QMainWindow):
             self._info_panel.set_favourite(is_fav)
 
     def _on_search(self, text: str):
+        if not text:
+            self._switch_view(self._current_view)
+            return
         words = text.lower().split()
         if not words:
             return
@@ -434,7 +443,7 @@ class MainWindow(QMainWindow):
         self._api.search(
             words[0],
             on_result=_on_result,
-            on_error=lambda e: print(f"radiox: search error: {e}", flush=True),
+            on_error=lambda e: print(f"dyedfox-radio: search error: {e}", flush=True),
         )
 
     def _on_add_custom_station(self):

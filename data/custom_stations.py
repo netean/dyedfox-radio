@@ -2,7 +2,7 @@ import json
 import uuid
 from pathlib import Path
 
-_CONFIG = Path.home() / ".config" / "radiox"
+_CONFIG = Path.home() / ".config" / "dyedfox-radio"
 _CUSTOM_FILE = _CONFIG / "custom_stations.json"
 
 
@@ -55,4 +55,4 @@ class CustomStationsManager:
         try:
             _CUSTOM_FILE.write_text(json.dumps(self._stations, indent=2))
         except Exception as e:
-            print(f"radiox: failed to save custom stations: {e}", flush=True)
+            print(f"dyedfox-radio: failed to save custom stations: {e}", flush=True)

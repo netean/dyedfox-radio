@@ -32,7 +32,7 @@ if _DBUS_OK:
             self._bridge = bridge
             self._backend = backend
             self._metadata = dbus.Dictionary(
-                {"mpris:trackid": dbus.ObjectPath("/org/radiox/track/0"),
+                {"mpris:trackid": dbus.ObjectPath("/org/dyedfoxradio/track/0"),
                  "xesam:title": dbus.String(""),
                  "xesam:artist": dbus.Array([""], signature="s")},
                 signature="sv",
@@ -74,7 +74,7 @@ if _DBUS_OK:
 
         def push_metadata(self, title: str, station: str, art_url: str):
             self._metadata = dbus.Dictionary(
-                {"mpris:trackid": dbus.ObjectPath("/org/radiox/track/1"),
+                {"mpris:trackid": dbus.ObjectPath("/org/dyedfoxradio/track/1"),
                  "xesam:title": dbus.String(title),
                  "xesam:artist": dbus.Array([station], signature="s"),
                  "mpris:artUrl": dbus.String(art_url)},
@@ -154,7 +154,7 @@ class MprisPlayer:
 
 def setup_mpris(backend, window) -> "MprisPlayer | None":
     if not _DBUS_OK:
-        print("radiox: python-dbus not available, MPRIS disabled", flush=True)
+        print("dyedfox-radio: python-dbus not available, MPRIS disabled", flush=True)
         return None
     try:
         bus = dbus.SessionBus()
@@ -184,5 +184,5 @@ def setup_mpris(backend, window) -> "MprisPlayer | None":
 
         return MprisPlayer(obj, poller, bridge)
     except Exception as e:
-        print(f"radiox: MPRIS setup failed: {e}", flush=True)
+        print(f"dyedfox-radio: MPRIS setup failed: {e}", flush=True)
         return None

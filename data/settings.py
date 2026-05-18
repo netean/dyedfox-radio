@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-_CONFIG = Path.home() / ".config" / "radiox"
+_CONFIG = Path.home() / ".config" / "dyedfox-radio"
 _FILE = _CONFIG / "settings.json"
 
 DEFAULTS: dict = {
@@ -33,4 +33,4 @@ class Settings:
         try:
             _FILE.write_text(json.dumps(self._data, indent=2))
         except Exception as e:
-            print(f"radiox: failed to save settings: {e}", flush=True)
+            print(f"dyedfox-radio: failed to save settings: {e}", flush=True)

@@ -272,6 +272,7 @@ class StationListWidget(QWidget):
         self._row_widgets: dict[str, StationRowWidget] = {}
         self._playing_uuid: str | None = None
         self._is_playing: bool = False
+        self._favicon_cache: dict[str, bytes] = {}
         self._pool = QThreadPool.globalInstance()
 
         layout = QVBoxLayout(self)
@@ -355,9 +356,12 @@ class StationListWidget(QWidget):
 
             favicon_url = station.get("favicon", "")
             if favicon_url:
-                loader = _FaviconLoader(uuid, favicon_url)
-                loader.signals.loaded.connect(self._on_favicon_loaded)
-                self._pool.start(loader)
+                if uuid in self._favicon_cache:
+                    row.set_favicon(self._favicon_cache[uuid])
+                else:
+                    loader = _FaviconLoader(uuid, favicon_url)
+                    loader.signals.loaded.connect(self._on_favicon_loaded)
+                    self._pool.start(loader)
 
         if self._playing_uuid and self._playing_uuid in self._row_widgets:
             if self._is_playing:
@@ -409,6 +413,7 @@ class StationListWidget(QWidget):
         self.station_play_requested.emit(station)
 
     def _on_favicon_loaded(self, uuid: str, data: bytes):
+        self._favicon_cache[uuid] = data
         if uuid in self._row_widgets:
             self._row_widgets[uuid].set_favicon(data)
 

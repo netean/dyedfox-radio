@@ -88,6 +88,12 @@ sudo cp -r "$SRC_DIR"/api "$SRC_DIR"/data "$SRC_DIR"/player \
            "$SRC_DIR"/tray "$SRC_DIR"/ui "$SRC_DIR"/assets \
            "$SRC_DIR"/main.py "$DEST_LIB/"
 
+info "Installing translations..."
+sudo install -dm755 "$DEST_LIB/translations"
+for qm in "$SRC_DIR"/translations/*.qm; do
+    [ -f "$qm" ] && sudo install -m644 "$qm" "$DEST_LIB/translations/"
+done
+
 info "Installing icons..."
 sudo install -Dm644 "$SRC_DIR/assets/icons/$APP.png"      "$DEST_ICON_PNG"
 sudo install -Dm644 "$SRC_DIR/assets/icons/$APP-tray.svg" "$DEST_ICON_SVG"

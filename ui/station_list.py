@@ -284,7 +284,7 @@ class StationListWidget(QWidget):
         search_layout.setContentsMargins(8, 4, 8, 4)
 
         self._search_input = QLineEdit()
-        self._search_input.setPlaceholderText("Search stations…")
+        self._search_input.setPlaceholderText(self.tr("Search stations…"))
         self._search_input.setClearButtonEnabled(True)
         search_layout.addWidget(self._search_input)
 
@@ -305,13 +305,13 @@ class StationListWidget(QWidget):
         self._error_label.setWordWrap(True)
         error_layout.addWidget(self._error_label)
 
-        self._error_hint = QLabel("This may be a temporary server-side issue.")
+        self._error_hint = QLabel(self.tr("This may be a temporary server-side issue."))
         self._error_hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._error_hint.setEnabled(False)
         error_layout.addWidget(self._error_hint)
 
         self._retry_callback = None
-        self._retry_btn = QPushButton("Retry")
+        self._retry_btn = QPushButton(self.tr("Retry"))
         self._retry_btn.setFixedWidth(80)
         self._retry_btn.clicked.connect(lambda: self._retry_callback and self._retry_callback())
         self._retry_btn.hide()

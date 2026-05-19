@@ -1,3 +1,6 @@
+# Compiled translations (generated from .ts by lrelease)
+translations/*.qm
+
 # makepkg artifacts
 pkg/
 src/

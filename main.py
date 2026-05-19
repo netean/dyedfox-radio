@@ -14,7 +14,7 @@ except ImportError:
 
 from pathlib import Path
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import QTimer, QTranslator, QLocale
 from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 from PyQt6.QtGui import QIcon
 
@@ -65,6 +65,12 @@ def main():
     app.setApplicationName("Dyedfox Radio")
     app.setDesktopFileName("dyedfox-radio")
     app.setQuitOnLastWindowClosed(False)
+
+    _translations_dir = Path(__file__).parent / "translations"
+    _translator = QTranslator(app)
+    _locale = QLocale.system().name()  # e.g. "uk_UA"
+    if _translator.load(f"dyedfox-radio_{_locale}", str(_translations_dir)):
+        app.installTranslator(_translator)
 
     if _try_raise_existing():
         sys.exit(0)

@@ -105,8 +105,9 @@ bash install.sh uninstall
 **2. Copy application files:**
 
 ```bash
-sudo mkdir -p /usr/lib/dyedfox-radio
+sudo mkdir -p /usr/lib/dyedfox-radio/translations
 sudo cp -r api data player tray ui assets main.py /usr/lib/dyedfox-radio/
+sudo cp translations/*.qm /usr/lib/dyedfox-radio/translations/
 sudo cp assets/icons/dyedfox-radio.png /usr/share/icons/hicolor/256x256/apps/
 sudo cp assets/icons/dyedfox-radio-tray.svg /usr/share/icons/hicolor/scalable/apps/
 sudo cp dyedfox-radio.desktop /usr/share/applications/

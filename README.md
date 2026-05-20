@@ -13,6 +13,7 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 - [Build from source (PKGBUILD)](#build-from-source-pkgbuild)
 - [Install on other Linux distros](#install-on-other-linux-distros)
 - [Manual installation](#manual-installation)
+- [Localization](#localization)
 - [Paths](#paths)
 - [Dependencies](#dependencies)
 
@@ -117,6 +118,16 @@ sudo cp dyedfox-radio.desktop /usr/share/applications/
 echo -e '#!/bin/sh\nexec python3 /usr/lib/dyedfox-radio/main.py "$@"' | sudo tee /usr/bin/dyedfox-radio > /dev/null
 sudo chmod 755 /usr/bin/dyedfox-radio
 ```
+
+## Localization
+
+The UI language follows your system locale automatically.
+
+| Locale | Language | Status |
+|---|---|---|
+| `uk_UA` | Ukrainian | ✓ included |
+
+More languages are welcome — see [translations/TRANSLATING.md](translations/TRANSLATING.md) to contribute.
 
 ## Paths
 After installation the following files are placed automatically:

@@ -20,17 +20,17 @@ class SystemTrayIcon(QSystemTrayIcon):
 
     def _build_menu(self):
         menu = QMenu()
-        self._action_show = menu.addAction("Show / Hide")
+        self._action_show = menu.addAction(self.tr("Show / Hide"))
         self._action_show.triggered.connect(self._toggle_window)
         menu.addSeparator()
-        self._action_playstop = menu.addAction("Play")
+        self._action_playstop = menu.addAction(self.tr("Play"))
         self._action_playstop.triggered.connect(self._toggle_playback)
         menu.addSeparator()
-        menu.addAction("Quit").triggered.connect(QApplication.quit)
+        menu.addAction(self.tr("Quit")).triggered.connect(QApplication.quit)
         self.setContextMenu(menu)
 
     def _set_playing(self, playing: bool):
-        self._action_playstop.setText("Stop" if playing else "Play")
+        self._action_playstop.setText(self.tr("Stop") if playing else self.tr("Play"))
 
     def _toggle_playback(self):
         if self._backend.is_playing:

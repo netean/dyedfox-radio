@@ -42,7 +42,7 @@ class NowPlayingBar(QWidget):
         self._icon.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         layout.addWidget(self._icon)
 
-        self._label = _ElidedLabel("Not playing")
+        self._label = _ElidedLabel(self.tr("Not playing"))
         layout.addWidget(self._label, 1)
 
     def set_station(self, name: str):
@@ -59,11 +59,11 @@ class NowPlayingBar(QWidget):
         self._update()
 
     def set_error(self):
-        self._song = "Stream unavailable"
+        self._song = self.tr("Stream unavailable")
         self._update()
 
     def _update(self):
         if self._song:
             self._label.setText(f"{self._station}  —  {self._song}")
         else:
-            self._label.setText(self._station or "Not playing")
+            self._label.setText(self._station or self.tr("Not playing"))

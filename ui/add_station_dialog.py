@@ -8,23 +8,23 @@ class AddStationDialog(QDialog):
     def __init__(self, parent=None, name="", url="", favicon=""):
         super().__init__(parent)
         editing = bool(name or url)
-        self.setWindowTitle("Edit custom station" if editing else "Add custom station")
+        self.setWindowTitle(self.tr("Edit custom station") if editing else self.tr("Add custom station"))
         self.setMinimumWidth(380)
 
         layout = QVBoxLayout(self)
         form = QFormLayout()
 
         self._name = QLineEdit(name)
-        self._name.setPlaceholderText("My Radio Station")
-        form.addRow("Name:", self._name)
+        self._name.setPlaceholderText(self.tr("My Radio Station"))
+        form.addRow(self.tr("Name:"), self._name)
 
         self._url = QLineEdit(url)
         self._url.setPlaceholderText("http://stream.example.com/live")
-        form.addRow("Stream URL:", self._url)
+        form.addRow(self.tr("Stream URL:"), self._url)
 
         self._favicon = QLineEdit(favicon)
         self._favicon.setPlaceholderText("https://example.com/logo.png  (optional)")
-        form.addRow("Logo URL:", self._favicon)
+        form.addRow(self.tr("Logo URL:"), self._favicon)
 
         layout.addLayout(form)
 
@@ -44,10 +44,10 @@ class AddStationDialog(QDialog):
         name = self._name.text().strip()
         url = self._url.text().strip()
         if not name:
-            self._show_error("Name is required.")
+            self._show_error(self.tr("Name is required."))
             return
         if not url.startswith(("http://", "https://")):
-            self._show_error("Stream URL must start with http:// or https://")
+            self._show_error(self.tr("Stream URL must start with http:// or https://"))
             return
         self._error.hide()
         self.accept()

@@ -15,7 +15,7 @@ class ControlBar(QWidget):
         layout.setContentsMargins(12, 4, 12, 4)
         layout.setSpacing(8)
 
-        self._play_stop_btn = QPushButton(QIcon.fromTheme("media-playback-stop"), "Stop")
+        self._play_stop_btn = QPushButton(QIcon.fromTheme("media-playback-stop"), self.tr("Stop"))
         self._play_stop_btn.setFlat(True)
         self._play_stop_btn.clicked.connect(self.playback_toggled)
         layout.addWidget(self._play_stop_btn)
@@ -36,10 +36,10 @@ class ControlBar(QWidget):
     def set_playing(self, playing: bool):
         if playing:
             self._play_stop_btn.setIcon(QIcon.fromTheme("media-playback-stop"))
-            self._play_stop_btn.setText("Stop")
+            self._play_stop_btn.setText(self.tr("Stop"))
         else:
             self._play_stop_btn.setIcon(QIcon.fromTheme("media-playback-start"))
-            self._play_stop_btn.setText("Play")
+            self._play_stop_btn.setText(self.tr("Play"))
 
     def set_volume_slider(self, value: int):
         self._slider.blockSignals(True)

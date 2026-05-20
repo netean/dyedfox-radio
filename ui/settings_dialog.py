@@ -11,7 +11,7 @@ class SettingsDialog(QDialog):
     def __init__(self, settings: Settings, parent=None):
         super().__init__(parent)
         self._settings = settings
-        self.setWindowTitle("Settings")
+        self.setWindowTitle(self.tr("Settings"))
         self.setMinimumWidth(380)
         self.setModal(True)
 
@@ -19,42 +19,42 @@ class SettingsDialog(QDialog):
         layout.setSpacing(12)
 
         # --- Startup ---
-        startup = QGroupBox("Startup")
+        startup = QGroupBox(self.tr("Startup"))
         startup_layout = QVBoxLayout(startup)
 
-        self._start_minimized = QCheckBox("Start minimized to tray")
+        self._start_minimized = QCheckBox(self.tr("Start minimized to tray"))
         self._start_minimized.setChecked(settings["start_minimized"])
         startup_layout.addWidget(self._start_minimized)
 
-        self._autoplay_last = QCheckBox("Autoplay last station")
+        self._autoplay_last = QCheckBox(self.tr("Autoplay last station"))
         self._autoplay_last.setChecked(settings["autoplay_last"])
         startup_layout.addWidget(self._autoplay_last)
 
-        note = QLabel("Startup options take effect on next launch.")
+        note = QLabel(self.tr("Startup options take effect on next launch."))
         note.setEnabled(False)
         startup_layout.addWidget(note)
 
         layout.addWidget(startup)
 
         # --- Stations ---
-        stations = QGroupBox("Stations")
+        stations = QGroupBox(self.tr("Stations"))
         stations_layout = QFormLayout(stations)
         stations_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.FieldsStayAtSizeHint)
 
         self._limit = QComboBox()
         for n in [50, 100, 200]:
-            self._limit.addItem(f"{n} stations", n)
+            self._limit.addItem(self.tr("{0} stations").format(n), n)
         current = settings["station_limit"]
         self._limit.setCurrentIndex({50: 0, 100: 1, 200: 2}.get(current, 1))
-        stations_layout.addRow("Top stations to load:", self._limit)
+        stations_layout.addRow(self.tr("Top stations to load:"), self._limit)
 
         layout.addWidget(stations)
 
         # --- Notifications ---
-        notif = QGroupBox("Notifications")
+        notif = QGroupBox(self.tr("Notifications"))
         notif_layout = QVBoxLayout(notif)
 
-        self._notifications = QCheckBox("Show song change notifications")
+        self._notifications = QCheckBox(self.tr("Show song change notifications"))
         self._notifications.setChecked(settings["notifications"])
         notif_layout.addWidget(self._notifications)
 

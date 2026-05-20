@@ -7,7 +7,7 @@ from PyQt6.QtGui import QIcon, QPixmap
 class AboutDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("About Dyedfox Radio")
+        self.setWindowTitle(self.tr("About Dyedfox Radio"))
         self.setModal(True)
         self.setFixedWidth(320)
 
@@ -31,21 +31,21 @@ class AboutDialog(QDialog):
         name.setFont(f)
         layout.addWidget(name)
 
-        version = QLabel("Version 0.2.4")
+        version = QLabel("Version 0.2.5")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         version.setEnabled(False)
         layout.addWidget(version)
 
         layout.addSpacing(4)
 
-        desc = QLabel("Desktop internet radio player.\nPowered by radio-browser.info.")
+        desc = QLabel(self.tr("Desktop internet radio player.\nPowered by radio-browser.info."))
         desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
         desc.setWordWrap(True)
         layout.addWidget(desc)
 
         layout.addSpacing(4)
 
-        license_label = QLabel("Released under the GPL-3.0 license.")
+        license_label = QLabel(self.tr("Released under the GPL-3.0 license."))
         license_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         license_label.setEnabled(False)
         layout.addWidget(license_label)

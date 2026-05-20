@@ -108,8 +108,8 @@ class MainWindow(QMainWindow):
         self._nav_btns: dict[str, QPushButton] = {}
 
         for label, view, icon_name in [
-            ("All stations", "all",        "network-wireless"),
-            ("Favourites",   "favourites", "emblem-favorite"),
+            (self.tr("All stations"), "all",        "network-wireless"),
+            (self.tr("Favourites"),   "favourites", "emblem-favorite"),
         ]:
             btn = QPushButton(label)
             btn.setFlat(True)
@@ -121,7 +121,7 @@ class MainWindow(QMainWindow):
             layout.addWidget(btn)
             self._nav_btns[view] = btn
 
-        custom_btn = QPushButton("Custom")
+        custom_btn = QPushButton(self.tr("Custom"))
         custom_btn.setFlat(True)
         custom_btn.setCheckable(True)
         custom_btn.setIcon(QIcon.fromTheme("document-edit"))
@@ -131,14 +131,14 @@ class MainWindow(QMainWindow):
         layout.addWidget(custom_btn)
         self._nav_btns["custom"] = custom_btn
 
-        self._add_station_btn = QPushButton("+ Add station")
+        self._add_station_btn = QPushButton(self.tr("+ Add station"))
         self._add_station_btn.setFlat(True)
         self._add_station_btn.setStyleSheet(_sub_style)
         self._add_station_btn.clicked.connect(self._on_add_custom_station)
         self._add_station_btn.hide()
         layout.addWidget(self._add_station_btn)
 
-        recent_btn = QPushButton("Recent")
+        recent_btn = QPushButton(self.tr("Recent"))
         recent_btn.setFlat(True)
         recent_btn.setCheckable(True)
         recent_btn.setIcon(QIcon.fromTheme("document-open-recent"))
@@ -148,7 +148,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(recent_btn)
         self._nav_btns["recent"] = recent_btn
 
-        self._clear_recent_btn = QPushButton("Clear recent")
+        self._clear_recent_btn = QPushButton(self.tr("Clear recent"))
         self._clear_recent_btn.setFlat(True)
         self._clear_recent_btn.setStyleSheet(_sub_style)
         self._clear_recent_btn.clicked.connect(self._on_clear_recent)
@@ -161,7 +161,7 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self._sep())
 
-        self._settings_btn = QPushButton("Settings")
+        self._settings_btn = QPushButton(self.tr("Settings"))
         self._settings_btn.setFlat(True)
         self._settings_btn.setIcon(QIcon.fromTheme("preferences-system"))
         self._settings_btn.setIconSize(QSize(16, 16))
@@ -169,7 +169,7 @@ class MainWindow(QMainWindow):
         self._settings_btn.clicked.connect(self._open_settings)
         layout.addWidget(self._settings_btn)
 
-        self._about_btn = QPushButton("About")
+        self._about_btn = QPushButton(self.tr("About"))
         self._about_btn.setFlat(True)
         self._about_btn.setIcon(QIcon.fromTheme("help-about"))
         self._about_btn.setIconSize(QSize(16, 16))
@@ -227,7 +227,7 @@ class MainWindow(QMainWindow):
             limit=self._settings["station_limit"],
             on_result=on_loaded,
             on_error=lambda e: self._station_list.set_error(
-                "Could not load stations — check your connection",
+                self.tr("Could not load stations — check your connection"),
                 on_retry=lambda: self.load_top_stations(),
             ),
         )
@@ -267,7 +267,7 @@ class MainWindow(QMainWindow):
                 uuids,
                 on_result=self._station_list.set_stations,
                 on_error=lambda e: self._station_list.set_error(
-                    "Could not load favourites — check your connection",
+                    self.tr("Could not load favourites — check your connection"),
                     on_retry=lambda: self._switch_view("favourites"),
                 ),
             )
@@ -283,7 +283,7 @@ class MainWindow(QMainWindow):
                     uuids,
                     on_result=_on_recent_loaded,
                     on_error=lambda e: self._station_list.set_error(
-                        "Could not load recent — check your connection",
+                        self.tr("Could not load recent — check your connection"),
                         on_retry=lambda: self._switch_view("recent"),
                     ),
                 )
@@ -368,7 +368,7 @@ class MainWindow(QMainWindow):
             station = self._current_station.get("name", "the station") if self._current_station else "the station"
             self._tray.showMessage(
                 "Dyedfox Radio",
-                f"Could not connect to {station}. The stream may be down or unavailable.",
+                self.tr("Could not connect to {0}. The stream may be down or unavailable.").format(station),
                 QSystemTrayIcon.MessageIcon.Warning,
                 4000,
             )

@@ -2,10 +2,10 @@ import math
 import requests
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem,
-    QLineEdit, QPushButton, QLabel, QSizePolicy,
+    QLineEdit, QPushButton, QLabel, QSizePolicy, QApplication,
 )
-from PyQt6.QtCore import Qt, QSize, QTimer, QRunnable, QObject, pyqtSignal, QThreadPool
-from PyQt6.QtGui import QIcon, QPalette, QPixmap, QPainter
+from PyQt6.QtCore import Qt, QSize, QTimer, QRunnable, QObject, pyqtSignal, QThreadPool, QEvent
+from PyQt6.QtGui import QIcon, QPalette, QPixmap, QPainter, QColor, QBrush
 
 from data.favourites import FavouritesManager
 
@@ -203,29 +203,16 @@ class StationRowWidget(QWidget):
             )
 
     def set_playing(self, playing: bool):
-        self.setAutoFillBackground(True)
-        p = self.palette()
         if playing:
-            highlight = QPalette().color(QPalette.ColorRole.Highlight)
-            highlight.setAlpha(40)
-            p.setColor(QPalette.ColorRole.Window, highlight)
             self._favicon.hide()
             self._wave.start()
         else:
-            p.setColor(QPalette.ColorRole.Window, QPalette().color(QPalette.ColorRole.Base))
             self._wave.stop()
             self._favicon.show()
-        self.setPalette(p)
 
     def freeze_wave(self):
-        self.setAutoFillBackground(True)
-        p = self.palette()
-        highlight = QPalette().color(QPalette.ColorRole.Highlight)
-        highlight.setAlpha(40)
-        p.setColor(QPalette.ColorRole.Window, highlight)
         self._favicon.hide()
         self._wave.show_frozen()
-        self.setPalette(p)
 
     def update_favourite(self, is_fav: bool):
         if self._heart_btn is None:
@@ -270,6 +257,7 @@ class StationListWidget(QWidget):
         self._fav_uuids: set[str] = set()
         self._recent_uuids: list[str] = []
         self._row_widgets: dict[str, StationRowWidget] = {}
+        self._item_map: dict[str, QListWidgetItem] = {}
         self._playing_uuid: str | None = None
         self._is_playing: bool = False
         self._favicon_cache: dict[str, bytes] = {}
@@ -330,11 +318,36 @@ class StationListWidget(QWidget):
         self._search_timer.timeout.connect(self._on_search_debounced)
         self._search_input.textChanged.connect(lambda: self._search_timer.start(350))
 
+    def _highlight_brush(self) -> QBrush:
+        pal = QApplication.palette()
+        h = pal.color(QPalette.ColorRole.Highlight)
+        b = pal.color(QPalette.ColorRole.Base)
+        t = 0.20
+        return QBrush(QColor(
+            int(b.red()   * (1 - t) + h.red()   * t),
+            int(b.green() * (1 - t) + h.green() * t),
+            int(b.blue()  * (1 - t) + h.blue()  * t),
+        ))
+
+    def _set_item_highlight(self, uuid: str, on: bool):
+        if uuid in self._item_map:
+            if on:
+                brush = self._highlight_brush()
+                self._item_map[uuid].setBackground(brush)
+                color = brush.color().name()
+                self._list.setStyleSheet(
+                    f"QListWidget::item:selected {{ background-color: {color}; }}"
+                )
+            else:
+                self._item_map[uuid].setBackground(QBrush())
+                self._list.setStyleSheet("")
+
     def set_stations(self, stations: list[dict], deletable: bool = False):
         self._error_widget.hide()
         self._list.show()
         self._list.clear()
         self._row_widgets.clear()
+        self._item_map.clear()
 
         for station in stations:
             uuid = station.get("stationuuid", "")
@@ -347,6 +360,7 @@ class StationListWidget(QWidget):
             row = StationRowWidget(station, self._favourites, on_delete=on_delete, on_edit=on_edit)
             self._list.setItemWidget(item, row)
             self._row_widgets[uuid] = row
+            self._item_map[uuid] = item
 
             row.play_requested.connect(
                 lambda s=station, i=item: self._on_row_play(s, i)
@@ -364,6 +378,7 @@ class StationListWidget(QWidget):
                     self._pool.start(loader)
 
         if self._playing_uuid and self._playing_uuid in self._row_widgets:
+            self._set_item_highlight(self._playing_uuid, True)
             if self._is_playing:
                 self._row_widgets[self._playing_uuid].set_playing(True)
             else:
@@ -385,10 +400,13 @@ class StationListWidget(QWidget):
         self._apply_filter()
 
     def mark_playing(self, uuid: str):
-        if self._playing_uuid and self._playing_uuid in self._row_widgets:
-            self._row_widgets[self._playing_uuid].set_playing(False)
+        if self._playing_uuid:
+            self._set_item_highlight(self._playing_uuid, False)
+            if self._playing_uuid in self._row_widgets:
+                self._row_widgets[self._playing_uuid].set_playing(False)
         self._playing_uuid = uuid
         self._is_playing = True
+        self._set_item_highlight(uuid, True)
         if uuid in self._row_widgets:
             self._row_widgets[uuid].set_playing(True)
 
@@ -453,3 +471,9 @@ class StationListWidget(QWidget):
                     visible = False
 
             item.setHidden(not visible)
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.Type.PaletteChange and self._playing_uuid:
+            self._set_item_highlight(self._playing_uuid, True)
+            self._list.viewport().update()
+        super().changeEvent(event)

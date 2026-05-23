@@ -111,6 +111,9 @@ def main():
 
     autoplay_uuid = recent.uuids()[0] if settings["autoplay_last"] and recent.uuids() else ""
     window.load_top_stations(autoplay_uuid=autoplay_uuid)
+    last_view = settings["last_view"]
+    if last_view != "all":
+        window._switch_view(last_view)
 
     sys.exit(app.exec())
 

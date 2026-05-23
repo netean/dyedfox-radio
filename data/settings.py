@@ -10,6 +10,7 @@ DEFAULTS: dict = {
     "volume": 80,
     "station_limit": 100,
     "notifications": True,
+    "last_view": "all",
 }
 
 

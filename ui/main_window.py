@@ -208,7 +208,8 @@ class MainWindow(QMainWindow):
     def load_top_stations(self, autoplay_uuid: str = ""):
         def on_loaded(stations: list):
             self._top_stations = stations
-            self._station_list.set_stations(stations)
+            if self._current_view == "all":
+                self._station_list.set_stations(stations)
             if autoplay_uuid:
                 match = next((s for s in stations if s.get("stationuuid") == autoplay_uuid), None)
                 if match:
@@ -247,6 +248,8 @@ class MainWindow(QMainWindow):
 
     def _switch_view(self, view: str):
         self._current_view = view
+        self._settings["last_view"] = view
+        self._settings.save()
         self._search_results = []
         self._last_search_word = ""
         for v, btn in self._nav_btns.items():

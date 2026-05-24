@@ -10,6 +10,7 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 - [Features](#features)
 - [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Install on Arch Linux (AUR)](#install-on-arch-linux-aur)
+- [Install on openSUSE (OBS)](#install-on-opensuse-obs)
 - [Build from source (PKGBUILD)](#build-from-source-pkgbuild)
 - [Install on other Linux distros](#install-on-other-linux-distros)
 - [Manual installation](#manual-installation)
@@ -57,6 +58,10 @@ git clone https://aur.archlinux.org/dyedfox-radio.git
 cd dyedfox-radio
 makepkg -si
 ```
+
+## Install on openSUSE (OBS)
+
+Available on the [openSUSE Build Service](https://build.opensuse.org/package/show/home:tekidev/dyedfox-radio), maintained by [TekiDev](https://build.opensuse.org/users/tekidev).
 
 ## Build from source (PKGBUILD)
 

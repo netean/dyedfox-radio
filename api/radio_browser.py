@@ -70,13 +70,17 @@ class RadioBrowserClient:
     def top_stations(self, limit: int = 100, on_result=None, on_error=None):
         self._run(f"{BASE_URL}/stations/topvote/{limit}", {}, on_result, on_error)
 
-    def search(self, query: str, limit: int = 100, on_result=None, on_error=None):
-        self._run(
-            f"{BASE_URL}/stations/search",
-            {"name": query, "limit": limit, "hidebroken": "true"},
-            on_result,
-            on_error,
-        )
+    def search(self, name: str = "", country: str = "", tag: str = "", language: str = "", limit: int = 100, on_result=None, on_error=None):
+        params: dict = {"limit": limit, "hidebroken": "true"}
+        if name:
+            params["name"] = name
+        if country:
+            params["country"] = country
+        if tag:
+            params["tag"] = tag
+        if language:
+            params["language"] = language
+        self._run(f"{BASE_URL}/stations/search", params, on_result, on_error)
 
     def by_tag(self, tag: str, on_result=None, on_error=None):
         self._run(f"{BASE_URL}/stations/bytag/{tag}", {}, on_result, on_error)

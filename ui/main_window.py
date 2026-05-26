@@ -40,7 +40,7 @@ class MainWindow(QMainWindow):
         self._current_view = "all"
         self._top_stations: list = []
         self._search_results: list = []
-        self._last_search_word: str = ""
+        self._last_search_key: tuple = ("", "", "")
         self._last_title: str = ""
         self._tray = None
         self._mpris = None
@@ -78,7 +78,7 @@ class MainWindow(QMainWindow):
 
         content_layout.addWidget(self._sep(vertical=True))
 
-        self._station_list = StationListWidget(self._favourites)
+        self._station_list = StationListWidget(self._favourites, self._settings)
         content_layout.addWidget(self._station_list, 1)
 
         content_layout.addWidget(self._sep(vertical=True))
@@ -163,6 +163,7 @@ class MainWindow(QMainWindow):
 
         self._settings_btn = QPushButton(self.tr("Settings"))
         self._settings_btn.setFlat(True)
+        self._settings_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self._settings_btn.setIcon(QIcon.fromTheme("preferences-system"))
         self._settings_btn.setIconSize(QSize(16, 16))
         self._settings_btn.setStyleSheet("QPushButton { text-align: left; padding: 4px 8px; }")
@@ -171,6 +172,7 @@ class MainWindow(QMainWindow):
 
         self._about_btn = QPushButton(self.tr("About"))
         self._about_btn.setFlat(True)
+        self._about_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self._about_btn.setIcon(QIcon.fromTheme("help-about"))
         self._about_btn.setIconSize(QSize(16, 16))
         self._about_btn.setStyleSheet("QPushButton { text-align: left; padding: 4px 8px; }")
@@ -187,7 +189,7 @@ class MainWindow(QMainWindow):
 
         self._station_list.station_play_requested.connect(self._on_station_play)
         self._station_list.favourite_toggled.connect(self._on_favourite_toggled)
-        self._station_list.search_requested.connect(self._on_search)
+        self._station_list.search_params_changed.connect(self._on_search_params_changed)
         self._station_list.station_delete_requested.connect(self._on_custom_delete)
         self._station_list.station_edit_requested.connect(self._on_custom_edit)
 
@@ -251,7 +253,7 @@ class MainWindow(QMainWindow):
         self._settings["last_view"] = view
         self._settings.save()
         self._search_results = []
-        self._last_search_word = ""
+        self._last_search_key = ("", "", "")
         for v, btn in self._nav_btns.items():
             btn.setChecked(v == view)
         self._clear_recent_btn.setVisible(view == "recent")
@@ -409,42 +411,31 @@ class MainWindow(QMainWindow):
         if self._current_station and self._current_station.get("stationuuid") == uuid:
             self._info_panel.set_favourite(is_fav)
 
-    def _on_search(self, text: str):
-        if not text:
-            self._switch_view(self._current_view)
-            return
-        words = text.lower().split()
-        if not words:
-            return
-
-        def _filter(stations: list) -> list:
-            if len(words) == 1:
-                return stations
-            return [
-                s for s in stations
-                if all(
-                    w in (
-                        s.get("name", "") + " " +
-                        s.get("tags", "") + " " +
-                        s.get("country", "") + " " +
-                        s.get("language", "")
-                    ).lower()
-                    for w in words
-                )
-            ]
-
-        if words[0] == self._last_search_word and self._search_results:
-            self._station_list.set_stations(_filter(self._search_results))
+    def _on_search_params_changed(self, name: str, country: str, tag: str, language: str):
+        if not name and not country and not tag and not language:
+            if self._top_stations:
+                self._station_list.set_stations(self._top_stations)
+            else:
+                self.load_top_stations()
             return
 
-        self._last_search_word = words[0]
+        key = (name, country, tag, language)
+        if key == self._last_search_key and self._search_results:
+            self._station_list.set_stations(self._search_results)
+            return
+
+        self._last_search_key = key
 
         def _on_result(stations: list):
             self._search_results = stations
-            self._station_list.set_stations(_filter(stations))
+            self._station_list.set_stations(stations)
 
         self._api.search(
-            words[0],
+            name=name,
+            country=country,
+            tag=tag,
+            language=language,
+            limit=self._settings["station_limit"],
             on_result=_on_result,
             on_error=lambda e: print(f"dyedfox-radio: search error: {e}", flush=True),
         )
@@ -452,8 +443,8 @@ class MainWindow(QMainWindow):
     def _on_add_custom_station(self):
         dlg = AddStationDialog(self)
         if dlg.exec():
-            name, url, favicon = dlg.values()
-            self._custom.add(name, url, favicon)
+            name, url, favicon, tags, country, language = dlg.values()
+            self._custom.add(name, url, favicon, tags, country, language)
             self._station_list.set_stations(self._custom.all(), deletable=True)
 
     def _on_custom_edit(self, uuid: str):
@@ -465,10 +456,13 @@ class MainWindow(QMainWindow):
             name=station.get("name", ""),
             url=station.get("url_resolved", ""),
             favicon=station.get("favicon", ""),
+            tags=station.get("tags", ""),
+            country=station.get("country", ""),
+            language=station.get("language", ""),
         )
         if dlg.exec():
-            name, url, favicon = dlg.values()
-            self._custom.update(uuid, name, url, favicon)
+            name, url, favicon, tags, country, language = dlg.values()
+            self._custom.update(uuid, name, url, favicon, tags, country, language)
             self._station_list.set_stations(self._custom.all(), deletable=True)
 
     def _on_custom_delete(self, uuid: str):

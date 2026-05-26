@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
 
 
 class AddStationDialog(QDialog):
-    def __init__(self, parent=None, name="", url="", favicon=""):
+    def __init__(self, parent=None, name="", url="", favicon="", tags="", country="", language=""):
         super().__init__(parent)
         editing = bool(name or url)
         self.setWindowTitle(self.tr("Edit custom station") if editing else self.tr("Add custom station"))
@@ -25,6 +25,18 @@ class AddStationDialog(QDialog):
         self._favicon = QLineEdit(favicon)
         self._favicon.setPlaceholderText("https://example.com/logo.png  (optional)")
         form.addRow(self.tr("Logo URL:"), self._favicon)
+
+        self._tags = QLineEdit(tags)
+        self._tags.setPlaceholderText(self.tr("jazz, blues  (optional)"))
+        form.addRow(self.tr("Genre / tags:"), self._tags)
+
+        self._country = QLineEdit(country)
+        self._country.setPlaceholderText(self.tr("optional"))
+        form.addRow(self.tr("Country:"), self._country)
+
+        self._language = QLineEdit(language)
+        self._language.setPlaceholderText(self.tr("english  (optional)"))
+        form.addRow(self.tr("Language:"), self._language)
 
         layout.addLayout(form)
 
@@ -56,9 +68,12 @@ class AddStationDialog(QDialog):
         self._error.setText(msg)
         self._error.show()
 
-    def values(self) -> tuple[str, str, str]:
+    def values(self) -> tuple[str, str, str, str, str, str]:
         return (
             self._name.text().strip(),
             self._url.text().strip(),
             self._favicon.text().strip(),
+            self._tags.text().strip(),
+            self._country.text().strip(),
+            self._language.text().strip(),
         )

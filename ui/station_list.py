@@ -1,13 +1,40 @@
+from __future__ import annotations
 import math
 import requests
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem,
-    QLineEdit, QPushButton, QLabel, QSizePolicy, QApplication,
+    QLineEdit, QPushButton, QLabel, QSizePolicy, QApplication, QComboBox,
 )
 from PyQt6.QtCore import Qt, QSize, QTimer, QRunnable, QObject, pyqtSignal, QThreadPool, QEvent
 from PyQt6.QtGui import QIcon, QPalette, QPixmap, QPainter, QColor, QBrush
 
 from data.favourites import FavouritesManager
+from data.settings import Settings
+
+
+class _SpinnerLabel(QLabel):
+    _FRAMES = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._frame = 0
+        self._timer = QTimer(self)
+        self._timer.timeout.connect(self._step)
+        self.hide()
+
+    def start(self):
+        self._frame = 0
+        self.setText(self._FRAMES[0])
+        self.show()
+        self._timer.start(80)
+
+    def stop(self):
+        self._timer.stop()
+        self.hide()
+
+    def _step(self):
+        self._frame = (self._frame + 1) % len(self._FRAMES)
+        self.setText(self._FRAMES[self._frame])
 
 
 class _WaveWidget(QWidget):
@@ -146,16 +173,19 @@ class StationRowWidget(QWidget):
 
         tags = [t.strip() for t in station.get("tags", "").split(",") if t.strip()]
         first_tag = tags[0] if tags else ""
+        country = station.get("country", "")
+        codec = station.get("codec", "")
         bitrate = station.get("bitrate", 0)
-        meta_parts = [p for p in [first_tag, f"{bitrate} kbps" if bitrate else ""] if p]
+        votes = station.get("votes", 0)
+        votes_str = f"{votes // 1000}k ♥" if votes >= 1000 else (f"{votes} ♥" if votes else "")
+        meta_parts = [p for p in [
+            country, first_tag, codec,
+            f"{bitrate} kbps" if bitrate else "",
+            votes_str,
+        ] if p]
         meta_label = _ElidedLabel("  ·  ".join(meta_parts))
         meta_label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-        p = meta_label.palette()
-        p.setColor(
-            QPalette.ColorRole.WindowText,
-            meta_label.palette().color(QPalette.ColorGroup.Disabled, QPalette.ColorRole.WindowText),
-        )
-        meta_label.setPalette(p)
+        meta_label.setStyleSheet("color: palette(placeholder-text);")
         text_layout.addWidget(meta_label)
 
         layout.addWidget(text, 1)
@@ -246,14 +276,17 @@ class StationRowWidget(QWidget):
 class StationListWidget(QWidget):
     station_play_requested = pyqtSignal(dict)
     favourite_toggled = pyqtSignal(str, bool)
-    search_requested = pyqtSignal(str)
+    search_params_changed = pyqtSignal(str, str, str, str)  # name, country, tag, language
     station_delete_requested = pyqtSignal(str)
     station_edit_requested = pyqtSignal(str)
 
-    def __init__(self, favourites: FavouritesManager, parent=None):
+    def __init__(self, favourites: FavouritesManager, settings: Settings, parent=None):
         super().__init__(parent)
         self._favourites = favourites
+        self._settings = settings
         self._current_view = "all"
+        self._stations_raw: list[dict] = []
+        self._deletable: bool = False
         self._fav_uuids: set[str] = set()
         self._recent_uuids: list[str] = []
         self._row_widgets: dict[str, StationRowWidget] = {}
@@ -277,6 +310,57 @@ class StationListWidget(QWidget):
         search_layout.addWidget(self._search_input)
 
         layout.addWidget(search_bar)
+
+        self._sort_bar = QWidget()
+        sort_layout = QHBoxLayout(self._sort_bar)
+        sort_layout.setContentsMargins(8, 0, 8, 4)
+        sort_layout.setSpacing(6)
+
+        self._sort_field = QComboBox()
+        for label, key in [
+            (self.tr("Name"),     "name"),
+            (self.tr("Country"),  "country"),
+            (self.tr("Bitrate"),  "bitrate"),
+            (self.tr("Votes"),    "votes"),
+            (self.tr("Language"), "language"),
+            (self.tr("Codec"),    "codec"),
+        ]:
+            self._sort_field.addItem(label, key)
+
+        self._country_input = QLineEdit()
+        self._country_input.setPlaceholderText(self.tr("Country…"))
+        self._country_input.setClearButtonEnabled(True)
+
+        self._tag_input = QLineEdit()
+        self._tag_input.setPlaceholderText(self.tr("Genre / tag…"))
+        self._tag_input.setClearButtonEnabled(True)
+
+        self._language_input = QLineEdit()
+        self._language_input.setPlaceholderText(self.tr("Language…"))
+        self._language_input.setClearButtonEnabled(True)
+
+        self._sort_descending: bool = False
+        self._sort_dir = QPushButton("↑")
+        self._sort_dir.setFlat(True)
+        self._sort_dir.setFixedWidth(28)
+        self._sort_dir.setToolTip(self.tr("Toggle sort direction"))
+
+        self._spinner = _SpinnerLabel()
+        self._spinner.setStyleSheet("color: palette(placeholder-text);")
+
+        self._status_label = QLabel()
+        self._status_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        self._status_label.setStyleSheet("color: palette(placeholder-text);")
+
+        sort_layout.addWidget(self._sort_field)
+        sort_layout.addWidget(self._sort_dir)
+        sort_layout.addWidget(self._country_input, 1)
+        sort_layout.addWidget(self._tag_input, 1)
+        sort_layout.addWidget(self._language_input, 1)
+        sort_layout.addWidget(self._spinner)
+        sort_layout.addWidget(self._status_label)
+
+        layout.addWidget(self._sort_bar)
 
         self._list = QListWidget()
         self._list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -318,6 +402,14 @@ class StationListWidget(QWidget):
         self._search_timer.timeout.connect(self._on_search_debounced)
         self._search_input.textChanged.connect(lambda: self._search_timer.start(350))
 
+        self._sort_field.currentIndexChanged.connect(self._on_sort_changed)
+        self._sort_dir.clicked.connect(self._on_sort_dir_clicked)
+        self._country_input.textChanged.connect(lambda: self._search_timer.start(350))
+        self._tag_input.textChanged.connect(lambda: self._search_timer.start(350))
+        self._language_input.textChanged.connect(lambda: self._search_timer.start(350))
+
+        self._load_sort_controls("all")
+
     def _highlight_brush(self) -> QBrush:
         pal = QApplication.palette()
         h = pal.color(QPalette.ColorRole.Highlight)
@@ -343,29 +435,32 @@ class StationListWidget(QWidget):
                 self._list.setStyleSheet("")
 
     def set_stations(self, stations: list[dict], deletable: bool = False):
+        self._stations_raw = list(stations)
+        self._deletable = deletable
+        self._rebuild()
+
+    def _rebuild(self):
         self._error_widget.hide()
         self._list.show()
         self._list.clear()
         self._row_widgets.clear()
         self._item_map.clear()
 
-        for station in stations:
+        for station in self._sorted_stations():
             uuid = station.get("stationuuid", "")
             item = QListWidgetItem(self._list)
             item.setSizeHint(QSize(0, 56))
             item.setData(Qt.ItemDataRole.UserRole, station)
 
-            on_delete = (lambda u: self.station_delete_requested.emit(u)) if deletable else None
-            on_edit = (lambda u: self.station_edit_requested.emit(u)) if deletable else None
+            on_delete = (lambda u: self.station_delete_requested.emit(u)) if self._deletable else None
+            on_edit = (lambda u: self.station_edit_requested.emit(u)) if self._deletable else None
             row = StationRowWidget(station, self._favourites, on_delete=on_delete, on_edit=on_edit)
             self._list.setItemWidget(item, row)
             self._row_widgets[uuid] = row
             self._item_map[uuid] = item
 
-            row.play_requested.connect(
-                lambda s=station, i=item: self._on_row_play(s, i)
-            )
-            if not deletable:
+            row.play_requested.connect(lambda s=station, i=item: self._on_row_play(s, i))
+            if not self._deletable:
                 row.favourite_toggled.connect(self.favourite_toggled)
 
             favicon_url = station.get("favicon", "")
@@ -386,6 +481,40 @@ class StationListWidget(QWidget):
 
         self._apply_filter()
 
+    def _sorted_stations(self) -> list[dict]:
+        if self._current_view == "recent":
+            return list(self._stations_raw)
+        prefs = self._settings["sort"].get(self._current_view, {"field": "name", "ascending": True})
+        field = prefs["field"]
+        ascending = prefs["ascending"]
+
+        def sort_key(s: dict):
+            v = s.get(field, "")
+            return v.lower() if isinstance(v, str) else (v or 0)
+
+        return sorted(self._stations_raw, key=sort_key, reverse=not ascending)
+
+    def _load_sort_controls(self, view: str):
+        prefs = self._settings["sort"].get(view, {"field": "name", "ascending": True})
+        keys = [self._sort_field.itemData(i) for i in range(self._sort_field.count())]
+        field_idx = keys.index(prefs["field"]) if prefs["field"] in keys else 0
+        self._sort_descending = not prefs["ascending"]
+        self._sort_field.blockSignals(True)
+        self._sort_field.setCurrentIndex(field_idx)
+        self._sort_field.blockSignals(False)
+        self._sort_dir.setText("↓" if self._sort_descending else "↑")
+
+    def _on_sort_dir_clicked(self):
+        self._sort_descending = not self._sort_descending
+        self._sort_dir.setText("↓" if self._sort_descending else "↑")
+        self._on_sort_changed()
+
+    def _on_sort_changed(self):
+        field = self._sort_field.currentData()
+        self._settings["sort"][self._current_view] = {"field": field, "ascending": not self._sort_descending}
+        self._settings.save()
+        self._rebuild()
+
     def set_error(self, message: str, on_retry=None):
         self._list.hide()
         self._error_label.setText(message)
@@ -397,6 +526,13 @@ class StationListWidget(QWidget):
         self._current_view = view
         self._fav_uuids = fav_uuids
         self._recent_uuids = recent_uuids
+        self._sort_bar.setVisible(view != "recent")
+        if view != "recent":
+            self._load_sort_controls(view)
+        for w in (self._country_input, self._tag_input, self._language_input):
+            w.blockSignals(True)
+            w.clear()
+            w.blockSignals(False)
         self._apply_filter()
 
     def mark_playing(self, uuid: str):
@@ -436,15 +572,21 @@ class StationListWidget(QWidget):
             self._row_widgets[uuid].set_favicon(data)
 
     def _on_search_debounced(self):
-        text = self._search_input.text().strip()
         self._apply_filter()
-        if len(text) >= 2:
-            self.search_requested.emit(text)
-        elif not text:
-            self.search_requested.emit("")
+        if self._current_view == "all":
+            name = self._search_input.text().strip()
+            country = self._country_input.text().strip()
+            tag = self._tag_input.text().strip()
+            language = self._language_input.text().strip()
+            if name or country or tag or language:
+                self._spinner.start()
+            self.search_params_changed.emit(name, country, tag, language)
 
     def _apply_filter(self):
         words = self._search_input.text().lower().split()
+        country_text = self._country_input.text().strip().lower()
+        tag_text = self._tag_input.text().strip().lower()
+        language_text = self._language_input.text().strip().lower()
         recent_set = set(self._recent_uuids)
 
         for i in range(self._list.count()):
@@ -460,7 +602,7 @@ class StationListWidget(QWidget):
             elif self._current_view == "recent":
                 visible = uuid in recent_set
 
-            if words:
+            if visible and words:
                 combined = (
                     station.get("name", "") + " " +
                     station.get("tags", "") + " " +
@@ -470,7 +612,26 @@ class StationListWidget(QWidget):
                 if not all(w in combined for w in words):
                     visible = False
 
+            if visible and country_text:
+                if country_text not in station.get("country", "").lower():
+                    visible = False
+
+            if visible and tag_text:
+                if tag_text not in station.get("tags", "").lower():
+                    visible = False
+
+            if visible and language_text:
+                if language_text not in station.get("language", "").lower():
+                    visible = False
+
             item.setHidden(not visible)
+
+        self._spinner.stop()
+        visible_count = sum(1 for i in range(self._list.count()) if not self._list.item(i).isHidden())
+        if self._list.count() > 0:
+            self._status_label.setText(self.tr("{0} stations").format(visible_count))
+        else:
+            self._status_label.clear()
 
     def changeEvent(self, event):
         if event.type() == QEvent.Type.PaletteChange and self._playing_uuid:

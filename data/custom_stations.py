@@ -15,16 +15,16 @@ class CustomStationsManager:
     def all(self) -> list[dict]:
         return list(self._stations)
 
-    def add(self, name: str, url: str, favicon: str = "") -> dict:
+    def add(self, name: str, url: str, favicon: str = "", tags: str = "", country: str = "", language: str = "") -> dict:
         station = {
             "stationuuid": f"custom-{uuid.uuid4()}",
             "name": name,
             "url_resolved": url,
             "favicon": favicon,
             "custom": True,
-            "tags": "",
-            "country": "",
-            "language": "",
+            "tags": tags,
+            "country": country,
+            "language": language,
             "codec": "",
             "bitrate": 0,
             "votes": 0,
@@ -33,12 +33,15 @@ class CustomStationsManager:
         self._save()
         return station
 
-    def update(self, station_uuid: str, name: str, url: str, favicon: str):
+    def update(self, station_uuid: str, name: str, url: str, favicon: str, tags: str = "", country: str = "", language: str = ""):
         for s in self._stations:
             if s.get("stationuuid") == station_uuid:
                 s["name"] = name
                 s["url_resolved"] = url
                 s["favicon"] = favicon
+                s["tags"] = tags
+                s["country"] = country
+                s["language"] = language
                 break
         self._save()
 

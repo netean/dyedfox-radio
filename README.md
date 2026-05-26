@@ -22,6 +22,7 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 
 ![Main window](screenshots/main.png)
 ![Main window - Light Theme](screenshots/main-light.png)
+![Sort and filter demo](screenshots/sort.gif)
 ![System tray](screenshots/systray.png)
 ![MPRIS2 support](screenshots/mpris2.png)
 

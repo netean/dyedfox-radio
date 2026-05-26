@@ -4,6 +4,7 @@ import requests
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem,
     QLineEdit, QPushButton, QLabel, QSizePolicy, QApplication, QComboBox,
+    QStyle, QStyleOption,
 )
 from PyQt6.QtCore import Qt, QSize, QTimer, QRunnable, QObject, pyqtSignal, QThreadPool, QEvent
 from PyQt6.QtGui import QIcon, QPalette, QPixmap, QPainter, QColor, QBrush
@@ -130,7 +131,10 @@ class _FaviconLoader(QRunnable):
         try:
             resp = requests.get(self._url, timeout=5, headers={"User-Agent": "dyedfox-radio/1.0"})
             if resp.ok and resp.content:
-                self.signals.loaded.emit(self._uuid, resp.content)
+                try:
+                    self.signals.loaded.emit(self._uuid, resp.content)
+                except RuntimeError:
+                    pass
         except Exception:
             pass
 
@@ -273,6 +277,26 @@ class StationRowWidget(QWidget):
         super().mousePressEvent(event)
 
 
+class _LimitOverlay(QWidget):
+    def __init__(self, text: str, parent=None):
+        super().__init__(parent)
+        self.setStyleSheet(
+            "background: palette(window); border: 1px solid palette(mid); border-radius: 6px;"
+        )
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        row = QHBoxLayout(self)
+        row.setContentsMargins(10, 5, 10, 5)
+        lbl = QLabel(text)
+        lbl.setStyleSheet("border: none; background: transparent; color: palette(placeholder-text);")
+        row.addWidget(lbl)
+
+    def paintEvent(self, event):
+        opt = QStyleOption()
+        opt.initFrom(self)
+        p = QPainter(self)
+        self.style().drawPrimitive(QStyle.PrimitiveElement.PE_Widget, opt, p, self)
+
+
 class StationListWidget(QWidget):
     station_play_requested = pyqtSignal(dict)
     favourite_toggled = pyqtSignal(str, bool)
@@ -287,6 +311,7 @@ class StationListWidget(QWidget):
         self._current_view = "all"
         self._stations_raw: list[dict] = []
         self._deletable: bool = False
+        self._limit_reached: bool = False
         self._fav_uuids: set[str] = set()
         self._recent_uuids: list[str] = []
         self._row_widgets: dict[str, StationRowWidget] = {}
@@ -367,6 +392,12 @@ class StationListWidget(QWidget):
         self._list.setSpacing(0)
         layout.addWidget(self._list)
 
+        self._limit_overlay = _LimitOverlay(
+            self.tr("Result limit reached · narrow your search to see more"),
+            self,
+        )
+        self._limit_overlay.hide()
+
         self._error_widget = QWidget()
         self._error_widget.hide()
         error_layout = QVBoxLayout(self._error_widget)
@@ -434,9 +465,10 @@ class StationListWidget(QWidget):
                 self._item_map[uuid].setBackground(QBrush())
                 self._list.setStyleSheet("")
 
-    def set_stations(self, stations: list[dict], deletable: bool = False):
+    def set_stations(self, stations: list[dict], deletable: bool = False, limit_reached: bool = False):
         self._stations_raw = list(stations)
         self._deletable = deletable
+        self._limit_reached = limit_reached
         self._rebuild()
 
     def _rebuild(self):
@@ -522,10 +554,29 @@ class StationListWidget(QWidget):
         self._retry_btn.setVisible(on_retry is not None)
         self._error_widget.show()
 
+    def _show_limit_overlay(self):
+        geo = self._list.geometry()
+        sh = self._limit_overlay.sizeHint()
+        w = min(sh.width(), geo.width() - 20)
+        self._limit_overlay.setGeometry(
+            geo.x() + (geo.width() - w) // 2,
+            geo.y() + geo.height() - sh.height() - 10,
+            w,
+            sh.height(),
+        )
+        self._limit_overlay.raise_()
+        self._limit_overlay.show()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if self._limit_overlay.isVisible():
+            QTimer.singleShot(0, self._show_limit_overlay)
+
     def set_view(self, view: str, fav_uuids: set[str], recent_uuids: list[str]):
         self._current_view = view
         self._fav_uuids = fav_uuids
         self._recent_uuids = recent_uuids
+        self._limit_reached = False
         self._sort_bar.setVisible(view != "recent")
         if view != "recent":
             self._load_sort_controls(view)
@@ -572,6 +623,7 @@ class StationListWidget(QWidget):
             self._row_widgets[uuid].set_favicon(data)
 
     def _on_search_debounced(self):
+        self._limit_reached = False
         self._apply_filter()
         if self._current_view == "all":
             name = self._search_input.text().strip()
@@ -627,14 +679,25 @@ class StationListWidget(QWidget):
             item.setHidden(not visible)
 
         self._spinner.stop()
-        visible_count = sum(1 for i in range(self._list.count()) if not self._list.item(i).isHidden())
-        if self._list.count() > 0:
-            self._status_label.setText(self.tr("{0} stations").format(visible_count))
+        total = self._list.count()
+        visible_count = sum(1 for i in range(total) if not self._list.item(i).isHidden())
+        at_limit = self._limit_reached and visible_count == total
+        if total > 0:
+            count_str = f"{visible_count}+" if at_limit else str(visible_count)
+            self._status_label.setText(self.tr("{0} stations").format(count_str))
         else:
             self._status_label.clear()
+        if at_limit:
+            QTimer.singleShot(0, self._show_limit_overlay)
+        else:
+            self._limit_overlay.hide()
 
     def changeEvent(self, event):
-        if event.type() == QEvent.Type.PaletteChange and self._playing_uuid:
-            self._set_item_highlight(self._playing_uuid, True)
-            self._list.viewport().update()
+        if event.type() == QEvent.Type.PaletteChange:
+            if self._playing_uuid:
+                self._set_item_highlight(self._playing_uuid, True)
+                self._list.viewport().update()
+            ss = self._limit_overlay.styleSheet()
+            self._limit_overlay.setStyleSheet("")
+            self._limit_overlay.setStyleSheet(ss)
         super().changeEvent(event)

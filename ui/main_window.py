@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import (
     QPushButton, QFrame, QSystemTrayIcon, QApplication,
 )
 from pathlib import Path
-from PyQt6.QtCore import Qt, QSize, QEvent
+from PyQt6.QtCore import Qt, QSize, QEvent, QThreadPool
 from PyQt6.QtGui import QIcon, QShortcut, QKeySequence
 
 from ui.station_list import StationListWidget
@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
         self._last_title: str = ""
         self._tray = None
         self._mpris = None
+        self._panel_favicon_loader = None
 
         self.setWindowTitle("Dyedfox Radio")
         _icon = Path(__file__).parent.parent / "assets" / "icons" / "dyedfox-radio.png"
@@ -318,29 +319,10 @@ class MainWindow(QMainWindow):
             self._load_panel_favicon(favicon_url)
 
     def _load_panel_favicon(self, url: str):
-        from PyQt6.QtCore import QRunnable, QThreadPool, QObject, pyqtSignal
-        import requests as _req
-
-        class _Sig(QObject):
-            done = pyqtSignal(bytes)
-
-        class _Loader(QRunnable):
-            def __init__(self_, u):
-                super().__init__()
-                self_.setAutoDelete(True)
-                self_._url = u
-                self_.signals = _Sig()
-
-            def run(self_):
-                try:
-                    r = _req.get(self_._url, timeout=5, headers={"User-Agent": "dyedfox-radio/1.0"})
-                    if r.ok and r.content:
-                        self_.signals.done.emit(r.content)
-                except Exception:
-                    pass
-
-        loader = _Loader(url)
-        loader.signals.done.connect(self._info_panel.set_favicon)
+        from ui.station_list import _FaviconLoader
+        loader = _FaviconLoader("panel", url)
+        loader.signals.loaded.connect(lambda _uuid, data: self._info_panel.set_favicon(data))
+        self._panel_favicon_loader = loader  # prevent GC until signal fires
         QThreadPool.globalInstance().start(loader)
 
     def _on_metadata(self, title: str):
@@ -421,14 +403,16 @@ class MainWindow(QMainWindow):
 
         key = (name, country, tag, language)
         if key == self._last_search_key and self._search_results:
-            self._station_list.set_stations(self._search_results)
+            limit_reached = len(self._search_results) >= self._settings["station_limit"]
+            self._station_list.set_stations(self._search_results, limit_reached=limit_reached)
             return
 
         self._last_search_key = key
 
         def _on_result(stations: list):
             self._search_results = stations
-            self._station_list.set_stations(stations)
+            limit_reached = len(stations) >= self._settings["station_limit"]
+            self._station_list.set_stations(stations, limit_reached=limit_reached)
 
         self._api.search(
             name=name,

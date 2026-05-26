@@ -31,11 +31,17 @@ class _ApiWorker(QRunnable):
                 resp.raise_for_status()
                 data = resp.json()
                 if data:
-                    self.signals.result.emit(data)
+                    try:
+                        self.signals.result.emit(data)
+                    except RuntimeError:
+                        pass
                     return
             except Exception as e:
                 last_error = str(e)
-        self.signals.error.emit(last_error)
+        try:
+            self.signals.error.emit(last_error)
+        except RuntimeError:
+            pass
 
 
 class _PostApiWorker(QRunnable):
@@ -56,11 +62,17 @@ class _PostApiWorker(QRunnable):
                 resp.raise_for_status()
                 data = resp.json()
                 if data:
-                    self.signals.result.emit(data)
+                    try:
+                        self.signals.result.emit(data)
+                    except RuntimeError:
+                        pass
                     return
             except Exception as e:
                 last_error = str(e)
-        self.signals.error.emit(last_error)
+        try:
+            self.signals.error.emit(last_error)
+        except RuntimeError:
+            pass
 
 
 class RadioBrowserClient:

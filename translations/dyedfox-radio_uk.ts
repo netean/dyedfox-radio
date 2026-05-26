@@ -327,6 +327,11 @@ Powered by radio-browser.info.</source>
         <source>{0} stations</source>
         <translation>{0} станцій</translation>
     </message>
+    <message>
+        <location filename="../ui/station_list.py" line="396" />
+        <source>Result limit reached · narrow your search to see more</source>
+        <translation>Досягнуто ліміту результатів · звузьте пошук, щоб побачити більше</translation>
+    </message>
 </context><context>
     <name>SystemTrayIcon</name>
     <message>

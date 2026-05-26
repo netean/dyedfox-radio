@@ -163,6 +163,7 @@ class MainWindow(QMainWindow):
 
         self._settings_btn = QPushButton(self.tr("Settings"))
         self._settings_btn.setFlat(True)
+        self._settings_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self._settings_btn.setIcon(QIcon.fromTheme("preferences-system"))
         self._settings_btn.setIconSize(QSize(16, 16))
         self._settings_btn.setStyleSheet("QPushButton { text-align: left; padding: 4px 8px; }")
@@ -171,6 +172,7 @@ class MainWindow(QMainWindow):
 
         self._about_btn = QPushButton(self.tr("About"))
         self._about_btn.setFlat(True)
+        self._about_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self._about_btn.setIcon(QIcon.fromTheme("help-about"))
         self._about_btn.setIconSize(QSize(16, 16))
         self._about_btn.setStyleSheet("QPushButton { text-align: left; padding: 4px 8px; }")

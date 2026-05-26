@@ -42,10 +42,10 @@ class SettingsDialog(QDialog):
         stations_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.FieldsStayAtSizeHint)
 
         self._limit = QComboBox()
-        for n in [50, 100, 200]:
+        for n in [50, 100, 200, 500]:
             self._limit.addItem(self.tr("{0} stations").format(n), n)
         current = settings["station_limit"]
-        self._limit.setCurrentIndex({50: 0, 100: 1, 200: 2}.get(current, 1))
+        self._limit.setCurrentIndex({50: 0, 100: 1, 200: 2, 500: 3}.get(current, 1))
         stations_layout.addRow(self.tr("Top stations to load:"), self._limit)
 
         layout.addWidget(stations)

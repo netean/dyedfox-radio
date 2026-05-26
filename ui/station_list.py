@@ -12,6 +12,31 @@ from data.favourites import FavouritesManager
 from data.settings import Settings
 
 
+class _SpinnerLabel(QLabel):
+    _FRAMES = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._frame = 0
+        self._timer = QTimer(self)
+        self._timer.timeout.connect(self._step)
+        self.hide()
+
+    def start(self):
+        self._frame = 0
+        self.setText(self._FRAMES[0])
+        self.show()
+        self._timer.start(80)
+
+    def stop(self):
+        self._timer.stop()
+        self.hide()
+
+    def _step(self):
+        self._frame = (self._frame + 1) % len(self._FRAMES)
+        self.setText(self._FRAMES[self._frame])
+
+
 class _WaveWidget(QWidget):
     """Animated 3-bar equalizer shown while a station is playing."""
 
@@ -160,12 +185,7 @@ class StationRowWidget(QWidget):
         ] if p]
         meta_label = _ElidedLabel("  ·  ".join(meta_parts))
         meta_label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-        p = meta_label.palette()
-        p.setColor(
-            QPalette.ColorRole.WindowText,
-            meta_label.palette().color(QPalette.ColorGroup.Disabled, QPalette.ColorRole.WindowText),
-        )
-        meta_label.setPalette(p)
+        meta_label.setStyleSheet("color: palette(placeholder-text);")
         text_layout.addWidget(meta_label)
 
         layout.addWidget(text, 1)
@@ -325,11 +345,20 @@ class StationListWidget(QWidget):
         self._sort_dir.setFixedWidth(28)
         self._sort_dir.setToolTip(self.tr("Toggle sort direction"))
 
+        self._spinner = _SpinnerLabel()
+        self._spinner.setStyleSheet("color: palette(placeholder-text);")
+
+        self._status_label = QLabel()
+        self._status_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        self._status_label.setStyleSheet("color: palette(placeholder-text);")
+
         sort_layout.addWidget(self._sort_field)
         sort_layout.addWidget(self._sort_dir)
         sort_layout.addWidget(self._country_input, 1)
         sort_layout.addWidget(self._tag_input, 1)
         sort_layout.addWidget(self._language_input, 1)
+        sort_layout.addWidget(self._spinner)
+        sort_layout.addWidget(self._status_label)
 
         layout.addWidget(self._sort_bar)
 
@@ -549,6 +578,8 @@ class StationListWidget(QWidget):
             country = self._country_input.text().strip()
             tag = self._tag_input.text().strip()
             language = self._language_input.text().strip()
+            if name or country or tag or language:
+                self._spinner.start()
             self.search_params_changed.emit(name, country, tag, language)
 
     def _apply_filter(self):
@@ -594,6 +625,13 @@ class StationListWidget(QWidget):
                     visible = False
 
             item.setHidden(not visible)
+
+        self._spinner.stop()
+        visible_count = sum(1 for i in range(self._list.count()) if not self._list.item(i).isHidden())
+        if self._list.count() > 0:
+            self._status_label.setText(self.tr("{0} stations").format(visible_count))
+        else:
+            self._status_label.clear()
 
     def changeEvent(self, event):
         if event.type() == QEvent.Type.PaletteChange and self._playing_uuid:

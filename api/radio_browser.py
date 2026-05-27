@@ -1,11 +1,16 @@
 from __future__ import annotations
-import time
+import threading
 import requests
 from PyQt6.QtCore import QRunnable, QObject, pyqtSignal, QThreadPool
 
 BASE_URL = "https://de1.api.radio-browser.info/json"
 HEADERS = {"User-Agent": "dyedfox-radio/1.0"}
 _RETRY_DELAYS = [1, 3]
+_stop_event = threading.Event()
+
+
+def shutdown():
+    _stop_event.set()
 
 
 class _Signals(QObject):
@@ -24,8 +29,12 @@ class _ApiWorker(QRunnable):
     def run(self):
         last_error = "Empty response"
         for delay in (0, *_RETRY_DELAYS):
+            if _stop_event.is_set():
+                return
             if delay:
-                time.sleep(delay)
+                _stop_event.wait(delay)
+            if _stop_event.is_set():
+                return
             try:
                 resp = requests.get(self.url, params=self.params, headers=HEADERS, timeout=10)
                 resp.raise_for_status()
@@ -55,8 +64,12 @@ class _PostApiWorker(QRunnable):
     def run(self):
         last_error = "Empty response"
         for delay in (0, *_RETRY_DELAYS):
+            if _stop_event.is_set():
+                return
             if delay:
-                time.sleep(delay)
+                _stop_event.wait(delay)
+            if _stop_event.is_set():
+                return
             try:
                 resp = requests.post(self.url, data=self.data, headers=HEADERS, timeout=10)
                 resp.raise_for_status()

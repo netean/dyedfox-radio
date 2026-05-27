@@ -247,6 +247,11 @@ Powered by radio-browser.info.</source>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="54" />
+        <source>Higher values slow down initial load and search. Prefer using search and filters over increasing this limit.</source>
+        <translation>Більші значення сповільнюють початкове завантаження та пошук. Краще використовувати пошук і фільтри, ніж збільшувати ліміт.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="58" />
         <source>Notifications</source>
         <translation>Сповіщення</translation>
     </message>

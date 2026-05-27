@@ -48,6 +48,11 @@ class SettingsDialog(QDialog):
         self._limit.setCurrentIndex({50: 0, 100: 1, 200: 2, 500: 3}.get(current, 1))
         stations_layout.addRow(self.tr("Top stations to load:"), self._limit)
 
+        stations_note = QLabel(self.tr("Higher values slow down initial load and search. Prefer using search and filters over increasing this limit."))
+        stations_note.setEnabled(False)
+        stations_note.setWordWrap(True)
+        stations_layout.addRow(stations_note)
+
         layout.addWidget(stations)
 
         # --- Notifications ---

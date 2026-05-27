@@ -209,6 +209,8 @@ class MainWindow(QMainWindow):
         self._backend.set_volume(vol)
 
     def load_top_stations(self, autoplay_uuid: str = ""):
+        self._station_list.start_loading()
+
         def on_loaded(stations: list):
             self._top_stations = stations
             if self._current_view == "all":
@@ -268,14 +270,23 @@ class MainWindow(QMainWindow):
             return
 
         if view == "favourites":
+            cached = self._favourites.cached_stations()
+            self._station_list.start_loading()
+            if cached:
+                self._station_list.set_stations(cached)
             uuids = list(self._favourites.uuids())
+
+            def _on_fav_loaded(stations: list):
+                self._favourites.cache_stations(stations)
+                self._station_list.set_stations(stations)
+
             self._api.stations_by_uuids(
                 uuids,
-                on_result=self._station_list.set_stations,
+                on_result=_on_fav_loaded,
                 on_error=lambda e: self._station_list.set_error(
                     self.tr("Could not load favourites — check your connection"),
                     on_retry=lambda: self._switch_view("favourites"),
-                ),
+                ) if not cached else None,
             )
         elif view == "recent":
             uuids = self._recent.uuids()
@@ -297,6 +308,7 @@ class MainWindow(QMainWindow):
                 self._station_list.set_stations([])
         else:
             if self._top_stations:
+                self._station_list.start_loading()
                 self._station_list.set_stations(self._top_stations)
             else:
                 self.load_top_stations()
@@ -421,7 +433,7 @@ class MainWindow(QMainWindow):
             language=language,
             limit=self._settings["station_limit"],
             on_result=_on_result,
-            on_error=lambda e: print(f"dyedfox-radio: search error: {e}", flush=True),
+            on_error=lambda e: (print(f"dyedfox-radio: search error: {e}", flush=True), self._station_list.stop_loading()),
         )
 
     def _on_add_custom_station(self):

@@ -14,13 +14,13 @@ except ImportError:
 
 from pathlib import Path
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtCore import QTimer, QTranslator, QLocale
+from PyQt6.QtCore import QTimer, QTranslator, QLocale, QThreadPool
 from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 from PyQt6.QtGui import QIcon
 
 from player.backend import GStreamerBackend
 from player.mpris import setup_mpris
-from api.radio_browser import RadioBrowserClient
+from api.radio_browser import RadioBrowserClient, shutdown as _shutdown_workers
 from data.favourites import FavouritesManager, RecentManager
 from data.settings import Settings
 from tray.tray_icon import SystemTrayIcon
@@ -105,6 +105,13 @@ def main():
         conn.deleteLater()
 
     server.newConnection.connect(_on_new_connection)
+
+    def _on_quit():
+        backend.stop()
+        _shutdown_workers()
+        QThreadPool.globalInstance().clear()
+
+    app.aboutToQuit.connect(_on_quit)
 
     if not settings["start_minimized"]:
         window.show()

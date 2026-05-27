@@ -122,7 +122,7 @@ class _FaviconSignals(QObject):
 class _FaviconLoader(QRunnable):
     def __init__(self, uuid: str, url: str):
         super().__init__()
-        self.setAutoDelete(True)
+        self.setAutoDelete(False)
         self._uuid = uuid
         self._url = url
         self.signals = _FaviconSignals()
@@ -320,6 +320,10 @@ class StationListWidget(QWidget):
         self._is_playing: bool = False
         self._favicon_cache: dict[str, bytes] = {}
         self._pool = QThreadPool.globalInstance()
+        self._pending_favicon_loaders: list[_FaviconLoader] = []
+        self._build_gen: int = 0
+        self._built_uuids: list[str] = []
+        self._built_deletable: bool = False
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -469,48 +473,84 @@ class StationListWidget(QWidget):
         self._stations_raw = list(stations)
         self._deletable = deletable
         self._limit_reached = limit_reached
+
+        new_sorted_uuids = [s.get("stationuuid", "") for s in self._sorted_stations()]
+        if new_sorted_uuids == self._built_uuids and deletable == self._built_deletable:
+            self._error_widget.hide()
+            self._list.show()
+            self._apply_filter()
+            return
+
         self._rebuild()
 
+    _BATCH_SIZE = 40
+
     def _rebuild(self):
+        for loader in self._pending_favicon_loaders:
+            self._pool.tryTake(loader)
+        self._pending_favicon_loaders.clear()
+
+        sorted_stations = self._sorted_stations()
+        self._built_uuids = [s.get("stationuuid", "") for s in sorted_stations]
+        self._built_deletable = self._deletable
+        self._build_gen += 1
+        gen = self._build_gen
+
         self._error_widget.hide()
         self._list.show()
         self._list.clear()
         self._row_widgets.clear()
         self._item_map.clear()
 
-        for station in self._sorted_stations():
-            uuid = station.get("stationuuid", "")
-            item = QListWidgetItem(self._list)
-            item.setSizeHint(QSize(0, 56))
-            item.setData(Qt.ItemDataRole.UserRole, station)
+        pending = list(sorted_stations)
 
-            on_delete = (lambda u: self.station_delete_requested.emit(u)) if self._deletable else None
-            on_edit = (lambda u: self.station_edit_requested.emit(u)) if self._deletable else None
-            row = StationRowWidget(station, self._favourites, on_delete=on_delete, on_edit=on_edit)
-            self._list.setItemWidget(item, row)
-            self._row_widgets[uuid] = row
-            self._item_map[uuid] = item
+        def _next_batch():
+            if self._build_gen != gen:
+                return
+            batch, pending[:] = pending[:self._BATCH_SIZE], pending[self._BATCH_SIZE:]
+            for station in batch:
+                self._build_row(station)
+            if pending:
+                QTimer.singleShot(0, _next_batch)
+            else:
+                self._finish_rebuild()
 
-            row.play_requested.connect(lambda s=station, i=item: self._on_row_play(s, i))
-            if not self._deletable:
-                row.favourite_toggled.connect(self.favourite_toggled)
+        _next_batch()
 
-            favicon_url = station.get("favicon", "")
-            if favicon_url:
-                if uuid in self._favicon_cache:
-                    row.set_favicon(self._favicon_cache[uuid])
-                else:
-                    loader = _FaviconLoader(uuid, favicon_url)
-                    loader.signals.loaded.connect(self._on_favicon_loaded)
-                    self._pool.start(loader)
+    def _build_row(self, station: dict):
+        uuid = station.get("stationuuid", "")
+        item = QListWidgetItem(self._list)
+        item.setSizeHint(QSize(0, 56))
+        item.setData(Qt.ItemDataRole.UserRole, station)
 
+        on_delete = (lambda u: self.station_delete_requested.emit(u)) if self._deletable else None
+        on_edit = (lambda u: self.station_edit_requested.emit(u)) if self._deletable else None
+        row = StationRowWidget(station, self._favourites, on_delete=on_delete, on_edit=on_edit)
+        self._list.setItemWidget(item, row)
+        self._row_widgets[uuid] = row
+        self._item_map[uuid] = item
+
+        row.play_requested.connect(lambda s=station, i=item: self._on_row_play(s, i))
+        if not self._deletable:
+            row.favourite_toggled.connect(self.favourite_toggled)
+
+        favicon_url = station.get("favicon", "")
+        if favicon_url:
+            if uuid in self._favicon_cache:
+                row.set_favicon(self._favicon_cache[uuid])
+            else:
+                loader = _FaviconLoader(uuid, favicon_url)
+                loader.signals.loaded.connect(self._on_favicon_loaded)
+                self._pending_favicon_loaders.append(loader)
+                self._pool.start(loader)
+
+    def _finish_rebuild(self):
         if self._playing_uuid and self._playing_uuid in self._row_widgets:
             self._set_item_highlight(self._playing_uuid, True)
             if self._is_playing:
                 self._row_widgets[self._playing_uuid].set_playing(True)
             else:
                 self._row_widgets[self._playing_uuid].freeze_wave()
-
         self._apply_filter()
 
     def _sorted_stations(self) -> list[dict]:
@@ -546,6 +586,12 @@ class StationListWidget(QWidget):
         self._settings["sort"][self._current_view] = {"field": field, "ascending": not self._sort_descending}
         self._settings.save()
         self._rebuild()
+
+    def start_loading(self):
+        self._spinner.start()
+
+    def stop_loading(self):
+        self._spinner.stop()
 
     def set_error(self, message: str, on_retry=None):
         self._list.hide()
@@ -628,10 +674,9 @@ class StationListWidget(QWidget):
         if self._current_view == "all":
             name = self._search_input.text().strip()
             country = self._country_input.text().strip()
-            tag = self._tag_input.text().strip()
-            language = self._language_input.text().strip()
-            if name or country or tag or language:
-                self._spinner.start()
+            tag = self._tag_input.text().strip().lower()
+            language = self._language_input.text().strip().lower()
+            self._spinner.start()
             self.search_params_changed.emit(name, country, tag, language)
 
     def _apply_filter(self):

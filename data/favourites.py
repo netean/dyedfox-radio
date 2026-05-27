@@ -4,6 +4,7 @@ from pathlib import Path
 
 _CONFIG = Path.home() / ".config" / "dyedfox-radio"
 _FAV_FILE = _CONFIG / "favourites.json"
+_FAV_CACHE_FILE = _CONFIG / "favourites_cache.json"
 _RECENT_FILE = _CONFIG / "recent.json"
 
 
@@ -24,6 +25,19 @@ class FavouritesManager:
 
     def uuids(self) -> set[str]:
         return set(self._uuids)
+
+    def cached_stations(self) -> list[dict]:
+        try:
+            data = json.loads(_FAV_CACHE_FILE.read_text())
+            return [s for s in data if s.get("stationuuid") in self._uuids]
+        except Exception:
+            return []
+
+    def cache_stations(self, stations: list[dict]):
+        try:
+            _FAV_CACHE_FILE.write_text(json.dumps(stations, indent=2))
+        except Exception as e:
+            print(f"dyedfox-radio: failed to save favourites cache: {e}", flush=True)
 
     @staticmethod
     def _load(path: Path) -> list:

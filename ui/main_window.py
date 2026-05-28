@@ -320,7 +320,7 @@ class MainWindow(QMainWindow):
         self._current_station = station
         self._last_title = ""
         self._backend.play(url)
-        self._now_playing.set_station(station.get("name", ""))
+        self._now_playing.set_station(station.get("name", "").strip())
         self._now_playing.clear_song()
         self._info_panel.set_station(station, self._favourites.is_favourite(station.get("stationuuid", "")))
         self._station_list.mark_playing(station.get("stationuuid", ""))

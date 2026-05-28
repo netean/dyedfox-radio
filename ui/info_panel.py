@@ -126,7 +126,7 @@ class InfoPanel(QWidget):
 
     def set_station(self, station: dict, is_favourite: bool = False):
         self._uuid = station.get("stationuuid", "")
-        self._station_name = station.get("name", "")
+        self._station_name = station.get("name", "").strip()
         self._homepage_url = station.get("homepage", "")
         self._name.setText(self._station_name)
         self._country.setText(station.get("country", ""))

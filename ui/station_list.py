@@ -168,7 +168,7 @@ class StationRowWidget(QWidget):
         text_layout.setContentsMargins(0, 0, 0, 0)
         text_layout.setSpacing(1)
 
-        name_label = _ElidedLabel(station.get("name", ""))
+        name_label = _ElidedLabel(station.get("name", "").strip())
         f = name_label.font()
         f.setBold(True)
         name_label.setFont(f)

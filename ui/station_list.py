@@ -562,7 +562,7 @@ class StationListWidget(QWidget):
 
         def sort_key(s: dict):
             v = s.get(field, "")
-            return v.lower() if isinstance(v, str) else (v or 0)
+            return v.strip().lower() if isinstance(v, str) else (v or 0)
 
         return sorted(self._stations_raw, key=sort_key, reverse=not ascending)
 

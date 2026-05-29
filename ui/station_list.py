@@ -499,7 +499,9 @@ class StationListWidget(QWidget):
 
         self._error_widget.hide()
         self._list.show()
+        self._list.setUpdatesEnabled(False)
         self._list.clear()
+        self._list.setUpdatesEnabled(True)
         self._row_widgets.clear()
         self._item_map.clear()
 

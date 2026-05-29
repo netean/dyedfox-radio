@@ -25,6 +25,9 @@ class SystemTrayIcon(QSystemTrayIcon):
         menu.addSeparator()
         self._action_playstop = menu.addAction(self.tr("Play"))
         self._action_playstop.triggered.connect(self._toggle_playback)
+        self._action_mute = menu.addAction(self.tr("Mute"))
+        self._action_mute.setCheckable(True)
+        self._action_mute.triggered.connect(self._toggle_mute)
         menu.addSeparator()
         menu.addAction(self.tr("Quit")).triggered.connect(QApplication.quit)
         self.setContextMenu(menu)
@@ -37,6 +40,16 @@ class SystemTrayIcon(QSystemTrayIcon):
             self._backend.stop()
         else:
             self._backend.play_last()
+
+    def _toggle_mute(self):
+        muted = not self._backend.is_muted
+        self._backend.set_muted(muted)
+        self._action_mute.setChecked(muted)
+        if self._window:
+            self._window.set_muted(muted)
+
+    def set_muted(self, muted: bool):
+        self._action_mute.setChecked(muted)
 
     def _on_activate(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.MiddleClick:

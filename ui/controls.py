@@ -1,11 +1,12 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QSlider, QLabel
-from PyQt6.QtCore import Qt, QEvent, pyqtSignal
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QSlider
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon
 
 
 class ControlBar(QWidget):
     playback_toggled = pyqtSignal()
     volume_changed = pyqtSignal(int)
+    mute_toggled = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -22,9 +23,13 @@ class ControlBar(QWidget):
 
         layout.addStretch()
 
-        self._vol_icon = QLabel()
-        self._vol_icon.setPixmap(QIcon.fromTheme("audio-volume-medium").pixmap(16, 16))
-        layout.addWidget(self._vol_icon)
+        self._mute_btn = QPushButton()
+        self._mute_btn.setFlat(True)
+        self._mute_btn.setFixedSize(24, 24)
+        self._mute_btn.setCheckable(True)
+        self._mute_btn.setToolTip(self.tr("Mute"))
+        self._mute_btn.clicked.connect(self.mute_toggled)
+        layout.addWidget(self._mute_btn)
 
         self._slider = QSlider(Qt.Orientation.Horizontal)
         self._slider.setRange(0, 100)
@@ -32,6 +37,8 @@ class ControlBar(QWidget):
         self._slider.setFixedWidth(140)
         self._slider.valueChanged.connect(self.volume_changed)
         layout.addWidget(self._slider)
+
+        self._update_mute_icon(False)
 
     def set_playing(self, playing: bool):
         if playing:
@@ -46,10 +53,15 @@ class ControlBar(QWidget):
         self._slider.setValue(value)
         self._slider.blockSignals(False)
 
-    def changeEvent(self, event):
-        if event.type() == QEvent.Type.PaletteChange:
-            self._vol_icon.setPixmap(QIcon.fromTheme("audio-volume-medium").pixmap(16, 16))
-        super().changeEvent(event)
+    def set_muted(self, muted: bool):
+        self._mute_btn.blockSignals(True)
+        self._mute_btn.setChecked(muted)
+        self._mute_btn.blockSignals(False)
+        self._update_mute_icon(muted)
+
+    def _update_mute_icon(self, muted: bool):
+        name = "audio-volume-muted" if muted else "audio-volume-medium"
+        self._mute_btn.setIcon(QIcon.fromTheme(name))
 
     @property
     def volume(self) -> int:

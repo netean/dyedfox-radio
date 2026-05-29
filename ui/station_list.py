@@ -129,7 +129,7 @@ class _FaviconLoader(QRunnable):
 
     def run(self):
         try:
-            resp = requests.get(self._url, timeout=5, headers={"User-Agent": "dyedfox-radio/1.0"})
+            resp = requests.get(self._url, timeout=2, headers={"User-Agent": "dyedfox-radio/1.0"})
             if resp.ok and resp.content:
                 try:
                     self.signals.loaded.emit(self._uuid, resp.content)
@@ -303,6 +303,7 @@ class StationListWidget(QWidget):
     search_params_changed = pyqtSignal(str, str, str, str)  # name, country, tag, language
     station_delete_requested = pyqtSignal(str)
     station_edit_requested = pyqtSignal(str)
+    playing_visibility_changed = pyqtSignal(bool)
 
     def __init__(self, favourites: FavouritesManager, settings: Settings, parent=None):
         super().__init__(parent)
@@ -587,6 +588,25 @@ class StationListWidget(QWidget):
         self._settings.save()
         self._rebuild()
 
+    def _emit_playing_visibility(self):
+        visible = (
+            self._playing_uuid is not None
+            and self._playing_uuid in self._item_map
+            and not self._item_map[self._playing_uuid].isHidden()
+        )
+        self.playing_visibility_changed.emit(visible)
+
+    def scroll_to_playing(self):
+        if self._playing_uuid and self._playing_uuid in self._item_map:
+            item = self._item_map[self._playing_uuid]
+            if not item.isHidden():
+                self._list.scrollToItem(item, self._list.ScrollHint.PositionAtCenter)
+
+    def cancel_pending_favicons(self):
+        for loader in self._pending_favicon_loaders:
+            self._pool.tryTake(loader)
+        self._pending_favicon_loaders.clear()
+
     def start_loading(self):
         self._spinner.start()
 
@@ -618,13 +638,15 @@ class StationListWidget(QWidget):
         if self._limit_overlay.isVisible():
             QTimer.singleShot(0, self._show_limit_overlay)
 
+    _NO_SORT_VIEWS = {"recent", "new", "random", "trending"}
+
     def set_view(self, view: str, fav_uuids: set[str], recent_uuids: list[str]):
         self._current_view = view
         self._fav_uuids = fav_uuids
         self._recent_uuids = recent_uuids
         self._limit_reached = False
-        self._sort_bar.setVisible(view != "recent")
-        if view != "recent":
+        self._sort_bar.setVisible(view not in self._NO_SORT_VIEWS)
+        if view not in self._NO_SORT_VIEWS:
             self._load_sort_controls(view)
         for w in (self._country_input, self._tag_input, self._language_input):
             w.blockSignals(True)
@@ -642,6 +664,7 @@ class StationListWidget(QWidget):
         self._set_item_highlight(uuid, True)
         if uuid in self._row_widgets:
             self._row_widgets[uuid].set_playing(True)
+        self._emit_playing_visibility()
 
     def mark_stopped(self):
         self._is_playing = False
@@ -736,6 +759,7 @@ class StationListWidget(QWidget):
             QTimer.singleShot(0, self._show_limit_overlay)
         else:
             self._limit_overlay.hide()
+        self._emit_playing_visibility()
 
     def changeEvent(self, event):
         if event.type() == QEvent.Type.PaletteChange:

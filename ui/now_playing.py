@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QSizePolicy
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QIcon, QPalette
 
 
@@ -27,11 +27,14 @@ class _ElidedLabel(QLabel):
 
 
 class NowPlayingBar(QWidget):
+    clicked = pyqtSignal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFixedHeight(36)
         self._station = ""
         self._song = ""
+        self._clickable = False
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(12, 4, 12, 4)
@@ -44,6 +47,15 @@ class NowPlayingBar(QWidget):
 
         self._label = _ElidedLabel(self.tr("Not playing"))
         layout.addWidget(self._label, 1)
+
+    def set_clickable(self, enabled: bool):
+        self._clickable = enabled
+        self.setCursor(Qt.CursorShape.PointingHandCursor if (self._station and enabled) else Qt.CursorShape.ArrowCursor)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and self._clickable:
+            self.clicked.emit()
+        super().mousePressEvent(event)
 
     def set_station(self, name: str):
         self._station = name

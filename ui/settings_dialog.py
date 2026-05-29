@@ -1,10 +1,12 @@
 from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QFormLayout, QCheckBox, QComboBox,
-    QDialogButtonBox, QGroupBox, QLabel,
+    QDialog, QVBoxLayout, QHBoxLayout, QFormLayout, QCheckBox, QComboBox,
+    QDialogButtonBox, QGroupBox, QLabel, QPushButton, QFileDialog, QMessageBox,
 )
 from PyQt6.QtCore import QEvent
+from pathlib import Path
 
 from data.settings import Settings
+from data import backup as _backup
 
 
 class SettingsDialog(QDialog):
@@ -65,6 +67,27 @@ class SettingsDialog(QDialog):
 
         layout.addWidget(notif)
 
+        # --- Backup / Restore ---
+        backup_group = QGroupBox(self.tr("Backup"))
+        backup_layout = QVBoxLayout(backup_group)
+
+        backup_note = QLabel(self.tr("Back up and restore your favourites, custom stations, history, and settings."))
+        backup_note.setEnabled(False)
+        backup_note.setWordWrap(True)
+        backup_layout.addWidget(backup_note)
+
+        btn_row = QHBoxLayout()
+        export_btn = QPushButton(self.tr("Export…"))
+        export_btn.clicked.connect(self._on_export)
+        import_btn = QPushButton(self.tr("Import…"))
+        import_btn.clicked.connect(self._on_import)
+        btn_row.addWidget(export_btn)
+        btn_row.addWidget(import_btn)
+        btn_row.addStretch()
+        backup_layout.addLayout(btn_row)
+
+        layout.addWidget(backup_group)
+
         # --- Buttons ---
         buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel
@@ -86,3 +109,37 @@ class SettingsDialog(QDialog):
         self._settings["notifications"] = self._notifications.isChecked()
         self._settings.save()
         self.accept()
+
+    def _on_export(self):
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            self.tr("Export backup"),
+            _backup.default_export_name(),
+            self.tr("Zip files (*.zip)"),
+        )
+        if not path:
+            return
+        try:
+            _backup.export_backup(Path(path))
+            QMessageBox.information(self, self.tr("Backup"), self.tr("Backup exported successfully."))
+        except Exception as e:
+            QMessageBox.critical(self, self.tr("Backup"), self.tr("Export failed: {0}").format(str(e)))
+
+    def _on_import(self):
+        path, _ = QFileDialog.getOpenFileName(
+            self,
+            self.tr("Import backup"),
+            "",
+            self.tr("Zip files (*.zip)"),
+        )
+        if not path:
+            return
+        try:
+            restored = _backup.import_backup(Path(path))
+            QMessageBox.information(
+                self,
+                self.tr("Backup"),
+                self.tr("Restored: {0}.\nRestart the app to apply changes.").format(", ".join(restored)),
+            )
+        except Exception as e:
+            QMessageBox.critical(self, self.tr("Backup"), self.tr("Import failed: {0}").format(str(e)))

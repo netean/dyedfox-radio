@@ -3,8 +3,11 @@ from PyQt6.QtWidgets import (
     QPushButton, QFrame, QSystemTrayIcon, QApplication,
 )
 from pathlib import Path
+import subprocess
 from PyQt6.QtCore import Qt, QSize, QEvent, QThreadPool
-from PyQt6.QtGui import QIcon, QShortcut, QKeySequence
+from PyQt6.QtGui import QIcon, QShortcut, QKeySequence, QPixmap
+
+_NOTIF_ICON_PATH = Path.home() / ".config" / "dyedfox-radio" / "notif_icon.png"
 
 from ui.station_list import StationListWidget
 from ui.info_panel import InfoPanel
@@ -15,7 +18,7 @@ from ui.about_dialog import AboutDialog
 from ui.add_station_dialog import AddStationDialog
 from player.backend import GStreamerBackend
 from api.radio_browser import RadioBrowserClient
-from data.favourites import FavouritesManager, RecentManager
+from data.favourites import FavouritesManager, RecentManager, new_cache, trending_cache, random_cache
 from data.settings import Settings
 from data.custom_stations import CustomStationsManager
 
@@ -39,12 +42,17 @@ class MainWindow(QMainWindow):
         self._current_station: dict | None = None
         self._current_view = "all"
         self._top_stations: list = []
+        self._new_stations_cache: list = new_cache.load()
+        self._trending_stations_cache: list = trending_cache.load()
+        self._random_stations_cache: list = random_cache.load()
         self._search_results: list = []
         self._last_search_key: tuple = ("", "", "")
         self._last_title: str = ""
         self._tray = None
         self._mpris = None
         self._panel_favicon_loader = None
+        self._current_favicon: QIcon | None = None
+        self._pending_notification: tuple[str, str] | None = None  # (station, title)
 
         self.setWindowTitle("Dyedfox Radio")
         _icon = Path(__file__).parent.parent / "assets" / "icons" / "dyedfox-radio.png"
@@ -98,39 +106,39 @@ class MainWindow(QMainWindow):
         root_layout.addWidget(self._controls)
 
     def _build_sidebar(self) -> QWidget:
+        from PyQt6.QtWidgets import QLabel
         sidebar = QWidget()
         sidebar.setFixedWidth(148)
         layout = QVBoxLayout(sidebar)
         layout.setContentsMargins(4, 8, 4, 8)
         layout.setSpacing(2)
 
-        _sub_style = "QPushButton { text-align: left; padding: 2px 8px 2px 20px; font-size: small; }"
         _nav_style = "QPushButton { text-align: left; padding: 4px 8px; }"
+        _sub_style = "QPushButton { text-align: left; padding: 2px 8px 2px 20px; font-size: small; }"
+        _sec_style = "QLabel { color: palette(placeholder-text); font-size: small; padding: 6px 8px 2px 8px; }"
         self._nav_btns: dict[str, QPushButton] = {}
 
-        for label, view, icon_name in [
-            (self.tr("All stations"), "all",        "network-wireless"),
-            (self.tr("Favourites"),   "favourites", "emblem-favorite"),
-        ]:
+        def _section(text: str) -> QLabel:
+            lbl = QLabel(text)
+            lbl.setStyleSheet(_sec_style)
+            return lbl
+
+        def _nav_btn(label: str, view: str, icon: str) -> QPushButton:
             btn = QPushButton(label)
             btn.setFlat(True)
             btn.setCheckable(True)
-            btn.setIcon(QIcon.fromTheme(icon_name))
+            btn.setIcon(QIcon.fromTheme(icon))
             btn.setIconSize(QSize(16, 16))
             btn.setStyleSheet(_nav_style)
             btn.clicked.connect(lambda _, v=view: self._switch_view(v))
-            layout.addWidget(btn)
             self._nav_btns[view] = btn
+            return btn
 
-        custom_btn = QPushButton(self.tr("Custom"))
-        custom_btn.setFlat(True)
-        custom_btn.setCheckable(True)
-        custom_btn.setIcon(QIcon.fromTheme("document-edit"))
-        custom_btn.setIconSize(QSize(16, 16))
-        custom_btn.setStyleSheet(_nav_style)
-        custom_btn.clicked.connect(lambda: self._switch_view("custom"))
-        layout.addWidget(custom_btn)
-        self._nav_btns["custom"] = custom_btn
+        # --- LIBRARY ---
+        layout.addWidget(_section(self.tr("LIBRARY")))
+        layout.addWidget(_nav_btn(self.tr("All stations"), "all",        "network-wireless"))
+        layout.addWidget(_nav_btn(self.tr("Favourites"),   "favourites", "emblem-favorite"))
+        layout.addWidget(_nav_btn(self.tr("Custom"),       "custom",     "document-edit"))
 
         self._add_station_btn = QPushButton(self.tr("+ Add station"))
         self._add_station_btn.setFlat(True)
@@ -139,27 +147,24 @@ class MainWindow(QMainWindow):
         self._add_station_btn.hide()
         layout.addWidget(self._add_station_btn)
 
-        recent_btn = QPushButton(self.tr("Recent"))
-        recent_btn.setFlat(True)
-        recent_btn.setCheckable(True)
-        recent_btn.setIcon(QIcon.fromTheme("document-open-recent"))
-        recent_btn.setIconSize(QSize(16, 16))
-        recent_btn.setStyleSheet(_nav_style)
-        recent_btn.clicked.connect(lambda: self._switch_view("recent"))
-        layout.addWidget(recent_btn)
-        self._nav_btns["recent"] = recent_btn
+        layout.addWidget(_nav_btn(self.tr("History"), "recent", "document-open-recent"))
 
-        self._clear_recent_btn = QPushButton(self.tr("Clear recent"))
+        self._clear_recent_btn = QPushButton(self.tr("Clear history"))
         self._clear_recent_btn.setFlat(True)
         self._clear_recent_btn.setStyleSheet(_sub_style)
         self._clear_recent_btn.clicked.connect(self._on_clear_recent)
         self._clear_recent_btn.hide()
         layout.addWidget(self._clear_recent_btn)
 
+        # --- DISCOVER ---
+        layout.addWidget(_section(self.tr("DISCOVER")))
+        layout.addWidget(_nav_btn(self.tr("New"),      "new",      "starred"))
+        layout.addWidget(_nav_btn(self.tr("Random"),   "random",   "media-playlist-shuffle"))
+        layout.addWidget(_nav_btn(self.tr("Trending"), "trending", "office-chart-bar"))
+
         self._nav_btns["all"].setChecked(True)
 
         layout.addStretch()
-
         layout.addWidget(self._sep())
 
         self._settings_btn = QPushButton(self.tr("Settings"))
@@ -194,8 +199,11 @@ class MainWindow(QMainWindow):
         self._station_list.station_delete_requested.connect(self._on_custom_delete)
         self._station_list.station_edit_requested.connect(self._on_custom_edit)
 
+        self._now_playing.clicked.connect(self._station_list.scroll_to_playing)
+        self._station_list.playing_visibility_changed.connect(self._now_playing.set_clickable)
         self._controls.playback_toggled.connect(self._on_playback_toggled)
         self._controls.volume_changed.connect(self._on_volume_changed)
+        self._controls.mute_toggled.connect(self._on_mute_toggled)
 
         self._info_panel.favourite_toggled.connect(self._on_favourite_toggled)
 
@@ -291,6 +299,7 @@ class MainWindow(QMainWindow):
         elif view == "recent":
             uuids = self._recent.uuids()
             if uuids:
+                self._station_list.start_loading()
                 def _on_recent_loaded(stations: list, ordered=uuids):
                     by_uuid = {s.get("stationuuid"): s for s in stations}
                     self._station_list.set_stations(
@@ -300,12 +309,60 @@ class MainWindow(QMainWindow):
                     uuids,
                     on_result=_on_recent_loaded,
                     on_error=lambda e: self._station_list.set_error(
-                        self.tr("Could not load recent — check your connection"),
+                        self.tr("Could not load history — check your connection"),
                         on_retry=lambda: self._switch_view("recent"),
                     ),
                 )
             else:
                 self._station_list.set_stations([])
+        elif view == "new":
+            self._station_list.start_loading()
+            if self._new_stations_cache:
+                self._station_list.set_stations(self._new_stations_cache)
+            def _on_new_loaded(stations: list):
+                self._new_stations_cache = stations
+                new_cache.save(stations)
+                self._station_list.set_stations(stations)
+            self._api.new_stations(
+                limit=self._settings["station_limit"],
+                on_result=_on_new_loaded,
+                on_error=lambda e: self._station_list.set_error(
+                    self.tr("Could not load new stations — check your connection"),
+                    on_retry=lambda: self._switch_view("new"),
+                ) if not self._new_stations_cache else None,
+            )
+        elif view == "random":
+            self._station_list.start_loading()
+            if self._random_stations_cache:
+                self._station_list.set_stations(self._random_stations_cache)
+            def _on_random_loaded(stations: list):
+                self._random_stations_cache = stations
+                random_cache.save(stations)
+                self._station_list.set_stations(stations)
+            self._api.random_stations(
+                limit=50,
+                on_result=_on_random_loaded,
+                on_error=lambda e: self._station_list.set_error(
+                    self.tr("Could not load stations — check your connection"),
+                    on_retry=lambda: self._switch_view("random"),
+                ) if not self._random_stations_cache else None,
+            )
+        elif view == "trending":
+            self._station_list.start_loading()
+            if self._trending_stations_cache:
+                self._station_list.set_stations(self._trending_stations_cache)
+            def _on_trending_loaded(stations: list):
+                self._trending_stations_cache = stations
+                trending_cache.save(stations)
+                self._station_list.set_stations(stations)
+            self._api.trending_stations(
+                limit=self._settings["station_limit"],
+                on_result=_on_trending_loaded,
+                on_error=lambda e: self._station_list.set_error(
+                    self.tr("Could not load trending stations — check your connection"),
+                    on_retry=lambda: self._switch_view("trending"),
+                ) if not self._trending_stations_cache else None,
+            )
         else:
             if self._top_stations:
                 self._station_list.start_loading()
@@ -326,6 +383,8 @@ class MainWindow(QMainWindow):
         self._station_list.mark_playing(station.get("stationuuid", ""))
         self._recent.add(station.get("stationuuid", ""))
 
+        self._current_favicon = None
+        self._pending_notification = None
         favicon_url = station.get("favicon", "")
         if favicon_url:
             self._load_panel_favicon(favicon_url)
@@ -333,9 +392,21 @@ class MainWindow(QMainWindow):
     def _load_panel_favicon(self, url: str):
         from ui.station_list import _FaviconLoader
         loader = _FaviconLoader("panel", url)
-        loader.signals.loaded.connect(lambda _uuid, data: self._info_panel.set_favicon(data))
+        loader.signals.loaded.connect(self._on_panel_favicon_loaded)
         self._panel_favicon_loader = loader  # prevent GC until signal fires
         QThreadPool.globalInstance().start(loader)
+
+    def _on_panel_favicon_loaded(self, _uuid: str, data: bytes):
+        self._info_panel.set_favicon(data)
+        pix = QPixmap()
+        pix.loadFromData(data)
+        if not pix.isNull():
+            self._current_favicon = QIcon(pix)
+            pix.save(str(_NOTIF_ICON_PATH), "PNG")
+            if self._pending_notification:
+                station, title = self._pending_notification
+                self._pending_notification = None
+                self._show_notification(station, title)
 
     def _on_metadata(self, title: str):
         self._now_playing.set_song(title)
@@ -346,12 +417,14 @@ class MainWindow(QMainWindow):
             return
         self._last_title = title
         if self._settings["notifications"] and self._tray and self._current_station:
-            self._tray.showMessage(
-                self._current_station.get("name", "Dyedfox Radio"),
-                title,
-                QSystemTrayIcon.MessageIcon.NoIcon,
-                3000,
-            )
+            station_name = self._current_station.get("name", "Dyedfox Radio")
+            if self._current_favicon:
+                self._pending_notification = None
+                self._show_notification(station_name, title)
+            elif self._current_station.get("favicon"):
+                self._pending_notification = (station_name, title)
+            else:
+                self._show_notification(station_name, title)
         if self._mpris and self._current_station:
             self._mpris.update_metadata(
                 title,
@@ -383,6 +456,17 @@ class MainWindow(QMainWindow):
         self._settings["volume"] = value
         self._settings.save()
 
+    def _on_mute_toggled(self):
+        muted = not self._backend.is_muted
+        self._backend.set_muted(muted)
+        self._controls.set_muted(muted)
+        if self._tray:
+            self._tray.set_muted(muted)
+
+    def set_muted(self, muted: bool):
+        self._backend.set_muted(muted)
+        self._controls.set_muted(muted)
+
     def _on_stopped(self):
         self._controls.set_playing(False)
         self._station_list.mark_stopped()
@@ -394,6 +478,18 @@ class MainWindow(QMainWindow):
         self._station_list.mark_resumed()
         if self._mpris:
             self._mpris.update_playback_status()
+
+    def _show_notification(self, station: str, title: str):
+        try:
+            cmd = ["notify-send", "-a", "Dyedfox Radio", "-t", "3000"]
+            if self._current_favicon and _NOTIF_ICON_PATH.exists():
+                cmd.extend(["-i", str(_NOTIF_ICON_PATH)])
+            else:
+                cmd.extend(["-i", "dyedfox-radio"])
+            cmd.extend(["--", station, title])
+            subprocess.Popen(cmd)
+        except FileNotFoundError:
+            self._tray.showMessage(station, title, QSystemTrayIcon.MessageIcon.NoIcon, 3000)
 
     def _on_clear_recent(self):
         self._recent.clear()

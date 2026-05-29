@@ -109,6 +109,7 @@ def main():
     def _on_quit():
         backend.stop()
         _shutdown_workers()
+        window._station_list.cancel_pending_favicons()
         QThreadPool.globalInstance().clear()
 
     app.aboutToQuit.connect(_on_quit)
@@ -117,10 +118,11 @@ def main():
         window.show()
 
     autoplay_uuid = recent.uuids()[0] if settings["autoplay_last"] and recent.uuids() else ""
-    window.load_top_stations(autoplay_uuid=autoplay_uuid)
     last_view = settings["last_view"]
     if last_view != "all":
         window._switch_view(last_view)
+    if last_view == "all" or autoplay_uuid:
+        window.load_top_stations(autoplay_uuid=autoplay_uuid)
 
     sys.exit(app.exec())
 

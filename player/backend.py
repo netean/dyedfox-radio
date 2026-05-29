@@ -44,6 +44,13 @@ class GStreamerBackend(QObject):
     def set_volume(self, value: int):
         self._player.set_property("volume", max(0, min(100, value)) / 100.0)
 
+    def set_muted(self, muted: bool):
+        self._player.set_property("mute", muted)
+
+    @property
+    def is_muted(self) -> bool:
+        return bool(self._player.get_property("mute"))
+
     @property
     def is_playing(self) -> bool:
         _, state, _ = self._player.get_state(0)

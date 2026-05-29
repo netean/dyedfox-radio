@@ -6,6 +6,9 @@ _CONFIG = Path.home() / ".config" / "dyedfox-radio"
 _FAV_FILE = _CONFIG / "favourites.json"
 _FAV_CACHE_FILE = _CONFIG / "favourites_cache.json"
 _RECENT_FILE = _CONFIG / "recent.json"
+_NEW_CACHE_FILE = _CONFIG / "new_cache.json"
+_TRENDING_CACHE_FILE = _CONFIG / "trending_cache.json"
+_RANDOM_CACHE_FILE = _CONFIG / "random_cache.json"
 
 
 class FavouritesManager:
@@ -52,6 +55,29 @@ class FavouritesManager:
             path.write_text(json.dumps(data, indent=2))
         except Exception as e:
             print(f"dyedfox-radio: failed to save {path}: {e}", flush=True)
+
+
+class StationsCache:
+    def __init__(self, path: Path):
+        _CONFIG.mkdir(parents=True, exist_ok=True)
+        self._path = path
+
+    def load(self) -> list[dict]:
+        try:
+            return json.loads(self._path.read_text())
+        except Exception:
+            return []
+
+    def save(self, stations: list[dict]):
+        try:
+            self._path.write_text(json.dumps(stations))
+        except Exception as e:
+            print(f"dyedfox-radio: failed to save {self._path.name}: {e}", flush=True)
+
+
+new_cache = StationsCache(_NEW_CACHE_FILE)
+trending_cache = StationsCache(_TRENDING_CACHE_FILE)
+random_cache = StationsCache(_RANDOM_CACHE_FILE)
 
 
 class RecentManager:

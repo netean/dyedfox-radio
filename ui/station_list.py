@@ -168,7 +168,7 @@ class StationRowWidget(QWidget):
         text_layout.setContentsMargins(0, 0, 0, 0)
         text_layout.setSpacing(1)
 
-        name_label = _ElidedLabel(station.get("name", ""))
+        name_label = _ElidedLabel(station.get("name", "").strip())
         f = name_label.font()
         f.setBold(True)
         name_label.setFont(f)
@@ -563,7 +563,7 @@ class StationListWidget(QWidget):
 
         def sort_key(s: dict):
             v = s.get(field, "")
-            return v.lower() if isinstance(v, str) else (v or 0)
+            return v.strip().lower() if isinstance(v, str) else (v or 0)
 
         return sorted(self._stations_raw, key=sort_key, reverse=not ascending)
 

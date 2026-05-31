@@ -130,9 +130,10 @@ sudo chmod 755 /usr/bin/dyedfox-radio
 
 The UI language follows your system locale automatically.
 
-| Locale | Language | Status |
-|---|---|---|
-| `uk_UA` | Ukrainian | ✓ included |
+| Locale | Language | Translator | Status |
+|---|---|---|---|
+| `uk_UA` | Ukrainian | [dyedfox](https://github.com/dyedfox) | ✓ included |
+| `nl_NL` | Dutch | [Heimen Stoffels (Vistaus)](https://github.com/Vistaus) | ✓ included |
 
 More languages are welcome — see [translations/TRANSLATING.md](translations/TRANSLATING.md) to contribute.
 

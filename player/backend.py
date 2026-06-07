@@ -19,6 +19,14 @@ class GStreamerBackend(QObject):
                 "Failed to create GStreamer playbin element. "
                 "Make sure gstreamer and gst-plugins-good are installed."
             )
+
+        # pulsesink (also works via PipeWire's PA layer) follows the default
+        # sink dynamically, so Bluetooth headphones picked up mid-session work
+        # without restarting. autoaudiosink locks to the device at play time.
+        audio_sink = Gst.ElementFactory.make("pulsesink", "audio_sink")
+        if audio_sink is not None:
+            self._player.set_property("audio-sink", audio_sink)
+
         self._bus = self._player.get_bus()
         self._last_url: str | None = None
 

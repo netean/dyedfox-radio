@@ -74,6 +74,10 @@ class NowPlayingBar(QWidget):
         self._song = self.tr("Stream unavailable")
         self._update()
 
+    def set_reconnecting(self, attempt: int):
+        self._song = self.tr("Reconnecting…")
+        self._update()
+
     def _update(self):
         if self._song:
             self._label.setText(f"{self._station}  —  {self._song}")

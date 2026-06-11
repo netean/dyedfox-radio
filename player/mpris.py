@@ -80,28 +80,30 @@ if _DBUS_OK:
                  "mpris:artUrl": dbus.String(art_url)},
                 signature="sv",
             )
-            playing = self._backend.is_playing
             has_url = self._backend.last_url is not None
             self.PropertiesChanged(
                 _PLAYER,
                 {
                     "Metadata": self._metadata,
                     "PlaybackStatus": self._status(),
-                    "CanPause": dbus.Boolean(playing),
-                    "CanPlay": dbus.Boolean(has_url and not playing),
-                    "CanStop": dbus.Boolean(playing),
+                    # Per MPRIS spec these are capability flags, not state — keep
+                    # them true whenever a station is loaded so consumers like the
+                    # lock screen don't disable their controls. PlaybackStatus
+                    # alone tells them which icon (play/pause) to show.
+                    "CanPause": dbus.Boolean(has_url),
+                    "CanPlay": dbus.Boolean(has_url),
+                    "CanStop": dbus.Boolean(has_url),
                 },
                 [],
             )
 
         def push_status(self):
-            playing = self._backend.is_playing
             has_url = self._backend.last_url is not None
             self.PropertiesChanged(_PLAYER, {
                 "PlaybackStatus": self._status(),
-                "CanPause": dbus.Boolean(playing),
-                "CanPlay": dbus.Boolean(has_url and not playing),
-                "CanStop": dbus.Boolean(playing),
+                "CanPause": dbus.Boolean(has_url),
+                "CanPlay": dbus.Boolean(has_url),
+                "CanStop": dbus.Boolean(has_url),
             }, [])
 
         def _status(self) -> dbus.String:
@@ -119,15 +121,14 @@ if _DBUS_OK:
                     "SupportedMimeTypes": dbus.Array([], signature="s"),
                 }
             if iface == _PLAYER:
-                playing = self._backend.is_playing
                 has_url = self._backend.last_url is not None
                 return {
                     "PlaybackStatus": self._status(),
                     "CanGoNext": dbus.Boolean(False),
                     "CanGoPrevious": dbus.Boolean(False),
-                    "CanPause": dbus.Boolean(playing),
-                    "CanPlay": dbus.Boolean(has_url and not playing),
-                    "CanStop": dbus.Boolean(playing),
+                    "CanPause": dbus.Boolean(has_url),
+                    "CanPlay": dbus.Boolean(has_url),
+                    "CanStop": dbus.Boolean(has_url),
                     "CanSeek": dbus.Boolean(False),
                     "CanControl": dbus.Boolean(True),
                     "Metadata": self._metadata,

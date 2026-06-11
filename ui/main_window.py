@@ -192,6 +192,7 @@ class MainWindow(QMainWindow):
         self._backend.error_occurred.connect(self._on_stream_error)
         self._backend.playback_stopped.connect(self._on_stopped)
         self._backend.playback_started.connect(self._on_started)
+        self._backend.reconnecting.connect(self._on_reconnecting)
 
         self._station_list.station_play_requested.connect(self._on_station_play)
         self._station_list.favourite_toggled.connect(self._on_favourite_toggled)
@@ -473,9 +474,18 @@ class MainWindow(QMainWindow):
         if self._mpris:
             self._mpris.update_playback_status()
 
+    def _on_reconnecting(self, attempt: int):
+        self._now_playing.set_reconnecting(attempt)
+        self._controls.set_playing(False)
+        self._station_list.mark_stopped()
+
     def _on_started(self):
         self._controls.set_playing(True)
         self._station_list.mark_resumed()
+        # After an auto-reconnect the strip shows "Reconnecting…"; restore the
+        # station name (the next ICY tag refills the song).
+        if self._current_station:
+            self._now_playing.set_station(self._current_station.get("name", "").strip())
         if self._mpris:
             self._mpris.update_playback_status()
 

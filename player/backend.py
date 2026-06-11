@@ -10,6 +10,16 @@ class GStreamerBackend(QObject):
     error_occurred = pyqtSignal(str)
     playback_started = pyqtSignal()
     playback_stopped = pyqtSignal()
+    reconnecting = pyqtSignal(int)  # attempt number (1-based)
+
+    # Backoff schedule (ms) for automatic reconnection after a dropped stream.
+    # Indexed by the current attempt; the final value is reused once exhausted.
+    _RETRY_DELAYS_MS = (1000, 2000, 4000, 8000, 15000)
+    _MAX_RETRIES = len(_RETRY_DELAYS_MS)
+    # How long a stream must keep playing before we consider it healthy and
+    # clear the retry counter. Guards against a station that connects then drops
+    # immediately, which would otherwise reconnect forever.
+    _STABLE_AFTER_MS = 10000
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -32,13 +42,28 @@ class GStreamerBackend(QObject):
 
         self._bus = self._player.get_bus()
         self._last_url: str | None = None
-        self._pending_restart = False
+        self._playing = False
+        self._retry_count = 0
+        self._reconnecting = False
+
+        self._reconnect_timer = QTimer(self)
+        self._reconnect_timer.setSingleShot(True)
+        self._reconnect_timer.timeout.connect(self._attempt_reconnect)
+
+        self._stable_timer = QTimer(self)
+        self._stable_timer.setSingleShot(True)
+        self._stable_timer.timeout.connect(self._mark_stable)
 
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._poll_bus)
         self._timer.start(200)
 
     def play(self, url: str):
+        self._reconnect_timer.stop()
+        self._stable_timer.stop()
+        self._retry_count = 0
+        self._reconnecting = False
+        self._playing = True
         self._player.set_state(Gst.State.NULL)
         self._player.set_property("uri", url)
         self._last_url = url
@@ -50,6 +75,11 @@ class GStreamerBackend(QObject):
             self.play(self._last_url)
 
     def stop(self):
+        self._reconnect_timer.stop()
+        self._stable_timer.stop()
+        self._retry_count = 0
+        self._reconnecting = False
+        self._playing = False
         self._player.set_state(Gst.State.NULL)
         self.playback_stopped.emit()
 
@@ -65,17 +95,46 @@ class GStreamerBackend(QObject):
 
     @property
     def is_playing(self) -> bool:
-        _, state, _ = self._player.get_state(0)
-        return state == Gst.State.PLAYING
+        # Reflects intent, set synchronously in play()/stop(). Querying the
+        # pipeline (get_state) races the asynchronous PLAYING transition and can
+        # report "not playing" for a moment right after resuming, which leaves
+        # MPRIS/tray controls stuck in the stopped state.
+        return self._playing
 
     @property
     def last_url(self) -> str | None:
         return self._last_url
 
-    def _auto_restart(self):
-        self._pending_restart = False
-        if self._last_url:
-            self.play(self._last_url)
+    def _handle_disconnect(self, reason: str):
+        # A live radio stream dropped: a clean server disconnect (EOS), a network
+        # blip, or an audio device switch (e.g. Bluetooth). Reconnect with
+        # backoff before giving up so transient drops recover on their own.
+        self._stable_timer.stop()
+        self._player.set_state(Gst.State.NULL)
+        if self._last_url and self._retry_count < self._MAX_RETRIES:
+            delay = self._RETRY_DELAYS_MS[self._retry_count]
+            self._retry_count += 1
+            self._reconnecting = True
+            self.reconnecting.emit(self._retry_count)
+            self._reconnect_timer.start(delay)
+        else:
+            self._retry_count = 0
+            self._reconnecting = False
+            self._playing = False
+            self.playback_stopped.emit()
+            self.error_occurred.emit(reason)
+
+    def _attempt_reconnect(self):
+        if not self._last_url:
+            return
+        self._player.set_state(Gst.State.NULL)
+        self._player.set_property("uri", self._last_url)
+        self._player.set_state(Gst.State.PLAYING)
+        # Retry counter resets only once playback has been stable for a while
+        # (see _mark_stable), not the moment we connect.
+
+    def _mark_stable(self):
+        self._retry_count = 0
 
     def _poll_bus(self):
         while True:
@@ -84,14 +143,16 @@ class GStreamerBackend(QObject):
                 break
             if msg.type == Gst.MessageType.ERROR:
                 err, _ = msg.parse_error()
-                self.stop()
-                if self._last_url and not self._pending_restart:
-                    # Device may have switched (e.g. BT headphones) — try once
-                    self._pending_restart = True
-                    QTimer.singleShot(1500, self._auto_restart)
-                else:
-                    self._pending_restart = False
-                    self.error_occurred.emit(str(err))
+                self._handle_disconnect(str(err))
+            elif msg.type == Gst.MessageType.EOS:
+                # Server closed the connection cleanly; for live radio this is a
+                # dropout, not a real end, so reconnect rather than going silent.
+                self._handle_disconnect("Stream ended")
+            elif msg.type == Gst.MessageType.STREAM_START:
+                if self._reconnecting:
+                    self._reconnecting = False
+                    self.playback_started.emit()
+                self._stable_timer.start(self._STABLE_AFTER_MS)
             elif msg.type == Gst.MessageType.TAG:
                 tags = msg.parse_tag()
                 ok, title = tags.get_string(Gst.TAG_TITLE)

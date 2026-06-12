@@ -107,7 +107,7 @@ def main():
     server.newConnection.connect(_on_new_connection)
 
     def _on_quit():
-        backend.stop()
+        backend.shutdown()
         _shutdown_workers()
         window._station_list.cancel_pending_favicons()
         QThreadPool.globalInstance().clear()
@@ -124,7 +124,13 @@ def main():
     if last_view == "all" or autoplay_uuid:
         window.load_top_stations(autoplay_uuid=autoplay_uuid)
 
-    sys.exit(app.exec())
+    rc = app.exec()
+    # The Qt loop has ended and aboutToQuit cleanup has run. GStreamer, PipeWire
+    # and GLib spin up native threads that can deadlock Python's interpreter
+    # shutdown, leaving the process resident after the tray icon disappears. All
+    # state is persisted on change, so terminate immediately instead of risking
+    # a hung finalization.
+    os._exit(rc)
 
 
 if __name__ == "__main__":

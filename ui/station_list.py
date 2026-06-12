@@ -117,6 +117,7 @@ class _ElidedLabel(QLabel):
 
 class _FaviconSignals(QObject):
     loaded = pyqtSignal(str, bytes)  # uuid, raw bytes
+    finished = pyqtSignal(object)    # the loader itself, for keep-alive bookkeeping
 
 
 class _FaviconLoader(QRunnable):
@@ -137,6 +138,15 @@ class _FaviconLoader(QRunnable):
                     pass
         except Exception:
             pass
+        finally:
+            # autoDelete is False, so Python owns this QRunnable. The owner must
+            # keep a reference until run() has fully returned — dropping it while
+            # the pool still holds the runnable causes a use-after-free (SIGSEGV).
+            # Signal completion so the owner can release its reference safely.
+            try:
+                self.signals.finished.emit(self)
+            except RuntimeError:
+                pass
 
 
 class StationRowWidget(QWidget):
@@ -321,7 +331,10 @@ class StationListWidget(QWidget):
         self._is_playing: bool = False
         self._favicon_cache: dict[str, bytes] = {}
         self._pool = QThreadPool.globalInstance()
-        self._pending_favicon_loaders: list[_FaviconLoader] = []
+        # Keep-alive set for in-flight favicon loaders (autoDelete=False). A loader
+        # stays here until its run() finishes or we successfully cancel it before
+        # it starts; otherwise the pool could dereference a freed QRunnable.
+        self._active_loaders: set[_FaviconLoader] = set()
         self._build_gen: int = 0
         self._built_uuids: list[str] = []
         self._built_deletable: bool = False
@@ -486,10 +499,20 @@ class StationListWidget(QWidget):
 
     _BATCH_SIZE = 40
 
+    def _cancel_loaders(self):
+        # Cancel queued favicon loaders. tryTake removes those not yet started, so
+        # they will never run and are safe to release. Loaders already running keep
+        # their reference until their finished signal fires — releasing them now
+        # would let the pool touch freed memory (SIGSEGV).
+        for loader in list(self._active_loaders):
+            if self._pool.tryTake(loader):
+                self._active_loaders.discard(loader)
+
+    def _on_loader_finished(self, loader):
+        self._active_loaders.discard(loader)
+
     def _rebuild(self):
-        for loader in self._pending_favicon_loaders:
-            self._pool.tryTake(loader)
-        self._pending_favicon_loaders.clear()
+        self._cancel_loaders()
 
         sorted_stations = self._sorted_stations()
         self._built_uuids = [s.get("stationuuid", "") for s in sorted_stations]
@@ -544,7 +567,8 @@ class StationListWidget(QWidget):
             else:
                 loader = _FaviconLoader(uuid, favicon_url)
                 loader.signals.loaded.connect(self._on_favicon_loaded)
-                self._pending_favicon_loaders.append(loader)
+                loader.signals.finished.connect(self._on_loader_finished)
+                self._active_loaders.add(loader)
                 self._pool.start(loader)
 
     def _finish_rebuild(self):
@@ -605,9 +629,7 @@ class StationListWidget(QWidget):
                 self._list.scrollToItem(item, self._list.ScrollHint.PositionAtCenter)
 
     def cancel_pending_favicons(self):
-        for loader in self._pending_favicon_loaders:
-            self._pool.tryTake(loader)
-        self._pending_favicon_loaders.clear()
+        self._cancel_loaders()
 
     def start_loading(self):
         self._spinner.start()

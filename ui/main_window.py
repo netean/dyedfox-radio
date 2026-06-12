@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (
 )
 from pathlib import Path
 import subprocess
-from PyQt6.QtCore import Qt, QSize, QEvent, QThreadPool
+from PyQt6.QtCore import Qt, QSize, QEvent, QThreadPool, QTimer
 from PyQt6.QtGui import QIcon, QShortcut, QKeySequence, QPixmap
 
 _NOTIF_ICON_PATH = Path.home() / ".config" / "dyedfox-radio" / "notif_icon.png"
@@ -50,9 +50,18 @@ class MainWindow(QMainWindow):
         self._last_title: str = ""
         self._tray = None
         self._mpris = None
-        self._panel_favicon_loader = None
+        self._panel_favicon_loaders: set = set()  # keep-alive until run() finishes
         self._current_favicon: QIcon | None = None
         self._pending_notification: tuple[str, str] | None = None  # (station, title)
+
+        # Clicking a station calls GStreamer set_state(NULL), which blocks the GUI
+        # thread until the stream tears down. Rapid clicks stack these teardowns
+        # and freeze the UI, so debounce: only the final selection actually plays.
+        self._pending_play_station: dict | None = None
+        self._play_debounce = QTimer(self)
+        self._play_debounce.setSingleShot(True)
+        self._play_debounce.setInterval(250)
+        self._play_debounce.timeout.connect(self._start_pending_play)
 
         self.setWindowTitle("Dyedfox Radio")
         _icon = Path(__file__).parent.parent / "assets" / "icons" / "dyedfox-radio.png"
@@ -375,6 +384,19 @@ class MainWindow(QMainWindow):
         url = station.get("url_resolved", "")
         if not url:
             return
+        # Defer the actual play so a burst of clicks results in a single stream
+        # teardown/start instead of one blocking set_state(NULL) per click.
+        self._pending_play_station = station
+        self._play_debounce.start()
+
+    def _start_pending_play(self):
+        station = self._pending_play_station
+        self._pending_play_station = None
+        if not station:
+            return
+        url = station.get("url_resolved", "")
+        if not url:
+            return
         self._current_station = station
         self._last_title = ""
         self._backend.play(url)
@@ -394,7 +416,10 @@ class MainWindow(QMainWindow):
         from ui.station_list import _FaviconLoader
         loader = _FaviconLoader("panel", url)
         loader.signals.loaded.connect(self._on_panel_favicon_loaded)
-        self._panel_favicon_loader = loader  # prevent GC until signal fires
+        # Hold a reference until run() finishes; switching stations quickly would
+        # otherwise GC an in-flight loader and crash the pool (use-after-free).
+        loader.signals.finished.connect(self._panel_favicon_loaders.discard)
+        self._panel_favicon_loaders.add(loader)
         QThreadPool.globalInstance().start(loader)
 
     def _on_panel_favicon_loaded(self, _uuid: str, data: bytes):

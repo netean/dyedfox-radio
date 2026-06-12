@@ -1,3 +1,5 @@
+import threading
+
 import gi
 gi.require_version('Gst', '1.0')
 from gi.repository import Gst
@@ -46,6 +48,19 @@ class GStreamerBackend(QObject):
         self._retry_count = 0
         self._reconnecting = False
 
+        # Pipeline state changes block: set_state(NULL) joins the streaming
+        # thread, which can stall for seconds on a slow/half-open network socket.
+        # Running that on the GUI thread freezes the window, so a dedicated worker
+        # performs every transition. PyGObject releases the GIL during the C call,
+        # so the UI stays responsive. Only the most recent request matters
+        # (latest-wins), which collapses a burst of clicks into one teardown.
+        self._cmd: tuple[str, str | None] | None = None
+        self._cmd_lock = threading.Lock()
+        self._cmd_event = threading.Event()
+        self._worker_stop = False
+        self._worker = threading.Thread(target=self._worker_loop, daemon=True)
+        self._worker.start()
+
         self._reconnect_timer = QTimer(self)
         self._reconnect_timer.setSingleShot(True)
         self._reconnect_timer.timeout.connect(self._attempt_reconnect)
@@ -58,16 +73,41 @@ class GStreamerBackend(QObject):
         self._timer.timeout.connect(self._poll_bus)
         self._timer.start(200)
 
+    def _submit(self, action: str, url: str | None = None):
+        # Hand a transition to the worker thread; latest request wins.
+        with self._cmd_lock:
+            self._cmd = (action, url)
+            self._cmd_event.set()
+
+    def _worker_loop(self):
+        while True:
+            self._cmd_event.wait()
+            if self._worker_stop:
+                self._player.set_state(Gst.State.NULL)
+                return
+            with self._cmd_lock:
+                cmd = self._cmd
+                self._cmd = None
+                self._cmd_event.clear()
+            if cmd is None:
+                continue
+            action, url = cmd
+            if action == "play":
+                # Tear the old stream down, then point playbin at the new URL.
+                self._player.set_state(Gst.State.NULL)
+                self._player.set_property("uri", url)
+                self._player.set_state(Gst.State.PLAYING)
+            elif action == "stop":
+                self._player.set_state(Gst.State.NULL)
+
     def play(self, url: str):
         self._reconnect_timer.stop()
         self._stable_timer.stop()
         self._retry_count = 0
         self._reconnecting = False
         self._playing = True
-        self._player.set_state(Gst.State.NULL)
-        self._player.set_property("uri", url)
         self._last_url = url
-        self._player.set_state(Gst.State.PLAYING)
+        self._submit("play", url)
         self.playback_started.emit()
 
     def play_last(self):
@@ -80,19 +120,22 @@ class GStreamerBackend(QObject):
         self._retry_count = 0
         self._reconnecting = False
         self._playing = False
-        self._player.set_state(Gst.State.NULL)
+        self._submit("stop")
         self.playback_stopped.emit()
 
     def shutdown(self):
         # Full teardown for app exit: stop every timer so nothing fires during
-        # shutdown, then drop the pipeline to NULL to release GStreamer's
-        # streaming threads before the interpreter finalizes.
+        # shutdown, then tell the worker to drop the pipeline to NULL and exit.
+        # Join briefly; if a transition is wedged on the network, the os._exit
+        # backstop in main() guarantees the process still dies.
         self._timer.stop()
         self._reconnect_timer.stop()
         self._stable_timer.stop()
         self._playing = False
         self._reconnecting = False
-        self._player.set_state(Gst.State.NULL)
+        self._worker_stop = True
+        self._cmd_event.set()
+        self._worker.join(timeout=2)
 
     def set_volume(self, value: int):
         self._player.set_property("volume", max(0, min(100, value)) / 100.0)
@@ -121,7 +164,6 @@ class GStreamerBackend(QObject):
         # blip, or an audio device switch (e.g. Bluetooth). Reconnect with
         # backoff before giving up so transient drops recover on their own.
         self._stable_timer.stop()
-        self._player.set_state(Gst.State.NULL)
         if self._last_url and self._retry_count < self._MAX_RETRIES:
             delay = self._RETRY_DELAYS_MS[self._retry_count]
             self._retry_count += 1
@@ -129,6 +171,7 @@ class GStreamerBackend(QObject):
             self.reconnecting.emit(self._retry_count)
             self._reconnect_timer.start(delay)
         else:
+            self._submit("stop")
             self._retry_count = 0
             self._reconnecting = False
             self._playing = False
@@ -138,9 +181,8 @@ class GStreamerBackend(QObject):
     def _attempt_reconnect(self):
         if not self._last_url:
             return
-        self._player.set_state(Gst.State.NULL)
-        self._player.set_property("uri", self._last_url)
-        self._player.set_state(Gst.State.PLAYING)
+        # Teardown + restart happens on the worker thread (see _worker_loop).
+        self._submit("play", self._last_url)
         # Retry counter resets only once playback has been stable for a while
         # (see _mark_stable), not the moment we connect.
 

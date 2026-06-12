@@ -83,6 +83,17 @@ class GStreamerBackend(QObject):
         self._player.set_state(Gst.State.NULL)
         self.playback_stopped.emit()
 
+    def shutdown(self):
+        # Full teardown for app exit: stop every timer so nothing fires during
+        # shutdown, then drop the pipeline to NULL to release GStreamer's
+        # streaming threads before the interpreter finalizes.
+        self._timer.stop()
+        self._reconnect_timer.stop()
+        self._stable_timer.stop()
+        self._playing = False
+        self._reconnecting = False
+        self._player.set_state(Gst.State.NULL)
+
     def set_volume(self, value: int):
         self._player.set_property("volume", max(0, min(100, value)) / 100.0)
 

@@ -93,7 +93,7 @@ class RadioBrowserClient:
         self._pool = QThreadPool.globalInstance()
 
     def top_stations(self, limit: int = 100, on_result=None, on_error=None):
-        self._run(f"{BASE_URL}/stations/topvote/{limit}", {}, on_result, on_error)
+        self._run(f"{BASE_URL}/stations/topvote/{limit}", {"hidebroken": "true"}, on_result, on_error)
 
     def search(self, name: str = "", country: str = "", tag: str = "", language: str = "", limit: int = 100, on_result=None, on_error=None):
         params: dict = {"limit": limit, "hidebroken": "true"}
@@ -111,7 +111,9 @@ class RadioBrowserClient:
         self._run(f"{BASE_URL}/stations/bytag/{tag}", {}, on_result, on_error)
 
     def new_stations(self, limit: int = 100, on_result=None, on_error=None):
-        self._run(f"{BASE_URL}/stations/lastchange/{limit}", {}, on_result, on_error)
+        # lastchange returns the most recently added/edited stations, many of
+        # which are unverified — hidebroken drops the ones already flagged dead.
+        self._run(f"{BASE_URL}/stations/lastchange/{limit}", {"hidebroken": "true"}, on_result, on_error)
 
     def random_stations(self, limit: int = 100, on_result=None, on_error=None):
         self._run(f"{BASE_URL}/stations/search", {"order": "random", "limit": limit, "hidebroken": "true"}, on_result, on_error)

@@ -136,100 +136,108 @@ Powered by radio-browser.info.</source>
 </context><context>
     <name>MainWindow</name>
     <message>
-        <location filename="../ui/main_window.py" line="138" />
+        <location filename="../ui/main_window.py" line="147" />
         <source>LIBRARY</source>
         <translation>БІБЛІОТЕКА</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="139" />
+        <location filename="../ui/main_window.py" line="148" />
         <source>All stations</source>
         <translation>Усі станції</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="140" />
+        <location filename="../ui/main_window.py" line="149" />
         <source>Favourites</source>
         <translation>Вподобані</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="141" />
+        <location filename="../ui/main_window.py" line="150" />
         <source>Custom</source>
         <translation>Власні</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="143" />
-        <source>+ Add station</source>
-        <translation>+ Додати станцію</translation>
-    </message>
-    <message>
-        <location filename="../ui/main_window.py" line="150" />
+        <location filename="../ui/main_window.py" line="151" />
         <source>History</source>
         <translation>Історія</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="152" />
-        <source>Clear history</source>
-        <translation>Очистити</translation>
-    </message>
-    <message>
-        <location filename="../ui/main_window.py" line="160" />
+        <location filename="../ui/main_window.py" line="154" />
         <source>DISCOVER</source>
         <translation>ДОСЛІДИТИ</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="161" />
+        <location filename="../ui/main_window.py" line="155" />
         <source>New</source>
         <translation>Нові</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="162" />
+        <location filename="../ui/main_window.py" line="156" />
         <source>Random</source>
         <translation>Випадкові</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="163" />
+        <location filename="../ui/main_window.py" line="157" />
         <source>Trending</source>
         <translation>Популярні</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="170" />
+        <location filename="../ui/main_window.py" line="158" />
+        <source>Now Listening</source>
+        <translation>Зараз слухають</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="165" />
         <source>Settings</source>
         <translation>Параметри</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="179" />
+        <location filename="../ui/main_window.py" line="174" />
         <source>About</source>
         <translation>Про застосунок</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="347" />
-        <location filename="../ui/main_window.py" line="245" />
+        <location filename="../ui/main_window.py" line="343" />
+        <location filename="../ui/main_window.py" line="243" />
         <source>Could not load stations — check your connection</source>
         <translation>Не вдалося завантажити станції — перевірте з'єднання</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="296" />
+        <location filename="../ui/main_window.py" line="292" />
         <source>Could not load favourites — check your connection</source>
         <translation>Не вдалося завантажити улюблені — перевірте з'єднання</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="313" />
+        <location filename="../ui/main_window.py" line="309" />
         <source>Could not load history — check your connection</source>
         <translation>Не вдалося завантажити історію — перевірте з'єднання</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="331" />
+        <location filename="../ui/main_window.py" line="327" />
         <source>Could not load new stations — check your connection</source>
         <translation>Не вдалося завантажити нові станції — перевірте з'єднання</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="363" />
+        <location filename="../ui/main_window.py" line="359" />
         <source>Could not load trending stations — check your connection</source>
         <translation>Не вдалося завантажити популярні станції — перевірте з'єднання</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="444" />
+        <location filename="../ui/main_window.py" line="375" />
+        <source>Could not load now listening stations — check your connection</source>
+        <translation>Не вдалося завантажити станції, які зараз слухають — перевірте з'єднання</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="472" />
         <source>Could not connect to {0}. The stream may be down or unavailable.</source>
         <translation>Не вдалося підключитися до {0}. Потік може бути недоступний.</translation>
+    </message>
+    <message>
+        <source>+ Add station</source>
+        <translation type="vanished">+ Додати станцію</translation>
+    </message>
+    <message>
+        <source>Clear history</source>
+        <translation type="vanished">Очистити</translation>
     </message>
 </context><context>
     <name>NowPlayingBar</name>
@@ -371,79 +379,111 @@ Restart the app to apply changes.</source>
 </context><context>
     <name>StationListWidget</name>
     <message>
-        <location filename="../ui/station_list.py" line="338" />
+        <location filename="../ui/station_list.py" line="370" />
         <source>Search stations…</source>
         <translation>Пошук станцій…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="351" />
+        <location filename="../ui/station_list.py" line="375" />
+        <source>Clear history</source>
+        <translation>Очистити історію</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="376" />
+        <source>Remove all stations from history</source>
+        <translation>Вилучити всі станції з історії</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="385" />
+        <source>+ Add station</source>
+        <translation>+ Додати станцію</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="386" />
+        <source>Add a custom station</source>
+        <translation>Додати власну станцію</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="403" />
         <source>Name</source>
         <translation>Назва</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="352" />
+        <location filename="../ui/station_list.py" line="404" />
         <source>Country</source>
         <translation>Країна</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="353" />
+        <location filename="../ui/station_list.py" line="405" />
         <source>Bitrate</source>
         <translation>Бітрейт</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="354" />
+        <location filename="../ui/station_list.py" line="406" />
         <source>Votes</source>
         <translation>Рейтинг</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="355" />
+        <location filename="../ui/station_list.py" line="407" />
         <source>Language</source>
         <translation>Мова</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="356" />
+        <location filename="../ui/station_list.py" line="408" />
         <source>Codec</source>
         <translation>Кодек</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="361" />
+        <location filename="../ui/station_list.py" line="413" />
         <source>Country…</source>
         <translation>Країна…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="365" />
+        <location filename="../ui/station_list.py" line="417" />
         <source>Genre / tag…</source>
         <translation>Жанр / тег…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="369" />
+        <location filename="../ui/station_list.py" line="421" />
         <source>Language…</source>
         <translation>Мова…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="376" />
+        <location filename="../ui/station_list.py" line="428" />
         <source>Toggle sort direction</source>
         <translation>Змінити напрямок сортування</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="401" />
+        <location filename="../ui/station_list.py" line="453" />
         <source>Result limit reached · narrow your search to see more</source>
         <translation>Досягнуто ліміту результатів · звузьте пошук, щоб побачити більше</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="416" />
+        <location filename="../ui/station_list.py" line="468" />
         <source>This may be a temporary server-side issue.</source>
         <translation>Це може бути тимчасова проблема на боці сервера.</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="422" />
+        <location filename="../ui/station_list.py" line="474" />
         <source>Retry</source>
         <translation>Повторити</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="757" />
+        <location filename="../ui/station_list.py" line="821" />
         <source>{0} stations</source>
         <translation>{0} станцій</translation>
+    </message>
+</context><context>
+    <name>StationRowWidget</name>
+    <message>
+        <location filename="../ui/station_list.py" line="223" />
+        <source>Delete station</source>
+        <translation>Видалити станцію</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="248" />
+        <source>Remove from history</source>
+        <translation>Вилучити з історії</translation>
     </message>
 </context><context>
     <name>SystemTrayIcon</name>

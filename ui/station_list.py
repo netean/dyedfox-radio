@@ -153,7 +153,7 @@ class StationRowWidget(QWidget):
     play_requested = pyqtSignal(dict)
     favourite_toggled = pyqtSignal(str, bool)  # uuid, new state
 
-    def __init__(self, station: dict, favourites: FavouritesManager, parent=None, on_delete=None, on_edit=None):
+    def __init__(self, station: dict, favourites: FavouritesManager, parent=None, on_delete=None, on_edit=None, on_remove=None):
         super().__init__(parent)
         self._station = station
         uuid = station.get("stationuuid", "")
@@ -220,6 +220,7 @@ class StationRowWidget(QWidget):
             del_btn = QPushButton()
             del_btn.setFlat(True)
             del_btn.setFixedSize(24, 24)
+            del_btn.setToolTip(self.tr("Delete station"))
             icon = QIcon.fromTheme("edit-delete")
             if icon.isNull():
                 del_btn.setText("✕")
@@ -237,6 +238,21 @@ class StationRowWidget(QWidget):
             self._update_heart(is_fav)
             self._heart_btn.toggled.connect(lambda checked, u=uuid: self._on_heart(u, checked))
             layout.addWidget(self._heart_btn)
+
+            # History rows keep the heart but add a remove-from-history button
+            # to the right of it (these are real stations, unlike Custom rows).
+            if on_remove is not None:
+                remove_btn = QPushButton()
+                remove_btn.setFlat(True)
+                remove_btn.setFixedSize(24, 24)
+                remove_btn.setToolTip(self.tr("Remove from history"))
+                rm_icon = QIcon.fromTheme("edit-delete")
+                if rm_icon.isNull():
+                    remove_btn.setText("✕")
+                else:
+                    remove_btn.setIcon(rm_icon)
+                remove_btn.clicked.connect(lambda: on_remove(uuid))
+                layout.addWidget(remove_btn)
 
     def set_favicon(self, data: bytes):
         pix = QPixmap()
@@ -313,6 +329,9 @@ class StationListWidget(QWidget):
     search_params_changed = pyqtSignal(str, str, str, str)  # name, country, tag, language
     station_delete_requested = pyqtSignal(str)
     station_edit_requested = pyqtSignal(str)
+    station_remove_requested = pyqtSignal(str)  # remove a single station from history
+    clear_history_requested = pyqtSignal()
+    add_station_requested = pyqtSignal()
     playing_visibility_changed = pyqtSignal(bool)
 
     def __init__(self, favourites: FavouritesManager, settings: Settings, parent=None):
@@ -352,6 +371,38 @@ class StationListWidget(QWidget):
         self._search_input.setClearButtonEnabled(True)
         search_layout.addWidget(self._search_input)
 
+        # Loading spinner lives in the always-visible search bar (not the sort
+        # bar, which is hidden for the curated lists) so every view shows it.
+        self._spinner = _SpinnerLabel()
+        self._spinner.setStyleSheet("color: palette(placeholder-text);")
+        search_layout.addWidget(self._spinner)
+
+        # Station count, also in the search bar so it shows for every view.
+        self._status_label = QLabel()
+        self._status_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        self._status_label.setStyleSheet("color: palette(placeholder-text);")
+        search_layout.addWidget(self._status_label)
+
+        # Shown only in the History view (see set_view); clears all recent items.
+        self._clear_history_btn = QPushButton(self.tr("Clear history"))
+        self._clear_history_btn.setToolTip(self.tr("Remove all stations from history"))
+        clear_icon = QIcon.fromTheme("edit-clear-history")
+        if not clear_icon.isNull():
+            self._clear_history_btn.setIcon(clear_icon)
+        self._clear_history_btn.clicked.connect(self.clear_history_requested)
+        self._clear_history_btn.hide()
+        search_layout.addWidget(self._clear_history_btn)
+
+        # Shown only in the Custom view (see set_view); opens the add-station dialog.
+        self._add_station_btn = QPushButton(self.tr("+ Add station"))
+        self._add_station_btn.setToolTip(self.tr("Add a custom station"))
+        add_icon = QIcon.fromTheme("list-add")
+        if not add_icon.isNull():
+            self._add_station_btn.setIcon(add_icon)
+        self._add_station_btn.clicked.connect(self.add_station_requested)
+        self._add_station_btn.hide()
+        search_layout.addWidget(self._add_station_btn)
+
         layout.addWidget(search_bar)
 
         self._sort_bar = QWidget()
@@ -388,20 +439,11 @@ class StationListWidget(QWidget):
         self._sort_dir.setFixedWidth(28)
         self._sort_dir.setToolTip(self.tr("Toggle sort direction"))
 
-        self._spinner = _SpinnerLabel()
-        self._spinner.setStyleSheet("color: palette(placeholder-text);")
-
-        self._status_label = QLabel()
-        self._status_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        self._status_label.setStyleSheet("color: palette(placeholder-text);")
-
         sort_layout.addWidget(self._sort_field)
         sort_layout.addWidget(self._sort_dir)
         sort_layout.addWidget(self._country_input, 1)
         sort_layout.addWidget(self._tag_input, 1)
         sort_layout.addWidget(self._language_input, 1)
-        sort_layout.addWidget(self._spinner)
-        sort_layout.addWidget(self._status_label)
 
         layout.addWidget(self._sort_bar)
 
@@ -551,7 +593,8 @@ class StationListWidget(QWidget):
 
         on_delete = (lambda u: self.station_delete_requested.emit(u)) if self._deletable else None
         on_edit = (lambda u: self.station_edit_requested.emit(u)) if self._deletable else None
-        row = StationRowWidget(station, self._favourites, on_delete=on_delete, on_edit=on_edit)
+        on_remove = (lambda u: self.station_remove_requested.emit(u)) if self._current_view == "recent" else None
+        row = StationRowWidget(station, self._favourites, on_delete=on_delete, on_edit=on_edit, on_remove=on_remove)
         self._list.setItemWidget(item, row)
         self._row_widgets[uuid] = row
         self._item_map[uuid] = item
@@ -581,7 +624,10 @@ class StationListWidget(QWidget):
         self._apply_filter()
 
     def _sorted_stations(self) -> list[dict]:
-        if self._current_view == "recent":
+        # No-sort views arrive in a meaningful server/raw order (recency for
+        # recent & now_listening, trend rank for trending, recency for new,
+        # shuffled for random) and have no sort bar — keep that order as-is.
+        if self._current_view in self._NO_SORT_VIEWS:
             return list(self._stations_raw)
         prefs = self._settings["sort"].get(self._current_view, {"field": "name", "ascending": True})
         field = prefs["field"]
@@ -662,13 +708,15 @@ class StationListWidget(QWidget):
         if self._limit_overlay.isVisible():
             QTimer.singleShot(0, self._show_limit_overlay)
 
-    _NO_SORT_VIEWS = {"recent", "new", "random", "trending"}
+    _NO_SORT_VIEWS = {"recent", "new", "random", "trending", "now_listening"}
 
     def set_view(self, view: str, fav_uuids: set[str], recent_uuids: list[str]):
         self._current_view = view
         self._fav_uuids = fav_uuids
         self._recent_uuids = recent_uuids
         self._limit_reached = False
+        self._clear_history_btn.setVisible(view == "recent")
+        self._add_station_btn.setVisible(view == "custom")
         self._sort_bar.setVisible(view not in self._NO_SORT_VIEWS)
         if view not in self._NO_SORT_VIEWS:
             self._load_sort_controls(view)

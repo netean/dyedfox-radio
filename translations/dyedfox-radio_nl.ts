@@ -135,100 +135,108 @@ Aangedreven door radiobrowser.info</translation>
 </context><context>
     <name>MainWindow</name>
     <message>
-        <location filename="../ui/main_window.py" line="138" />
+        <location filename="../ui/main_window.py" line="147" />
         <source>LIBRARY</source>
         <translation>BIBLIOTHEEK</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="139" />
+        <location filename="../ui/main_window.py" line="148" />
         <source>All stations</source>
         <translation>Alle radiostations</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="140" />
+        <location filename="../ui/main_window.py" line="149" />
         <source>Favourites</source>
         <translation>Favorieten</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="141" />
+        <location filename="../ui/main_window.py" line="150" />
         <source>Custom</source>
         <translation>Aangepast</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="143" />
-        <source>+ Add station</source>
-        <translation>+ Radiostation toevoegen</translation>
-    </message>
-    <message>
-        <location filename="../ui/main_window.py" line="150" />
+        <location filename="../ui/main_window.py" line="151" />
         <source>History</source>
         <translation>Geschiedenis</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="152" />
-        <source>Clear history</source>
-        <translation>Geschiedenis wissen</translation>
-    </message>
-    <message>
-        <location filename="../ui/main_window.py" line="160" />
+        <location filename="../ui/main_window.py" line="154" />
         <source>DISCOVER</source>
         <translation>ONTDEKKEN</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="161" />
+        <location filename="../ui/main_window.py" line="155" />
         <source>New</source>
         <translation>Nieuw</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="162" />
+        <location filename="../ui/main_window.py" line="156" />
         <source>Random</source>
         <translation>Willekeurig</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="163" />
+        <location filename="../ui/main_window.py" line="157" />
         <source>Trending</source>
         <translation>Populair</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="170" />
+        <location filename="../ui/main_window.py" line="158" />
+        <source>Now Listening</source>
+        <translation>Nu beluisterd</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="165" />
         <source>Settings</source>
         <translation>Instellingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="179" />
+        <location filename="../ui/main_window.py" line="174" />
         <source>About</source>
         <translation>Over</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="347" />
-        <location filename="../ui/main_window.py" line="245" />
+        <location filename="../ui/main_window.py" line="343" />
+        <location filename="../ui/main_window.py" line="243" />
         <source>Could not load stations — check your connection</source>
         <translation>De radiostations kunnen niet worden geladen — controleer je internetverbinding</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="296" />
+        <location filename="../ui/main_window.py" line="292" />
         <source>Could not load favourites — check your connection</source>
         <translation>De favorieten kunnen niet worden geladen — controleer je internetverbinding</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="313" />
+        <location filename="../ui/main_window.py" line="309" />
         <source>Could not load history — check your connection</source>
         <translation>De geschiedenis kan niet worden geladen — controleer je internetverbinding</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="331" />
+        <location filename="../ui/main_window.py" line="327" />
         <source>Could not load new stations — check your connection</source>
         <translation>Er kunnen geen nieuwe radiostations worden geladen — controleer je internetverbinding</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="363" />
+        <location filename="../ui/main_window.py" line="359" />
         <source>Could not load trending stations — check your connection</source>
         <translation>De populaire radiostations kunnen niet worden geladen — controleer je internetverbinding</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="444" />
+        <location filename="../ui/main_window.py" line="375" />
+        <source>Could not load now listening stations — check your connection</source>
+        <translation>De nu beluisterde radiostations kunnen niet worden geladen — controleer je internetverbinding</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="472" />
         <source>Could not connect to {0}. The stream may be down or unavailable.</source>
         <translation>Er kan geen verbinding worden gemaakt met ‘{0}’. Mogelijk is de stream uit de lucht of tijdelijk niet beschikbaar.</translation>
+    </message>
+    <message>
+        <source>+ Add station</source>
+        <translation type="vanished">+ Radiostation toevoegen</translation>
+    </message>
+    <message>
+        <source>Clear history</source>
+        <translation type="vanished">Geschiedenis wissen</translation>
     </message>
 </context><context>
     <name>NowPlayingBar</name>
@@ -370,79 +378,111 @@ Herstart het programma om de wijzigingen toe te passen.</translation>
 </context><context>
     <name>StationListWidget</name>
     <message>
-        <location filename="../ui/station_list.py" line="338" />
+        <location filename="../ui/station_list.py" line="370" />
         <source>Search stations…</source>
         <translation>Zoeken naar radiostation…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="351" />
+        <location filename="../ui/station_list.py" line="375" />
+        <source>Clear history</source>
+        <translation>Geschiedenis wissen</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="376" />
+        <source>Remove all stations from history</source>
+        <translation>Alle radiostations uit de geschiedenis verwijderen</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="385" />
+        <source>+ Add station</source>
+        <translation>+ Radiostation toevoegen</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="386" />
+        <source>Add a custom station</source>
+        <translation>Een eigen radiostation toevoegen</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="403" />
         <source>Name</source>
         <translation>Naam</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="352" />
+        <location filename="../ui/station_list.py" line="404" />
         <source>Country</source>
         <translation>Land</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="353" />
+        <location filename="../ui/station_list.py" line="405" />
         <source>Bitrate</source>
         <translation>Bitsnelheid</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="354" />
+        <location filename="../ui/station_list.py" line="406" />
         <source>Votes</source>
         <translation>Aantal stemmen</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="355" />
+        <location filename="../ui/station_list.py" line="407" />
         <source>Language</source>
         <translation>Taal</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="356" />
+        <location filename="../ui/station_list.py" line="408" />
         <source>Codec</source>
         <translation>Codec</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="361" />
+        <location filename="../ui/station_list.py" line="413" />
         <source>Country…</source>
         <translation>Land…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="365" />
+        <location filename="../ui/station_list.py" line="417" />
         <source>Genre / tag…</source>
         <translation>Genre/label…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="369" />
+        <location filename="../ui/station_list.py" line="421" />
         <source>Language…</source>
         <translation>Taal…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="376" />
+        <location filename="../ui/station_list.py" line="428" />
         <source>Toggle sort direction</source>
         <translation>Sorteervolgorde omkeren</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="401" />
+        <location filename="../ui/station_list.py" line="453" />
         <source>Result limit reached · narrow your search to see more</source>
         <translation>Het maximumaantal resultaten is bereikt — filter je zoekopdracht</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="416" />
+        <location filename="../ui/station_list.py" line="468" />
         <source>This may be a temporary server-side issue.</source>
         <translation>Mogelijk is dit een tijdelijk serverprobleem.</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="422" />
+        <location filename="../ui/station_list.py" line="474" />
         <source>Retry</source>
         <translation>Opnieuw proberen</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="757" />
+        <location filename="../ui/station_list.py" line="821" />
         <source>{0} stations</source>
         <translation>{0} radiostations</translation>
+    </message>
+</context><context>
+    <name>StationRowWidget</name>
+    <message>
+        <location filename="../ui/station_list.py" line="223" />
+        <source>Delete station</source>
+        <translation>Radiostation verwijderen</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="248" />
+        <source>Remove from history</source>
+        <translation>Uit geschiedenis verwijderen</translation>
     </message>
 </context><context>
     <name>SystemTrayIcon</name>

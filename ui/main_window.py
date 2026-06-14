@@ -18,7 +18,7 @@ from ui.about_dialog import AboutDialog
 from ui.add_station_dialog import AddStationDialog
 from player.backend import GStreamerBackend
 from api.radio_browser import RadioBrowserClient
-from data.favourites import FavouritesManager, RecentManager, new_cache, trending_cache, random_cache
+from data.favourites import FavouritesManager, RecentManager, new_cache, trending_cache, random_cache, now_listening_cache
 from data.settings import Settings
 from data.custom_stations import CustomStationsManager
 
@@ -45,6 +45,7 @@ class MainWindow(QMainWindow):
         self._new_stations_cache: list = new_cache.load()
         self._trending_stations_cache: list = trending_cache.load()
         self._random_stations_cache: list = random_cache.load()
+        self._now_listening_stations_cache: list = now_listening_cache.load()
         self._search_results: list = []
         self._last_search_key: tuple = ("", "", "")
         self._last_title: str = ""
@@ -123,7 +124,6 @@ class MainWindow(QMainWindow):
         layout.setSpacing(2)
 
         _nav_style = "QPushButton { text-align: left; padding: 4px 8px; }"
-        _sub_style = "QPushButton { text-align: left; padding: 2px 8px 2px 20px; font-size: small; }"
         _sec_style = "QLabel { color: palette(placeholder-text); font-size: small; padding: 6px 8px 2px 8px; }"
         self._nav_btns: dict[str, QPushButton] = {}
 
@@ -148,28 +148,14 @@ class MainWindow(QMainWindow):
         layout.addWidget(_nav_btn(self.tr("All stations"), "all",        "network-wireless"))
         layout.addWidget(_nav_btn(self.tr("Favourites"),   "favourites", "emblem-favorite"))
         layout.addWidget(_nav_btn(self.tr("Custom"),       "custom",     "document-edit"))
-
-        self._add_station_btn = QPushButton(self.tr("+ Add station"))
-        self._add_station_btn.setFlat(True)
-        self._add_station_btn.setStyleSheet(_sub_style)
-        self._add_station_btn.clicked.connect(self._on_add_custom_station)
-        self._add_station_btn.hide()
-        layout.addWidget(self._add_station_btn)
-
         layout.addWidget(_nav_btn(self.tr("History"), "recent", "document-open-recent"))
-
-        self._clear_recent_btn = QPushButton(self.tr("Clear history"))
-        self._clear_recent_btn.setFlat(True)
-        self._clear_recent_btn.setStyleSheet(_sub_style)
-        self._clear_recent_btn.clicked.connect(self._on_clear_recent)
-        self._clear_recent_btn.hide()
-        layout.addWidget(self._clear_recent_btn)
 
         # --- DISCOVER ---
         layout.addWidget(_section(self.tr("DISCOVER")))
-        layout.addWidget(_nav_btn(self.tr("New"),      "new",      "starred"))
-        layout.addWidget(_nav_btn(self.tr("Random"),   "random",   "media-playlist-shuffle"))
-        layout.addWidget(_nav_btn(self.tr("Trending"), "trending", "office-chart-bar"))
+        layout.addWidget(_nav_btn(self.tr("New"),           "new",           "starred"))
+        layout.addWidget(_nav_btn(self.tr("Random"),        "random",        "media-playlist-shuffle"))
+        layout.addWidget(_nav_btn(self.tr("Trending"),      "trending",      "office-chart-bar"))
+        layout.addWidget(_nav_btn(self.tr("Now Listening"), "now_listening", "view-process-users"))
 
         self._nav_btns["all"].setChecked(True)
 
@@ -208,6 +194,9 @@ class MainWindow(QMainWindow):
         self._station_list.search_params_changed.connect(self._on_search_params_changed)
         self._station_list.station_delete_requested.connect(self._on_custom_delete)
         self._station_list.station_edit_requested.connect(self._on_custom_edit)
+        self._station_list.station_remove_requested.connect(self._on_remove_recent)
+        self._station_list.clear_history_requested.connect(self._on_clear_recent)
+        self._station_list.add_station_requested.connect(self._on_add_custom_station)
 
         self._now_playing.clicked.connect(self._station_list.scroll_to_playing)
         self._station_list.playing_visibility_changed.connect(self._now_playing.set_clickable)
@@ -277,8 +266,6 @@ class MainWindow(QMainWindow):
         self._last_search_key = ("", "", "")
         for v, btn in self._nav_btns.items():
             btn.setChecked(v == view)
-        self._clear_recent_btn.setVisible(view == "recent")
-        self._add_station_btn.setVisible(view == "custom")
 
         # Set the filter mode first so it's in place when async stations arrive.
         self._station_list.set_view(view, self._favourites.uuids(), self._recent.uuids())
@@ -309,19 +296,22 @@ class MainWindow(QMainWindow):
         elif view == "recent":
             uuids = self._recent.uuids()
             if uuids:
+                cached = self._recent.cached_stations()
                 self._station_list.start_loading()
+                if cached:
+                    self._station_list.set_stations(cached)
                 def _on_recent_loaded(stations: list, ordered=uuids):
                     by_uuid = {s.get("stationuuid"): s for s in stations}
-                    self._station_list.set_stations(
-                        [by_uuid[u] for u in ordered if u in by_uuid]
-                    )
+                    ordered_stations = [by_uuid[u] for u in ordered if u in by_uuid]
+                    self._recent.cache_stations(ordered_stations)
+                    self._station_list.set_stations(ordered_stations)
                 self._api.stations_by_uuids(
                     uuids,
                     on_result=_on_recent_loaded,
                     on_error=lambda e: self._station_list.set_error(
                         self.tr("Could not load history — check your connection"),
                         on_retry=lambda: self._switch_view("recent"),
-                    ),
+                    ) if not cached else None,
                 )
             else:
                 self._station_list.set_stations([])
@@ -372,6 +362,22 @@ class MainWindow(QMainWindow):
                     self.tr("Could not load trending stations — check your connection"),
                     on_retry=lambda: self._switch_view("trending"),
                 ) if not self._trending_stations_cache else None,
+            )
+        elif view == "now_listening":
+            self._station_list.start_loading()
+            if self._now_listening_stations_cache:
+                self._station_list.set_stations(self._now_listening_stations_cache)
+            def _on_now_listening_loaded(stations: list):
+                self._now_listening_stations_cache = stations
+                now_listening_cache.save(stations)
+                self._station_list.set_stations(stations)
+            self._api.now_listening_stations(
+                limit=self._settings["station_limit"],
+                on_result=_on_now_listening_loaded,
+                on_error=lambda e: self._station_list.set_error(
+                    self.tr("Could not load now listening stations — check your connection"),
+                    on_retry=lambda: self._switch_view("now_listening"),
+                ) if not self._now_listening_stations_cache else None,
             )
         else:
             if self._top_stations:
@@ -530,6 +536,12 @@ class MainWindow(QMainWindow):
         self._recent.clear()
         self._station_list.set_view("recent", self._favourites.uuids(), self._recent.uuids())
 
+    def _on_remove_recent(self, uuid: str):
+        self._recent.remove(uuid)
+        # set_view re-filters the existing rows against the updated history, so the
+        # removed station disappears without a network round-trip.
+        self._station_list.set_view("recent", self._favourites.uuids(), self._recent.uuids())
+
     def _on_favourite_toggled(self, uuid: str, is_fav: bool):
         self._favourites.set(uuid, is_fav)
         self._station_list.update_favourite(uuid, is_fav)
@@ -600,7 +612,6 @@ class MainWindow(QMainWindow):
         if event.type() == QEvent.Type.PaletteChange:
             for btn in [
                 *self._nav_btns.values(),
-                self._clear_recent_btn, self._add_station_btn,
                 self._settings_btn, self._about_btn,
             ]:
                 btn.setStyleSheet(btn.styleSheet())

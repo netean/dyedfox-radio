@@ -6,9 +6,11 @@ _CONFIG = Path.home() / ".config" / "dyedfox-radio"
 _FAV_FILE = _CONFIG / "favourites.json"
 _FAV_CACHE_FILE = _CONFIG / "favourites_cache.json"
 _RECENT_FILE = _CONFIG / "recent.json"
+_RECENT_CACHE_FILE = _CONFIG / "recent_cache.json"
 _NEW_CACHE_FILE = _CONFIG / "new_cache.json"
 _TRENDING_CACHE_FILE = _CONFIG / "trending_cache.json"
 _RANDOM_CACHE_FILE = _CONFIG / "random_cache.json"
+_NOW_LISTENING_CACHE_FILE = _CONFIG / "now_listening_cache.json"
 
 
 class FavouritesManager:
@@ -78,6 +80,7 @@ class StationsCache:
 new_cache = StationsCache(_NEW_CACHE_FILE)
 trending_cache = StationsCache(_TRENDING_CACHE_FILE)
 random_cache = StationsCache(_RANDOM_CACHE_FILE)
+now_listening_cache = StationsCache(_NOW_LISTENING_CACHE_FILE)
 
 
 class RecentManager:
@@ -99,9 +102,33 @@ class RecentManager:
     def uuids(self) -> list[str]:
         return list(self._uuids)
 
+    def remove(self, uuid: str):
+        try:
+            self._uuids.remove(uuid)
+        except ValueError:
+            return
+        self._save()
+
     def clear(self):
         self._uuids = []
         self._save()
+
+    def cached_stations(self) -> list[dict]:
+        # Resolved station details from a previous load, filtered to the current
+        # history and returned in history order. Lets the History view render
+        # offline / when the API hiccups instead of showing a retry banner.
+        try:
+            data = json.loads(_RECENT_CACHE_FILE.read_text())
+            by_uuid = {s.get("stationuuid"): s for s in data}
+            return [by_uuid[u] for u in self._uuids if u in by_uuid]
+        except Exception:
+            return []
+
+    def cache_stations(self, stations: list[dict]):
+        try:
+            _RECENT_CACHE_FILE.write_text(json.dumps(stations, indent=2))
+        except Exception as e:
+            print(f"dyedfox-radio: failed to save recent cache: {e}", flush=True)
 
     def _load(self) -> list:
         try:

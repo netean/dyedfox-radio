@@ -22,6 +22,7 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 
 ![Main window](screenshots/main.png)
 ![Main window - Light Theme](screenshots/main-light.png)
+![History](screenshots/history-list.png)
 ![Sort and filter demo](screenshots/sort.gif)
 ![System tray](screenshots/systray.png)
 ![MPRIS2 support](screenshots/mpris2.png)
@@ -30,13 +31,18 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 
 - Browse and search top stations from radio-browser.info
 - Multi-keyword search across name, tags, country, and language
-- Favourites, recently played, and custom stations (add any stream by URL)
+- Discover lists: New, Random, Trending, and Now Listening (what others are tuning into right now)
+- Sort by name, country, bitrate, votes, language, or codec, and filter by country, tag, or language
+- Favourites, History, and custom stations (add any stream by URL)
+- Editable History — remove single stations or clear the whole list
 - Station info panel with logo, codec, bitrate, and tags
 - Animated equalizer indicator on the playing station
 - Now playing bar with song/artist from stream metadata
+- Automatic reconnection with backoff when a stream drops
 - System tray icon with play/stop context menu and middle-click toggle
 - MPRIS2 support (media keys, KDE media player widget)
 - Song change notifications
+- Breeze light/dark theme support, following the system palette
 - Persistent volume, favourites, and recent history
 
 ## Keyboard Shortcuts

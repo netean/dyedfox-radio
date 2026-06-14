@@ -121,6 +121,11 @@ class RadioBrowserClient:
     def trending_stations(self, limit: int = 100, on_result=None, on_error=None):
         self._run(f"{BASE_URL}/stations/search", {"order": "clicktrend", "reverse": "true", "limit": limit, "hidebroken": "true"}, on_result, on_error)
 
+    def now_listening_stations(self, limit: int = 100, on_result=None, on_error=None):
+        # Sort by the time of each station's last click (reverse=true → most
+        # recent first), i.e. what other users worldwide just tuned into.
+        self._run(f"{BASE_URL}/stations/search", {"order": "clicktimestamp", "reverse": "true", "limit": limit, "hidebroken": "true"}, on_result, on_error)
+
     def stations_by_uuids(self, uuids: list[str], on_result=None, on_error=None):
         if not uuids:
             if on_result:

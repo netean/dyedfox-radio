@@ -1,6 +1,26 @@
+from pathlib import Path
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QPushButton, QApplication
 from PyQt6.QtCore import Qt, QUrl, pyqtSignal
 from PyQt6.QtGui import QIcon, QPalette, QPixmap, QDesktopServices
+
+_NO_LOGO_PATH = str(Path(__file__).parent.parent / "assets" / "icons" / "no_logo-256x256.png")
+_default_logo: QPixmap | None = None
+
+
+def _default_logo_pixmap() -> QPixmap:
+    """Shared 184×184 fallback logo used when a station has no favicon."""
+    global _default_logo
+    if _default_logo is None:
+        pix = QPixmap(_NO_LOGO_PATH)
+        if pix.isNull():
+            _default_logo = QIcon.fromTheme("audio-x-generic").pixmap(48, 48)
+        else:
+            _default_logo = pix.scaled(
+                184, 184,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            )
+    return _default_logo
 
 
 class InfoPanel(QWidget):
@@ -24,7 +44,7 @@ class InfoPanel(QWidget):
         self._logo.setStyleSheet(
             "QLabel { background: palette(mid); border-radius: 6px; }"
         )
-        self._logo.setPixmap(QIcon.fromTheme("audio-x-generic").pixmap(48, 48))
+        self._logo.setPixmap(_default_logo_pixmap())
         layout.addWidget(self._logo)
 
         layout.addSpacing(4)
@@ -160,11 +180,7 @@ class InfoPanel(QWidget):
         self._now_playing.clear()
         self._now_playing_text = ""
 
-        favicon_url = station.get("favicon", "")
-        if favicon_url:
-            self._logo.setPixmap(QIcon.fromTheme("audio-x-generic").pixmap(48, 48))
-        else:
-            self._logo.setPixmap(QIcon.fromTheme("audio-x-generic").pixmap(48, 48))
+        self._logo.setPixmap(_default_logo_pixmap())
 
     def set_favicon(self, data: bytes):
         pix = QPixmap()

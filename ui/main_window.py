@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
-    QPushButton, QFrame, QSystemTrayIcon, QApplication,
+    QPushButton, QFrame, QSystemTrayIcon, QApplication, QMessageBox,
 )
 from pathlib import Path
 import subprocess
@@ -67,7 +67,17 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Dyedfox Radio")
         _icon = Path(__file__).parent.parent / "assets" / "icons" / "dyedfox-radio.png"
         self.setWindowIcon(QIcon(str(_icon)))
-        self.resize(960, 620)
+
+        # The app quits via os._exit() (see main.py), which skips finalizers, so
+        # window size is persisted on change rather than at quit. Debounce to avoid
+        # rewriting settings.json on every resize event during a drag. Created
+        # before _restore_window_size() since resize() may fire resizeEvent.
+        self._size_save_timer = QTimer(self)
+        self._size_save_timer.setSingleShot(True)
+        self._size_save_timer.setInterval(500)
+        self._size_save_timer.timeout.connect(self._save_window_size)
+
+        self._restore_window_size()
         self._setup_ui()
         self._connect_signals()
         self._apply_settings()
@@ -605,8 +615,44 @@ class MainWindow(QMainWindow):
             self._station_list.set_stations(self._custom.all(), deletable=True)
 
     def _on_custom_delete(self, uuid: str):
+        name = next(
+            (s.get("name", "") for s in self._custom.all() if s.get("stationuuid") == uuid),
+            "",
+        )
+        reply = QMessageBox.question(
+            self,
+            self.tr("Delete station"),
+            self.tr("Delete “{0}” from your custom stations?").format(name),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if reply != QMessageBox.StandardButton.Yes:
+            return
         self._custom.remove(uuid)
         self._station_list.set_stations(self._custom.all(), deletable=True)
+
+    def _restore_window_size(self):
+        size = self._settings["window_size"]
+        try:
+            w, h = int(size[0]), int(size[1])
+        except (TypeError, ValueError, IndexError):
+            w, h = 960, 620
+        # Guard against absurd or corrupt values restoring an unusable window.
+        w = max(640, min(w, 7680))
+        h = max(480, min(h, 4320))
+        self.resize(w, h)
+
+    def _save_window_size(self):
+        # Persist only the normal (restored) size, not maximized/minimized states,
+        # so un-maximizing later returns to a sensible size.
+        if self.isMaximized() or self.isMinimized() or self.isFullScreen():
+            return
+        self._settings["window_size"] = [self.width(), self.height()]
+        self._settings.save()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._size_save_timer.start()
 
     def changeEvent(self, event):
         if event.type() == QEvent.Type.PaletteChange:

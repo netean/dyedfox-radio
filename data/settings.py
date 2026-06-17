@@ -11,6 +11,7 @@ DEFAULTS: dict = {
     "station_limit": 100,
     "notifications": True,
     "last_view": "all",
+    "window_size": [960, 620],
     "sort": {
         "all":        {"field": "votes", "ascending": False},
         "favourites": {"field": "name",  "ascending": True},

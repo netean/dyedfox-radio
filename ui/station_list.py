@@ -1,5 +1,6 @@
 from __future__ import annotations
 import math
+from pathlib import Path
 import requests
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem,
@@ -11,6 +12,25 @@ from PyQt6.QtGui import QIcon, QPalette, QPixmap, QPainter, QColor, QBrush
 
 from data.favourites import FavouritesManager
 from data.settings import Settings
+
+_NO_LOGO_PATH = str(Path(__file__).parent.parent / "assets" / "icons" / "no_logo-256x256.png")
+_default_favicon: QPixmap | None = None
+
+
+def _default_favicon_pixmap() -> QPixmap:
+    """Shared 30×30 fallback icon used when a station has no favicon."""
+    global _default_favicon
+    if _default_favicon is None:
+        pix = QPixmap(_NO_LOGO_PATH)
+        if pix.isNull():
+            _default_favicon = QIcon.fromTheme("audio-x-generic").pixmap(28, 28)
+        else:
+            _default_favicon = pix.scaled(
+                30, 30,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            )
+    return _default_favicon
 
 
 class _SpinnerLabel(QLabel):
@@ -167,7 +187,7 @@ class StationRowWidget(QWidget):
         self._favicon = QLabel(icon_box)
         self._favicon.setFixedSize(30, 30)
         self._favicon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._favicon.setPixmap(QIcon.fromTheme("audio-x-generic").pixmap(28, 28))
+        self._favicon.setPixmap(_default_favicon_pixmap())
         self._wave = _WaveWidget(icon_box)
         self._wave.hide()
         layout.addWidget(icon_box)

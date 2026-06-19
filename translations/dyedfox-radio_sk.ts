@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="sk_SK">
+
+<context>
+    <name>AboutDialog</name>
+    <message>
+        <location filename="../ui/about_dialog.py" line="10" />
+        <source>About Dyedfox Radio</source>
+        <translation>O aplikácii Dyedfox Radio</translation>
+    </message>
+    <message>
+        <location filename="../ui/about_dialog.py" line="41" />
+        <source>Desktop internet radio player.
+Powered by radio-browser.info.</source>
+        <translation>Stolný prehrávač internetového rádia.
+Využíva radio-browser.info.</translation>
+    </message>
+    <message>
+        <location filename="../ui/about_dialog.py" line="48" />
+        <source>Released under the GPL-3.0 license.</source>
+        <translation>Vydané pod licenciou GPL-3.0.</translation>
+    </message>
+</context><context>
+    <name>AddStationDialog</name>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="11" />
+        <source>Edit custom station</source>
+        <translation>Upraviť vlastnú stanicu</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="11" />
+        <source>Add custom station</source>
+        <translation>Pridať vlastnú stanicu</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="18" />
+        <source>My Radio Station</source>
+        <translation>Moja rozhlasová stanica</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="19" />
+        <source>Name:</source>
+        <translation>Názov:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="23" />
+        <source>Stream URL:</source>
+        <translation>URL streamu:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="27" />
+        <source>Logo URL:</source>
+        <translation>URL loga:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="30" />
+        <source>jazz, blues  (optional)</source>
+        <translation>jazz, blues  (voliteľné)</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="31" />
+        <source>Genre / tags:</source>
+        <translation>Žáner / značky:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="34" />
+        <source>optional</source>
+        <translation>voliteľné</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="35" />
+        <source>Country:</source>
+        <translation>Krajina:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="38" />
+        <source>english  (optional)</source>
+        <translation>slovenčina  (voliteľné)</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="39" />
+        <source>Language:</source>
+        <translation>Jazyk:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="59" />
+        <source>Name is required.</source>
+        <translation>Názov je povinný.</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="62" />
+        <source>Stream URL must start with http:// or https://</source>
+        <translation>URL streamu musí začínať http:// alebo https://</translation>
+    </message>
+</context><context>
+    <name>ControlBar</name>
+    <message>
+        <location filename="../ui/controls.py" line="46" />
+        <location filename="../ui/controls.py" line="19" />
+        <source>Stop</source>
+        <translation>Zastaviť</translation>
+    </message>
+    <message>
+        <location filename="../ui/controls.py" line="30" />
+        <source>Mute</source>
+        <translation>Stlmiť</translation>
+    </message>
+    <message>
+        <location filename="../ui/controls.py" line="49" />
+        <source>Play</source>
+        <translation>Prehrať</translation>
+    </message>
+</context><context>
+    <name>InfoPanel</name>
+    <message>
+        <location filename="../ui/info_panel.py" line="68" />
+        <source>Copy station name</source>
+        <translation>Kopírovať názov stanice</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="75" />
+        <source>Open station website</source>
+        <translation>Otvoriť webovú stránku stanice</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="89" />
+        <source>Open on radio-browser.info</source>
+        <translation>Otvoriť na radio-browser.info</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="124" />
+        <source>Copy song info</source>
+        <translation>Kopírovať informácie o skladbe</translation>
+    </message>
+</context><context>
+    <name>MainWindow</name>
+    <message>
+        <location filename="../ui/main_window.py" line="147" />
+        <source>LIBRARY</source>
+        <translation>KNIŽNICA</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="148" />
+        <source>All stations</source>
+        <translation>Všetky stanice</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="149" />
+        <source>Favourites</source>
+        <translation>Obľúbené</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="150" />
+        <source>Custom</source>
+        <translation>Vlastné</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="151" />
+        <source>History</source>
+        <translation>História</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="154" />
+        <source>DISCOVER</source>
+        <translation>OBJAVOVAŤ</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="155" />
+        <source>New</source>
+        <translation>Nové</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="156" />
+        <source>Random</source>
+        <translation>Náhodné</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="157" />
+        <source>Trending</source>
+        <translation>Trendy</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="158" />
+        <source>Now Listening</source>
+        <translation>Práve sa počúva</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="165" />
+        <source>Settings</source>
+        <translation>Nastavenia</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="174" />
+        <source>About</source>
+        <translation>O aplikácii</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="346" />
+        <location filename="../ui/main_window.py" line="243" />
+        <source>Could not load stations — check your connection</source>
+        <translation>Nepodarilo sa načítať stanice — skontrolujte pripojenie</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="292" />
+        <source>Could not load favourites — check your connection</source>
+        <translation>Nepodarilo sa načítať obľúbené — skontrolujte pripojenie</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="312" />
+        <source>Could not load history — check your connection</source>
+        <translation>Nepodarilo sa načítať históriu — skontrolujte pripojenie</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="330" />
+        <source>Could not load new stations — check your connection</source>
+        <translation>Nepodarilo sa načítať nové stanice — skontrolujte pripojenie</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="362" />
+        <source>Could not load trending stations — check your connection</source>
+        <translation>Nepodarilo sa načítať trendujúce stanice — skontrolujte pripojenie</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="378" />
+        <source>Could not load now listening stations — check your connection</source>
+        <translation>Nepodarilo sa načítať práve počúvané stanice — skontrolujte pripojenie</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="475" />
+        <source>Could not connect to {0}. The stream may be down or unavailable.</source>
+        <translation>Nepodarilo sa pripojiť k {0}. Stream môže byť nedostupný.</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="614" />
+        <source>Delete station</source>
+        <translation>Odstrániť stanicu</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="615" />
+        <source>Delete “{0}” from your custom stations?</source>
+        <translation>Odstrániť „{0}“ z vašich vlastných staníc?</translation>
+    </message>
+</context><context>
+    <name>NowPlayingBar</name>
+    <message>
+        <location filename="../ui/now_playing.py" line="85" />
+        <location filename="../ui/now_playing.py" line="48" />
+        <source>Not playing</source>
+        <translation>Neprehráva sa</translation>
+    </message>
+    <message>
+        <location filename="../ui/now_playing.py" line="74" />
+        <source>Stream unavailable</source>
+        <translation>Stream nie je dostupný</translation>
+    </message>
+    <message>
+        <location filename="../ui/now_playing.py" line="78" />
+        <source>Reconnecting…</source>
+        <translation>Opätovné pripájanie…</translation>
+    </message>
+</context><context>
+    <name>SettingsDialog</name>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="16" />
+        <source>Settings</source>
+        <translation>Nastavenia</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="24" />
+        <source>Startup</source>
+        <translation>Spustenie</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="27" />
+        <source>Start minimized to tray</source>
+        <translation>Spustiť minimalizované do oznamovacej oblasti</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="31" />
+        <source>Autoplay last station</source>
+        <translation>Automaticky prehrať poslednú stanicu</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="35" />
+        <source>Startup options take effect on next launch.</source>
+        <translation>Možnosti spustenia sa prejavia pri ďalšom spustení.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="42" />
+        <source>Stations</source>
+        <translation>Stanice</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="48" />
+        <source>{0} stations</source>
+        <translation>{0} staníc</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="51" />
+        <source>Top stations to load:</source>
+        <translation>Počet najlepších staníc na načítanie:</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="53" />
+        <source>Higher values slow down initial load and search. Prefer using search and filters over increasing this limit.</source>
+        <translation>Vyššie hodnoty spomaľujú počiatočné načítanie a vyhľadávanie. Namiesto zvyšovania tohto limitu radšej používajte vyhľadávanie a filtre.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="61" />
+        <source>Notifications</source>
+        <translation>Upozornenia</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="64" />
+        <source>Show song change notifications</source>
+        <translation>Zobrazovať upozornenia pri zmene skladby</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="145" />
+        <location filename="../ui/settings_dialog.py" line="141" />
+        <location filename="../ui/settings_dialog.py" line="126" />
+        <location filename="../ui/settings_dialog.py" line="124" />
+        <location filename="../ui/settings_dialog.py" line="71" />
+        <source>Backup</source>
+        <translation>Záloha</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="74" />
+        <source>Back up and restore your favourites, custom stations, history, and settings.</source>
+        <translation>Zálohujte a obnovujte svoje obľúbené, vlastné stanice, históriu a nastavenia.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="80" />
+        <source>Export…</source>
+        <translation>Exportovať…</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="82" />
+        <source>Import…</source>
+        <translation>Importovať…</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="116" />
+        <source>Export backup</source>
+        <translation>Exportovať zálohu</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="133" />
+        <location filename="../ui/settings_dialog.py" line="118" />
+        <source>Zip files (*.zip)</source>
+        <translation>Súbory ZIP (*.zip)</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="124" />
+        <source>Backup exported successfully.</source>
+        <translation>Záloha bola úspešne exportovaná.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="126" />
+        <source>Export failed: {0}</source>
+        <translation>Export zlyhal: {0}</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="131" />
+        <source>Import backup</source>
+        <translation>Importovať zálohu</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="142" />
+        <source>Restored: {0}.
+Restart the app to apply changes.</source>
+        <translation>Obnovené: {0}.
+Reštartujte aplikáciu na použitie zmien.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="145" />
+        <source>Import failed: {0}</source>
+        <translation>Import zlyhal: {0}</translation>
+    </message>
+</context><context>
+    <name>StationListWidget</name>
+    <message>
+        <location filename="../ui/station_list.py" line="390" />
+        <source>Search stations…</source>
+        <translation>Hľadať stanice…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="407" />
+        <source>Clear history</source>
+        <translation>Vymazať históriu</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="408" />
+        <source>Remove all stations from history</source>
+        <translation>Odstrániť všetky stanice z histórie</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="417" />
+        <source>+ Add station</source>
+        <translation>+ Pridať stanicu</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="418" />
+        <source>Add a custom station</source>
+        <translation>Pridať vlastnú stanicu</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="435" />
+        <source>Name</source>
+        <translation>Názov</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="436" />
+        <source>Country</source>
+        <translation>Krajina</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="437" />
+        <source>Bitrate</source>
+        <translation>Dátový tok</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="438" />
+        <source>Votes</source>
+        <translation>Hlasy</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="439" />
+        <source>Language</source>
+        <translation>Jazyk</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="440" />
+        <source>Codec</source>
+        <translation>Kodek</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="445" />
+        <source>Country…</source>
+        <translation>Krajina…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="449" />
+        <source>Genre / tag…</source>
+        <translation>Žáner / značka…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="453" />
+        <source>Language…</source>
+        <translation>Jazyk…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="460" />
+        <source>Toggle sort direction</source>
+        <translation>Prepnúť smer zoradenia</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="476" />
+        <source>Result limit reached · narrow your search to see more</source>
+        <translation>Dosiahnutý limit výsledkov · zúžte vyhľadávanie na zobrazenie ďalších</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="491" />
+        <source>This may be a temporary server-side issue.</source>
+        <translation>Môže ísť o dočasný problém na strane servera.</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="497" />
+        <source>Retry</source>
+        <translation>Skúsiť znova</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="847" />
+        <source>{0} stations</source>
+        <translation>{0} staníc</translation>
+    </message>
+</context><context>
+    <name>StationRowWidget</name>
+    <message>
+        <location filename="../ui/station_list.py" line="243" />
+        <source>Delete station</source>
+        <translation>Odstrániť stanicu</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="268" />
+        <source>Remove from history</source>
+        <translation>Odstrániť z histórie</translation>
+    </message>
+</context><context>
+    <name>SystemTrayIcon</name>
+    <message>
+        <location filename="../tray/tray_icon.py" line="23" />
+        <source>Show / Hide</source>
+        <translation>Zobraziť / Skryť</translation>
+    </message>
+    <message>
+        <location filename="../tray/tray_icon.py" line="36" />
+        <location filename="../tray/tray_icon.py" line="26" />
+        <source>Play</source>
+        <translation>Prehrať</translation>
+    </message>
+    <message>
+        <location filename="../tray/tray_icon.py" line="28" />
+        <source>Mute</source>
+        <translation>Stlmiť</translation>
+    </message>
+    <message>
+        <location filename="../tray/tray_icon.py" line="32" />
+        <source>Quit</source>
+        <translation>Ukončiť</translation>
+    </message>
+    <message>
+        <location filename="../tray/tray_icon.py" line="36" />
+        <source>Stop</source>
+        <translation>Zastaviť</translation>
+    </message>
+</context>
+</TS>

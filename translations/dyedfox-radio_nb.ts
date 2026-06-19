@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="nb_NO">
+
+<context>
+    <name>AboutDialog</name>
+    <message>
+        <location filename="../ui/about_dialog.py" line="10" />
+        <source>About Dyedfox Radio</source>
+        <translation>Om Dyedfox Radio</translation>
+    </message>
+    <message>
+        <location filename="../ui/about_dialog.py" line="41" />
+        <source>Desktop internet radio player.
+Powered by radio-browser.info.</source>
+        <translation>Internettradiospiller for skrivebordet.
+Drevet av radio-browser.info.</translation>
+    </message>
+    <message>
+        <location filename="../ui/about_dialog.py" line="48" />
+        <source>Released under the GPL-3.0 license.</source>
+        <translation>Utgitt under GPL-3.0-lisensen.</translation>
+    </message>
+</context><context>
+    <name>AddStationDialog</name>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="11" />
+        <source>Edit custom station</source>
+        <translation>Rediger tilpasset stasjon</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="11" />
+        <source>Add custom station</source>
+        <translation>Legg til tilpasset stasjon</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="18" />
+        <source>My Radio Station</source>
+        <translation>Min radiostasjon</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="19" />
+        <source>Name:</source>
+        <translation>Navn:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="23" />
+        <source>Stream URL:</source>
+        <translation>Strøm-URL:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="27" />
+        <source>Logo URL:</source>
+        <translation>Logo-URL:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="30" />
+        <source>jazz, blues  (optional)</source>
+        <translation>jazz, blues  (valgfritt)</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="31" />
+        <source>Genre / tags:</source>
+        <translation>Sjanger / tagger:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="34" />
+        <source>optional</source>
+        <translation>valgfritt</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="35" />
+        <source>Country:</source>
+        <translation>Land:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="38" />
+        <source>english  (optional)</source>
+        <translation>norsk  (valgfritt)</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="39" />
+        <source>Language:</source>
+        <translation>Språk:</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="59" />
+        <source>Name is required.</source>
+        <translation>Navn er påkrevd.</translation>
+    </message>
+    <message>
+        <location filename="../ui/add_station_dialog.py" line="62" />
+        <source>Stream URL must start with http:// or https://</source>
+        <translation>Strøm-URL må begynne med http:// eller https://</translation>
+    </message>
+</context><context>
+    <name>ControlBar</name>
+    <message>
+        <location filename="../ui/controls.py" line="46" />
+        <location filename="../ui/controls.py" line="19" />
+        <source>Stop</source>
+        <translation>Stopp</translation>
+    </message>
+    <message>
+        <location filename="../ui/controls.py" line="30" />
+        <source>Mute</source>
+        <translation>Demp</translation>
+    </message>
+    <message>
+        <location filename="../ui/controls.py" line="49" />
+        <source>Play</source>
+        <translation>Spill av</translation>
+    </message>
+</context><context>
+    <name>InfoPanel</name>
+    <message>
+        <location filename="../ui/info_panel.py" line="68" />
+        <source>Copy station name</source>
+        <translation>Kopier stasjonsnavn</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="75" />
+        <source>Open station website</source>
+        <translation>Åpne stasjonens nettsted</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="89" />
+        <source>Open on radio-browser.info</source>
+        <translation>Åpne på radio-browser.info</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="124" />
+        <source>Copy song info</source>
+        <translation>Kopier sanginformasjon</translation>
+    </message>
+</context><context>
+    <name>MainWindow</name>
+    <message>
+        <location filename="../ui/main_window.py" line="147" />
+        <source>LIBRARY</source>
+        <translation>BIBLIOTEK</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="148" />
+        <source>All stations</source>
+        <translation>Alle stasjoner</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="149" />
+        <source>Favourites</source>
+        <translation>Favoritter</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="150" />
+        <source>Custom</source>
+        <translation>Tilpassede</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="151" />
+        <source>History</source>
+        <translation>Historikk</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="154" />
+        <source>DISCOVER</source>
+        <translation>OPPDAG</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="155" />
+        <source>New</source>
+        <translation>Nye</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="156" />
+        <source>Random</source>
+        <translation>Tilfeldige</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="157" />
+        <source>Trending</source>
+        <translation>Populære</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="158" />
+        <source>Now Listening</source>
+        <translation>Lyttes til nå</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="165" />
+        <source>Settings</source>
+        <translation>Innstillinger</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="174" />
+        <source>About</source>
+        <translation>Om</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="346" />
+        <location filename="../ui/main_window.py" line="243" />
+        <source>Could not load stations — check your connection</source>
+        <translation>Kunne ikke laste inn stasjoner — sjekk tilkoblingen</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="292" />
+        <source>Could not load favourites — check your connection</source>
+        <translation>Kunne ikke laste inn favoritter — sjekk tilkoblingen</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="312" />
+        <source>Could not load history — check your connection</source>
+        <translation>Kunne ikke laste inn historikk — sjekk tilkoblingen</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="330" />
+        <source>Could not load new stations — check your connection</source>
+        <translation>Kunne ikke laste inn nye stasjoner — sjekk tilkoblingen</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="362" />
+        <source>Could not load trending stations — check your connection</source>
+        <translation>Kunne ikke laste inn populære stasjoner — sjekk tilkoblingen</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="378" />
+        <source>Could not load now listening stations — check your connection</source>
+        <translation>Kunne ikke laste inn stasjoner som lyttes til nå — sjekk tilkoblingen</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="475" />
+        <source>Could not connect to {0}. The stream may be down or unavailable.</source>
+        <translation>Kunne ikke koble til {0}. Strømmen kan være utilgjengelig.</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="614" />
+        <source>Delete station</source>
+        <translation>Slett stasjon</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="615" />
+        <source>Delete “{0}” from your custom stations?</source>
+        <translation>Slette «{0}» fra dine tilpassede stasjoner?</translation>
+    </message>
+</context><context>
+    <name>NowPlayingBar</name>
+    <message>
+        <location filename="../ui/now_playing.py" line="85" />
+        <location filename="../ui/now_playing.py" line="48" />
+        <source>Not playing</source>
+        <translation>Spiller ikke</translation>
+    </message>
+    <message>
+        <location filename="../ui/now_playing.py" line="74" />
+        <source>Stream unavailable</source>
+        <translation>Strøm utilgjengelig</translation>
+    </message>
+    <message>
+        <location filename="../ui/now_playing.py" line="78" />
+        <source>Reconnecting…</source>
+        <translation>Kobler til på nytt…</translation>
+    </message>
+</context><context>
+    <name>SettingsDialog</name>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="16" />
+        <source>Settings</source>
+        <translation>Innstillinger</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="24" />
+        <source>Startup</source>
+        <translation>Oppstart</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="27" />
+        <source>Start minimized to tray</source>
+        <translation>Start minimert til systemkurv</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="31" />
+        <source>Autoplay last station</source>
+        <translation>Spill av siste stasjon automatisk</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="35" />
+        <source>Startup options take effect on next launch.</source>
+        <translation>Oppstartsalternativer trer i kraft ved neste oppstart.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="42" />
+        <source>Stations</source>
+        <translation>Stasjoner</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="48" />
+        <source>{0} stations</source>
+        <translation>{0} stasjoner</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="51" />
+        <source>Top stations to load:</source>
+        <translation>Antall toppstasjoner som skal lastes inn:</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="53" />
+        <source>Higher values slow down initial load and search. Prefer using search and filters over increasing this limit.</source>
+        <translation>Høyere verdier gjør den første innlastingen og søket tregere. Bruk heller søk og filtre enn å øke denne grensen.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="61" />
+        <source>Notifications</source>
+        <translation>Varsler</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="64" />
+        <source>Show song change notifications</source>
+        <translation>Vis varsler ved sangbytte</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="145" />
+        <location filename="../ui/settings_dialog.py" line="141" />
+        <location filename="../ui/settings_dialog.py" line="126" />
+        <location filename="../ui/settings_dialog.py" line="124" />
+        <location filename="../ui/settings_dialog.py" line="71" />
+        <source>Backup</source>
+        <translation>Sikkerhetskopi</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="74" />
+        <source>Back up and restore your favourites, custom stations, history, and settings.</source>
+        <translation>Sikkerhetskopier og gjenopprett favorittene dine, tilpassede stasjoner, historikk og innstillinger.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="80" />
+        <source>Export…</source>
+        <translation>Eksporter…</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="82" />
+        <source>Import…</source>
+        <translation>Importer…</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="116" />
+        <source>Export backup</source>
+        <translation>Eksporter sikkerhetskopi</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="133" />
+        <location filename="../ui/settings_dialog.py" line="118" />
+        <source>Zip files (*.zip)</source>
+        <translation>ZIP-filer (*.zip)</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="124" />
+        <source>Backup exported successfully.</source>
+        <translation>Sikkerhetskopi eksportert.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="126" />
+        <source>Export failed: {0}</source>
+        <translation>Eksport mislyktes: {0}</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="131" />
+        <source>Import backup</source>
+        <translation>Importer sikkerhetskopi</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="142" />
+        <source>Restored: {0}.
+Restart the app to apply changes.</source>
+        <translation>Gjenopprettet: {0}.
+Start appen på nytt for å bruke endringene.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="145" />
+        <source>Import failed: {0}</source>
+        <translation>Import mislyktes: {0}</translation>
+    </message>
+</context><context>
+    <name>StationListWidget</name>
+    <message>
+        <location filename="../ui/station_list.py" line="390" />
+        <source>Search stations…</source>
+        <translation>Søk etter stasjoner…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="407" />
+        <source>Clear history</source>
+        <translation>Tøm historikk</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="408" />
+        <source>Remove all stations from history</source>
+        <translation>Fjern alle stasjoner fra historikken</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="417" />
+        <source>+ Add station</source>
+        <translation>+ Legg til stasjon</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="418" />
+        <source>Add a custom station</source>
+        <translation>Legg til en tilpasset stasjon</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="435" />
+        <source>Name</source>
+        <translation>Navn</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="436" />
+        <source>Country</source>
+        <translation>Land</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="437" />
+        <source>Bitrate</source>
+        <translation>Bitrate</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="438" />
+        <source>Votes</source>
+        <translation>Stemmer</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="439" />
+        <source>Language</source>
+        <translation>Språk</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="440" />
+        <source>Codec</source>
+        <translation>Kodek</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="445" />
+        <source>Country…</source>
+        <translation>Land…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="449" />
+        <source>Genre / tag…</source>
+        <translation>Sjanger / tagg…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="453" />
+        <source>Language…</source>
+        <translation>Språk…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="460" />
+        <source>Toggle sort direction</source>
+        <translation>Bytt sorteringsretning</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="476" />
+        <source>Result limit reached · narrow your search to see more</source>
+        <translation>Resultatgrense nådd · avgrens søket for å se flere</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="491" />
+        <source>This may be a temporary server-side issue.</source>
+        <translation>Dette kan være et midlertidig problem på serversiden.</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="497" />
+        <source>Retry</source>
+        <translation>Prøv igjen</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="847" />
+        <source>{0} stations</source>
+        <translation>{0} stasjoner</translation>
+    </message>
+</context><context>
+    <name>StationRowWidget</name>
+    <message>
+        <location filename="../ui/station_list.py" line="243" />
+        <source>Delete station</source>
+        <translation>Slett stasjon</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="268" />
+        <source>Remove from history</source>
+        <translation>Fjern fra historikken</translation>
+    </message>
+</context><context>
+    <name>SystemTrayIcon</name>
+    <message>
+        <location filename="../tray/tray_icon.py" line="23" />
+        <source>Show / Hide</source>
+        <translation>Vis / Skjul</translation>
+    </message>
+    <message>
+        <location filename="../tray/tray_icon.py" line="36" />
+        <location filename="../tray/tray_icon.py" line="26" />
+        <source>Play</source>
+        <translation>Spill av</translation>
+    </message>
+    <message>
+        <location filename="../tray/tray_icon.py" line="28" />
+        <source>Mute</source>
+        <translation>Demp</translation>
+    </message>
+    <message>
+        <location filename="../tray/tray_icon.py" line="32" />
+        <source>Quit</source>
+        <translation>Avslutt</translation>
+    </message>
+    <message>
+        <location filename="../tray/tray_icon.py" line="36" />
+        <source>Stop</source>
+        <translation>Stopp</translation>
+    </message>
+</context>
+</TS>

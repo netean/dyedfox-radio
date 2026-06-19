@@ -138,10 +138,38 @@ The UI language follows your system locale automatically.
 
 | Locale | Language | Translator | Status |
 |---|---|---|---|
-| `uk_UA` | Ukrainian | [dyedfox](https://github.com/dyedfox) | ✓ included |
-| `nl_NL` | Dutch | [Heimen Stoffels (Vistaus)](https://github.com/Vistaus) | ✓ included |
+| `uk_UA` | Ukrainian | [dyedfox](https://github.com/dyedfox) | ✓ reviewed |
+| `nl_NL` | Dutch | [Heimen Stoffels (Vistaus)](https://github.com/Vistaus) | ✓ reviewed |
+| `bg_BG` | Bulgarian | machine-generated | ⚙ unreviewed |
+| `ca_ES` | Catalan | machine-generated | ⚙ unreviewed |
+| `cs_CZ` | Czech | machine-generated | ⚙ unreviewed |
+| `da_DK` | Danish | machine-generated | ⚙ unreviewed |
+| `de_DE` | German | machine-generated | ⚙ unreviewed |
+| `el_GR` | Greek | machine-generated | ⚙ unreviewed |
+| `es_ES` | Spanish | machine-generated | ⚙ unreviewed |
+| `et_EE` | Estonian | machine-generated | ⚙ unreviewed |
+| `fi_FI` | Finnish | machine-generated | ⚙ unreviewed |
+| `fr_FR` | French | machine-generated | ⚙ unreviewed |
+| `hr_HR` | Croatian | machine-generated | ⚙ unreviewed |
+| `hu_HU` | Hungarian | machine-generated | ⚙ unreviewed |
+| `it_IT` | Italian | machine-generated | ⚙ unreviewed |
+| `lt_LT` | Lithuanian | machine-generated | ⚙ unreviewed |
+| `lv_LV` | Latvian | machine-generated | ⚙ unreviewed |
+| `nb_NO` | Norwegian Bokmål | machine-generated | ⚙ unreviewed |
+| `pl_PL` | Polish | machine-generated | ⚙ unreviewed |
+| `pt_PT` | Portuguese | machine-generated | ⚙ unreviewed |
+| `ro_RO` | Romanian | machine-generated | ⚙ unreviewed |
+| `sk_SK` | Slovak | machine-generated | ⚙ unreviewed |
+| `sl_SI` | Slovenian | machine-generated | ⚙ unreviewed |
+| `sr_RS` | Serbian (Cyrillic) | machine-generated | ⚙ unreviewed |
+| `sv_SE` | Swedish | machine-generated | ⚙ unreviewed |
 
-More languages are welcome — see [translations/TRANSLATING.md](translations/TRANSLATING.md) to contribute.
+> **Note:** Locales marked ⚙ were machine-generated to give each language a starting
+> point and have **not** been reviewed by a native speaker. They may contain awkward
+> phrasing or mistakes. Corrections are very welcome — please send them in accordance
+> with [translations/TRANSLATING.md](translations/TRANSLATING.md).
+
+More languages are welcome too — see [translations/TRANSLATING.md](translations/TRANSLATING.md) to contribute.
 
 ## Paths
 After installation the following files are placed automatically:

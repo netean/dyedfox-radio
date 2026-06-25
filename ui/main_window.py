@@ -491,6 +491,9 @@ class MainWindow(QMainWindow):
         from api.artwork import parse_now_playing, ArtworkLoader
         self._art_token += 1
         self._current_art_url = ""
+        # Drop the previous song's cover so it doesn't linger if the new song has
+        # no match; revert to the favicon until/unless new art arrives.
+        self._info_panel.clear_album_art()
         if not (self._settings["show_album_art"] and self._current_station):
             return
         query = parse_now_playing(title)

@@ -54,6 +54,9 @@ class MainWindow(QMainWindow):
         self._panel_favicon_loaders: set = set()  # keep-alive until run() finishes
         self._current_favicon: QIcon | None = None
         self._pending_notification: tuple[str, str] | None = None  # (station, title)
+        self._artwork_loaders: set = set()  # keep-alive until run() finishes
+        self._art_token: int = 0  # identifies the current song for stale-result guarding
+        self._current_art_url: str = ""
 
         # Clicking a station calls GStreamer set_state(NULL), which blocks the GUI
         # thread until the stream tears down. Rapid clicks stack these teardowns
@@ -113,6 +116,7 @@ class MainWindow(QMainWindow):
         content_layout.addWidget(self._sep(vertical=True))
 
         self._info_panel = InfoPanel()
+        self._info_panel.set_album_art_enabled(self._settings["show_album_art"])
         content_layout.addWidget(self._info_panel)
 
         root_layout.addWidget(self._sep())
@@ -264,6 +268,12 @@ class MainWindow(QMainWindow):
     def _open_settings(self):
         dlg = SettingsDialog(self._settings, self)
         dlg.exec()
+        enabled = self._settings["show_album_art"]
+        self._info_panel.set_album_art_enabled(enabled)
+        if not enabled:
+            self._info_panel.clear_album_art()
+        elif self._current_station and self._last_title:
+            self._fetch_artwork(self._last_title)
 
     def _open_about(self):
         AboutDialog(self).exec()
@@ -415,6 +425,8 @@ class MainWindow(QMainWindow):
             return
         self._current_station = station
         self._last_title = ""
+        self._art_token += 1  # invalidate any in-flight artwork from the previous station
+        self._current_art_url = ""
         self._backend.play(url)
         self._now_playing.set_station(station.get("name", "").strip())
         self._now_playing.clear_song()
@@ -458,6 +470,7 @@ class MainWindow(QMainWindow):
         if title == self._last_title:
             return
         self._last_title = title
+        self._fetch_artwork(title)
         if self._settings["notifications"] and self._tray and self._current_station:
             station_name = self._current_station.get("name", "Dyedfox Radio")
             if self._current_favicon:
@@ -472,6 +485,33 @@ class MainWindow(QMainWindow):
                 title,
                 self._current_station.get("name", ""),
                 self._current_station.get("favicon", ""),
+            )
+
+    def _fetch_artwork(self, title: str):
+        from api.artwork import parse_now_playing, ArtworkLoader
+        self._art_token += 1
+        self._current_art_url = ""
+        if not (self._settings["show_album_art"] and self._current_station):
+            return
+        query = parse_now_playing(title)
+        if not query:
+            return
+        loader = ArtworkLoader(self._art_token, query)
+        loader.signals.loaded.connect(self._on_artwork_loaded)
+        loader.signals.finished.connect(self._artwork_loaders.discard)
+        self._artwork_loaders.add(loader)
+        QThreadPool.globalInstance().start(loader)
+
+    def _on_artwork_loaded(self, token: int, data: bytes, art_url: str):
+        if token != self._art_token:
+            return  # stale: the song or station changed before this resolved
+        self._info_panel.set_album_art(data, art_url)
+        self._current_art_url = art_url
+        if self._mpris and self._current_station:
+            self._mpris.update_metadata(
+                self._last_title,
+                self._current_station.get("name", ""),
+                art_url,
             )
 
     def _on_stream_error(self, msg: str):

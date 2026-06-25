@@ -114,130 +114,145 @@ Drevet av radio-browser.info.</translation>
 </context><context>
     <name>InfoPanel</name>
     <message>
-        <location filename="../ui/info_panel.py" line="68" />
+        <location filename="../ui/info_panel.py" line="115" />
+        <source>Click to enlarge</source>
+        <translation>Klikk for å forstørre</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="138" />
         <source>Copy station name</source>
         <translation>Kopier stasjonsnavn</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="75" />
+        <location filename="../ui/info_panel.py" line="155" />
         <source>Open station website</source>
         <translation>Åpne stasjonens nettsted</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="89" />
+        <location filename="../ui/info_panel.py" line="169" />
         <source>Open on radio-browser.info</source>
         <translation>Åpne på radio-browser.info</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="124" />
+        <location filename="../ui/info_panel.py" line="204" />
         <source>Copy song info</source>
         <translation>Kopier sanginformasjon</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="328" />
+        <source>Show station logo</source>
+        <translation>Vis stasjonslogo</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="333" />
+        <source>Show album art</source>
+        <translation>Vis albumcover</translation>
     </message>
 </context><context>
     <name>MainWindow</name>
     <message>
-        <location filename="../ui/main_window.py" line="147" />
+        <location filename="../ui/main_window.py" line="161" />
         <source>LIBRARY</source>
         <translation>BIBLIOTEK</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="148" />
+        <location filename="../ui/main_window.py" line="162" />
         <source>All stations</source>
         <translation>Alle stasjoner</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="149" />
+        <location filename="../ui/main_window.py" line="163" />
         <source>Favourites</source>
         <translation>Favoritter</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="150" />
+        <location filename="../ui/main_window.py" line="164" />
         <source>Custom</source>
         <translation>Tilpassede</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="151" />
+        <location filename="../ui/main_window.py" line="165" />
         <source>History</source>
         <translation>Historikk</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="154" />
+        <location filename="../ui/main_window.py" line="168" />
         <source>DISCOVER</source>
         <translation>OPPDAG</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="155" />
+        <location filename="../ui/main_window.py" line="169" />
         <source>New</source>
         <translation>Nye</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="156" />
+        <location filename="../ui/main_window.py" line="170" />
         <source>Random</source>
         <translation>Tilfeldige</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="157" />
+        <location filename="../ui/main_window.py" line="171" />
         <source>Trending</source>
         <translation>Populære</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="158" />
+        <location filename="../ui/main_window.py" line="172" />
         <source>Now Listening</source>
         <translation>Lyttes til nå</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="165" />
+        <location filename="../ui/main_window.py" line="179" />
         <source>Settings</source>
         <translation>Innstillinger</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="174" />
+        <location filename="../ui/main_window.py" line="188" />
         <source>About</source>
         <translation>Om</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="346" />
-        <location filename="../ui/main_window.py" line="243" />
+        <location filename="../ui/main_window.py" line="366" />
+        <location filename="../ui/main_window.py" line="257" />
         <source>Could not load stations — check your connection</source>
         <translation>Kunne ikke laste inn stasjoner — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="292" />
+        <location filename="../ui/main_window.py" line="312" />
         <source>Could not load favourites — check your connection</source>
         <translation>Kunne ikke laste inn favoritter — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="312" />
+        <location filename="../ui/main_window.py" line="332" />
         <source>Could not load history — check your connection</source>
         <translation>Kunne ikke laste inn historikk — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="330" />
+        <location filename="../ui/main_window.py" line="350" />
         <source>Could not load new stations — check your connection</source>
         <translation>Kunne ikke laste inn nye stasjoner — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="362" />
+        <location filename="../ui/main_window.py" line="382" />
         <source>Could not load trending stations — check your connection</source>
         <translation>Kunne ikke laste inn populære stasjoner — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="378" />
+        <location filename="../ui/main_window.py" line="398" />
         <source>Could not load now listening stations — check your connection</source>
         <translation>Kunne ikke laste inn stasjoner som lyttes til nå — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="475" />
+        <location filename="../ui/main_window.py" line="525" />
         <source>Could not connect to {0}. The stream may be down or unavailable.</source>
         <translation>Kunne ikke koble til {0}. Strømmen kan være utilgjengelig.</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="614" />
+        <location filename="../ui/main_window.py" line="664" />
         <source>Delete station</source>
         <translation>Slett stasjon</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="615" />
+        <location filename="../ui/main_window.py" line="665" />
         <source>Delete “{0}” from your custom stations?</source>
         <translation>Slette «{0}» fra dine tilpassede stasjoner?</translation>
     </message>
@@ -317,64 +332,79 @@ Drevet av radio-browser.info.</translation>
         <translation>Vis varsler ved sangbytte</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="145" />
-        <location filename="../ui/settings_dialog.py" line="141" />
-        <location filename="../ui/settings_dialog.py" line="126" />
-        <location filename="../ui/settings_dialog.py" line="124" />
         <location filename="../ui/settings_dialog.py" line="71" />
+        <source>Now playing</source>
+        <translation>Spilles nå</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="74" />
+        <source>Show album art for the current song</source>
+        <translation>Vis albumcover for gjeldende sang</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="78" />
+        <source>Cover art is looked up from Deezer using only the song title — no personal information is sent. Deezer can still see your IP address. Falls back to the station logo when no match is found.</source>
+        <translation>Coveret slås opp på Deezer kun ut fra sangtittelen; ingen personlig informasjon sendes. Deezer kan likevel se IP-adressen din. Hvis ingen treff blir funnet, vises stasjonslogoen.</translation>
+    </message>
+    <message>
+        <location filename="../ui/settings_dialog.py" line="171" />
+        <location filename="../ui/settings_dialog.py" line="167" />
+        <location filename="../ui/settings_dialog.py" line="152" />
+        <location filename="../ui/settings_dialog.py" line="150" />
+        <location filename="../ui/settings_dialog.py" line="88" />
         <source>Backup</source>
         <translation>Sikkerhetskopi</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="74" />
+        <location filename="../ui/settings_dialog.py" line="91" />
         <source>Back up and restore your favourites, custom stations, history, and settings.</source>
         <translation>Sikkerhetskopier og gjenopprett favorittene dine, tilpassede stasjoner, historikk og innstillinger.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="80" />
+        <location filename="../ui/settings_dialog.py" line="97" />
         <source>Export…</source>
         <translation>Eksporter…</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="82" />
+        <location filename="../ui/settings_dialog.py" line="99" />
         <source>Import…</source>
         <translation>Importer…</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="116" />
+        <location filename="../ui/settings_dialog.py" line="142" />
         <source>Export backup</source>
         <translation>Eksporter sikkerhetskopi</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="133" />
-        <location filename="../ui/settings_dialog.py" line="118" />
+        <location filename="../ui/settings_dialog.py" line="159" />
+        <location filename="../ui/settings_dialog.py" line="144" />
         <source>Zip files (*.zip)</source>
         <translation>ZIP-filer (*.zip)</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="124" />
+        <location filename="../ui/settings_dialog.py" line="150" />
         <source>Backup exported successfully.</source>
         <translation>Sikkerhetskopi eksportert.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="126" />
+        <location filename="../ui/settings_dialog.py" line="152" />
         <source>Export failed: {0}</source>
         <translation>Eksport mislyktes: {0}</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="131" />
+        <location filename="../ui/settings_dialog.py" line="157" />
         <source>Import backup</source>
         <translation>Importer sikkerhetskopi</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="142" />
+        <location filename="../ui/settings_dialog.py" line="168" />
         <source>Restored: {0}.
 Restart the app to apply changes.</source>
         <translation>Gjenopprettet: {0}.
 Start appen på nytt for å bruke endringene.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="145" />
+        <location filename="../ui/settings_dialog.py" line="171" />
         <source>Import failed: {0}</source>
         <translation>Import mislyktes: {0}</translation>
     </message>
@@ -515,5 +545,4 @@ Start appen på nytt for å bruke endringene.</translation>
         <source>Stop</source>
         <translation>Stopp</translation>
     </message>
-</context>
-</TS>
+</context></TS>

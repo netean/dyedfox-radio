@@ -10,7 +10,6 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 - [Features](#features)
 - [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Install on Arch Linux (AUR)](#install-on-arch-linux-aur)
-- [Install on openSUSE (OBS)](#install-on-opensuse-obs)
 - [Build from source (PKGBUILD)](#build-from-source-pkgbuild)
 - [Install on other Linux distros](#install-on-other-linux-distros)
 - [Manual installation](#manual-installation)
@@ -36,6 +35,7 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 - Favourites, History, and custom stations (add any stream by URL)
 - Editable History — remove single stations or clear the whole list
 - Station info panel with logo, codec, bitrate, and tags
+- Per-song album art for the current track (looked up from Deezer, falls back to the station logo) — click the artwork to enlarge, or toggle between cover art and station logo
 - Animated equalizer indicator on the playing station
 - Now playing bar with song/artist from stream metadata
 - Automatic reconnection with backoff when a stream drops
@@ -65,10 +65,6 @@ git clone https://aur.archlinux.org/dyedfox-radio.git
 cd dyedfox-radio
 makepkg -si
 ```
-
-## Install on openSUSE (OBS)
-
-Available on the [openSUSE Build Service](https://build.opensuse.org/package/show/home:tekidev/dyedfox-radio), maintained by [TekiDev](https://build.opensuse.org/users/tekidev).
 
 ## Build from source (PKGBUILD)
 

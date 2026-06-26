@@ -343,8 +343,8 @@ Funcționează cu radio-browser.info.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="78" />
-        <source>Cover art is looked up from Deezer using only the song title — no personal information is sent. Deezer can still see your IP address. Falls back to the station logo when no match is found.</source>
-        <translation>Coperta este căutată pe Deezer doar după titlul melodiei; nu se trimit informații personale. Deezer poate vedea totuși adresa dvs. IP. Dacă nu se găsește nicio potrivire, se afișează sigla postului.</translation>
+        <source>Cover art is looked up from Deezer using the song title. Falls back to the station logo when no match is found.</source>
+        <translation>Coperta este căutată pe Deezer după titlul melodiei. Dacă nu se găsește nicio potrivire, se afișează sigla postului.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="171" />

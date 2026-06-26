@@ -343,8 +343,8 @@ A radio-browser.info szolgáltatással.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="78" />
-        <source>Cover art is looked up from Deezer using only the song title — no personal information is sent. Deezer can still see your IP address. Falls back to the station logo when no match is found.</source>
-        <translation>A borítót a Deezer csak a szám címe alapján keresi meg; nem küld személyes adatokat. A Deezer azonban láthatja az Ön IP-címét. Ha nincs találat, az állomás logója jelenik meg.</translation>
+        <source>Cover art is looked up from Deezer using the song title. Falls back to the station logo when no match is found.</source>
+        <translation>A borítót a Deezer a szám címe alapján keresi meg. Ha nincs találat, az állomás logója jelenik meg.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="171" />

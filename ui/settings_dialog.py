@@ -75,9 +75,8 @@ class SettingsDialog(QDialog):
         self._show_album_art.setChecked(settings["show_album_art"])
         nowplaying_layout.addWidget(self._show_album_art)
 
-        art_note = QLabel(self.tr("Cover art is looked up from Deezer using only the song title — "
-                                  "no personal information is sent. Deezer can still see your IP "
-                                  "address. Falls back to the station logo when no match is found."))
+        art_note = QLabel(self.tr("Cover art is looked up from Deezer using the song title. "
+                                  "Falls back to the station logo when no match is found."))
         art_note.setEnabled(False)
         art_note.setWordWrap(True)
         nowplaying_layout.addWidget(art_note)

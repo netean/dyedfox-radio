@@ -350,8 +350,8 @@ Aangedreven door radiobrowser.info</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="78" />
-        <source>Cover art is looked up from Deezer using only the song title — no personal information is sent. Deezer can still see your IP address. Falls back to the station logo when no match is found.</source>
-        <translation>De albumhoes wordt op Deezer opgezocht op basis van alleen de songtitel; er wordt geen persoonlijke informatie verzonden. Deezer kan wel uw IP-adres zien. Als er geen overeenkomst wordt gevonden, wordt het stationslogo getoond.</translation>
+        <source>Cover art is looked up from Deezer using the song title. Falls back to the station logo when no match is found.</source>
+        <translation>De albumhoes wordt op Deezer opgezocht op basis van de songtitel. Als er geen overeenkomst wordt gevonden, wordt het stationslogo getoond.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="171" />

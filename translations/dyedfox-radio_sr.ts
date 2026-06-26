@@ -343,8 +343,8 @@ Powered by radio-browser.info.</source>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="78" />
-        <source>Cover art is looked up from Deezer using only the song title — no personal information is sent. Deezer can still see your IP address. Falls back to the station logo when no match is found.</source>
-        <translation>Омот се тражи на Deezer-у само према наслову песме; не шаљу се лични подаци. Deezer ипак може да види вашу IP адресу. Ако се не пронађе подударање, приказује се логотип станице.</translation>
+        <source>Cover art is looked up from Deezer using the song title. Falls back to the station logo when no match is found.</source>
+        <translation>Омот се тражи на Deezer-у према наслову песме. Ако се не пронађе подударање, приказује се логотип станице.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="171" />

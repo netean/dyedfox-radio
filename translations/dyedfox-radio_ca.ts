@@ -343,8 +343,8 @@ Amb la tecnologia de radio-browser.info.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="78" />
-        <source>Cover art is looked up from Deezer using only the song title — no personal information is sent. Deezer can still see your IP address. Falls back to the station logo when no match is found.</source>
-        <translation>La caràtula es cerca a Deezer només amb el títol de la cançó; no s’envia cap informació personal. Tot i així, Deezer pot veure la vostra adreça IP. Si no es troba cap coincidència, es mostra el logotip de l’emissora.</translation>
+        <source>Cover art is looked up from Deezer using the song title. Falls back to the station logo when no match is found.</source>
+        <translation>La caràtula es cerca a Deezer amb el títol de la cançó. Si no es troba cap coincidència, es mostra el logotip de l’emissora.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="171" />

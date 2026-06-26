@@ -343,8 +343,8 @@ Powered by radio-browser.info.</source>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="78" />
-        <source>Cover art is looked up from Deezer using only the song title — no personal information is sent. Deezer can still see your IP address. Falls back to the station logo when no match is found.</source>
-        <translation>Το εξώφυλλο αναζητείται στο Deezer μόνο με βάση τον τίτλο του τραγουδιού· δεν αποστέλλονται προσωπικά στοιχεία. Το Deezer μπορεί ωστόσο να δει τη διεύθυνση IP σας. Αν δεν βρεθεί αντιστοιχία, εμφανίζεται το λογότυπο του σταθμού.</translation>
+        <source>Cover art is looked up from Deezer using the song title. Falls back to the station logo when no match is found.</source>
+        <translation>Το εξώφυλλο αναζητείται στο Deezer με βάση τον τίτλο του τραγουδιού. Αν δεν βρεθεί αντιστοιχία, εμφανίζεται το λογότυπο του σταθμού.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="171" />

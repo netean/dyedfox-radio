@@ -343,8 +343,8 @@ Palvelun tarjoaa radio-browser.info.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="78" />
-        <source>Cover art is looked up from Deezer using only the song title — no personal information is sent. Deezer can still see your IP address. Falls back to the station logo when no match is found.</source>
-        <translation>Kansikuva haetaan Deezeristä pelkän kappaleen nimen perusteella; henkilötietoja ei lähetetä. Deezer voi silti nähdä IP-osoitteesi. Jos vastaavuutta ei löydy, näytetään aseman logo.</translation>
+        <source>Cover art is looked up from Deezer using the song title. Falls back to the station logo when no match is found.</source>
+        <translation>Kansikuva haetaan Deezeristä kappaleen nimen perusteella. Jos vastaavuutta ei löydy, näytetään aseman logo.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="171" />

@@ -343,8 +343,8 @@ Drevet av radio-browser.info.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="78" />
-        <source>Cover art is looked up from Deezer using only the song title — no personal information is sent. Deezer can still see your IP address. Falls back to the station logo when no match is found.</source>
-        <translation>Coveret slås opp på Deezer kun ut fra sangtittelen; ingen personlig informasjon sendes. Deezer kan likevel se IP-adressen din. Hvis ingen treff blir funnet, vises stasjonslogoen.</translation>
+        <source>Cover art is looked up from Deezer using the song title. Falls back to the station logo when no match is found.</source>
+        <translation>Coveret slås opp på Deezer ut fra sangtittelen. Hvis ingen treff blir funnet, vises stasjonslogoen.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="171" />

@@ -351,8 +351,8 @@ Powered by radio-browser.info.</source>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="78" />
-        <source>Cover art is looked up from Deezer using only the song title — no personal information is sent. Deezer can still see your IP address. Falls back to the station logo when no match is found.</source>
-        <translation>Обкладинку шукають на Deezer лише за назвою пісні; жодних особистих даних не надсилається. Проте Deezer може бачити вашу IP-адресу. Якщо збігів не знайдено, показується логотип станції.</translation>
+        <source>Cover art is looked up from Deezer using the song title. Falls back to the station logo when no match is found.</source>
+        <translation>Пошук обкладинки на Deezer за назвою пісні. Якщо збігів не знайдено, буде показано логотип станції.</translation>
     </message>
     <message>
         <location filename="../ui/settings_dialog.py" line="171" />

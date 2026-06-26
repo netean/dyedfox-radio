@@ -8,6 +8,8 @@ from PyQt6.QtCore import Qt, QSize, QEvent, QThreadPool, QTimer
 from PyQt6.QtGui import QIcon, QShortcut, QKeySequence, QPixmap
 
 _NOTIF_ICON_PATH = Path.home() / ".config" / "dyedfox-radio" / "notif_icon.png"
+_ART_NOTIF_ICON_PATH = Path.home() / ".config" / "dyedfox-radio" / "notif_art.png"
+_NOTIFY_ART_TIMEOUT_MS = 9000  # backstop: release a held notification if a cover lookup stalls
 
 from ui.station_list import StationListWidget
 from ui.info_panel import InfoPanel
@@ -53,7 +55,11 @@ class MainWindow(QMainWindow):
         self._mpris = None
         self._panel_favicon_loaders: set = set()  # keep-alive until run() finishes
         self._current_favicon: QIcon | None = None
-        self._pending_notification: tuple[str, str] | None = None  # (station, title)
+        self._pending_notification: tuple[str, str, int] | None = None  # (station, title, art_token)
+        self._notify_await_art: bool = False  # holding the notification for a cover lookup
+        self._artwork_loaders: set = set()  # keep-alive until run() finishes
+        self._art_token: int = 0  # identifies the current song for stale-result guarding
+        self._current_art_url: str = ""
 
         # Clicking a station calls GStreamer set_state(NULL), which blocks the GUI
         # thread until the stream tears down. Rapid clicks stack these teardowns
@@ -113,6 +119,7 @@ class MainWindow(QMainWindow):
         content_layout.addWidget(self._sep(vertical=True))
 
         self._info_panel = InfoPanel()
+        self._info_panel.set_album_art_enabled(self._settings["show_album_art"])
         content_layout.addWidget(self._info_panel)
 
         root_layout.addWidget(self._sep())
@@ -264,6 +271,12 @@ class MainWindow(QMainWindow):
     def _open_settings(self):
         dlg = SettingsDialog(self._settings, self)
         dlg.exec()
+        enabled = self._settings["show_album_art"]
+        self._info_panel.set_album_art_enabled(enabled)
+        if not enabled:
+            self._info_panel.clear_album_art()
+        elif self._current_station and self._last_title:
+            self._fetch_artwork(self._last_title)
 
     def _open_about(self):
         AboutDialog(self).exec()
@@ -415,6 +428,8 @@ class MainWindow(QMainWindow):
             return
         self._current_station = station
         self._last_title = ""
+        self._art_token += 1  # invalidate any in-flight artwork from the previous station
+        self._current_art_url = ""
         self._backend.play(url)
         self._now_playing.set_station(station.get("name", "").strip())
         self._now_playing.clear_song()
@@ -424,6 +439,7 @@ class MainWindow(QMainWindow):
 
         self._current_favicon = None
         self._pending_notification = None
+        self._notify_await_art = False
         favicon_url = station.get("favicon", "")
         if favicon_url:
             self._load_panel_favicon(favicon_url)
@@ -445,10 +461,11 @@ class MainWindow(QMainWindow):
         if not pix.isNull():
             self._current_favicon = QIcon(pix)
             pix.save(str(_NOTIF_ICON_PATH), "PNG")
-            if self._pending_notification:
-                station, title = self._pending_notification
-                self._pending_notification = None
-                self._show_notification(station, title)
+            # Fire a notification that was waiting only for the favicon. If we're
+            # instead holding it for a cover lookup, the artwork path owns it.
+            if self._pending_notification and not self._notify_await_art:
+                _, _, token = self._pending_notification
+                self._flush_notification(token)
 
     def _on_metadata(self, title: str):
         self._now_playing.set_song(title)
@@ -458,21 +475,77 @@ class MainWindow(QMainWindow):
         if title == self._last_title:
             return
         self._last_title = title
+        art_started = self._fetch_artwork(title)
         if self._settings["notifications"] and self._tray and self._current_station:
             station_name = self._current_station.get("name", "Dyedfox Radio")
-            if self._current_favicon:
-                self._pending_notification = None
-                self._show_notification(station_name, title)
-            elif self._current_station.get("favicon"):
-                self._pending_notification = (station_name, title)
+            token = self._art_token
+            self._pending_notification = (station_name, title, token)
+            if art_started:
+                # Hold the notification until the cover resolves. The lookup's
+                # finished signal releases it (with the cover, or the favicon if
+                # no match); a backstop timer guards against a stalled lookup.
+                self._notify_await_art = True
+                QTimer.singleShot(_NOTIFY_ART_TIMEOUT_MS, lambda: self._flush_notification(token))
             else:
-                self._show_notification(station_name, title)
+                self._notify_await_art = False
+                if self._current_favicon or not self._current_station.get("favicon"):
+                    self._flush_notification(token)  # favicon if loaded, else themed icon
+                # else: a favicon is still downloading — _on_panel_favicon_loaded fires it
         if self._mpris and self._current_station:
             self._mpris.update_metadata(
                 title,
                 self._current_station.get("name", ""),
                 self._current_station.get("favicon", ""),
             )
+
+    def _fetch_artwork(self, title: str) -> bool:
+        """Start an async cover lookup. Returns True if a lookup was started."""
+        from api.artwork import parse_now_playing, ArtworkLoader
+        self._art_token += 1
+        self._current_art_url = ""
+        # Drop the previous song's cover so it doesn't linger if the new song has
+        # no match; revert to the favicon until/unless new art arrives.
+        self._info_panel.clear_album_art()
+        if not (self._settings["show_album_art"] and self._current_station):
+            return False
+        query = parse_now_playing(title)
+        if not query:
+            return False
+        loader = ArtworkLoader(self._art_token, query)
+        loader.signals.loaded.connect(self._on_artwork_loaded)
+        loader.signals.finished.connect(self._artwork_loaders.discard)
+        loader.signals.finished.connect(lambda _l, t=self._art_token: self._on_artwork_finished(t))
+        self._artwork_loaders.add(loader)
+        QThreadPool.globalInstance().start(loader)
+        return True
+
+    def _on_artwork_loaded(self, token: int, data: bytes, art_url: str):
+        if token != self._art_token:
+            return  # stale: the song or station changed before this resolved
+        self._info_panel.set_album_art(data, art_url)
+        self._current_art_url = art_url
+        if self._mpris and self._current_station:
+            self._mpris.update_metadata(
+                self._last_title,
+                self._current_station.get("name", ""),
+                art_url,
+            )
+        # Release a held notification with the cover as its icon.
+        if self._notify_await_art:
+            pix = QPixmap()
+            pix.loadFromData(data)
+            if not pix.isNull():
+                pix.save(str(_ART_NOTIF_ICON_PATH), "PNG")
+                self._flush_notification(token, str(_ART_NOTIF_ICON_PATH))
+            else:
+                self._flush_notification(token)
+
+    def _on_artwork_finished(self, token: int):
+        # The lookup concluded. If a cover was found, _on_artwork_loaded already
+        # fired the notification; otherwise release it now with the favicon so a
+        # no-match song doesn't wait for the backstop timer.
+        if self._notify_await_art:
+            self._flush_notification(token)
 
     def _on_stream_error(self, msg: str):
         print(f"dyedfox-radio: stream error: {msg}", flush=True)
@@ -530,17 +603,33 @@ class MainWindow(QMainWindow):
         if self._mpris:
             self._mpris.update_playback_status()
 
-    def _show_notification(self, station: str, title: str):
+    def _flush_notification(self, token: int, icon_path: str | None = None):
+        """Fire the queued notification if it still belongs to the given song."""
+        if not self._pending_notification:
+            return
+        station, title, tok = self._pending_notification
+        if tok != token:
+            return  # a newer song superseded this one
+        self._pending_notification = None
+        self._notify_await_art = False
+        self._show_notification(station, title, icon_path)
+
+    def _show_notification(self, station: str, title: str, icon_path: str | None = None):
         try:
             cmd = ["notify-send", "-a", "Dyedfox Radio", "-t", "3000"]
-            if self._current_favicon and _NOTIF_ICON_PATH.exists():
+            if icon_path and Path(icon_path).exists():
+                cmd.extend(["-i", icon_path])
+            elif self._current_favicon and _NOTIF_ICON_PATH.exists():
                 cmd.extend(["-i", str(_NOTIF_ICON_PATH)])
             else:
                 cmd.extend(["-i", "dyedfox-radio"])
             cmd.extend(["--", station, title])
             subprocess.Popen(cmd)
         except FileNotFoundError:
-            self._tray.showMessage(station, title, QSystemTrayIcon.MessageIcon.NoIcon, 3000)
+            if icon_path and Path(icon_path).exists():
+                self._tray.showMessage(station, title, QIcon(icon_path), 3000)
+            else:
+                self._tray.showMessage(station, title, QSystemTrayIcon.MessageIcon.NoIcon, 3000)
 
     def _on_clear_recent(self):
         self._recent.clear()

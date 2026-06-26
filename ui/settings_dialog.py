@@ -14,7 +14,7 @@ class SettingsDialog(QDialog):
         super().__init__(parent)
         self._settings = settings
         self.setWindowTitle(self.tr("Settings"))
-        self.setMinimumWidth(380)
+        self.setFixedWidth(600)
         self.setModal(True)
 
         layout = QVBoxLayout(self)
@@ -67,6 +67,22 @@ class SettingsDialog(QDialog):
 
         layout.addWidget(notif)
 
+        # --- Now playing ---
+        nowplaying = QGroupBox(self.tr("Now playing"))
+        nowplaying_layout = QVBoxLayout(nowplaying)
+
+        self._show_album_art = QCheckBox(self.tr("Show album art for the current song"))
+        self._show_album_art.setChecked(settings["show_album_art"])
+        nowplaying_layout.addWidget(self._show_album_art)
+
+        art_note = QLabel(self.tr("Cover art is looked up from Deezer using the song title. "
+                                  "Falls back to the station logo when no match is found."))
+        art_note.setEnabled(False)
+        art_note.setWordWrap(True)
+        nowplaying_layout.addWidget(art_note)
+
+        layout.addWidget(nowplaying)
+
         # --- Backup / Restore ---
         backup_group = QGroupBox(self.tr("Backup"))
         backup_layout = QVBoxLayout(backup_group)
@@ -96,6 +112,14 @@ class SettingsDialog(QDialog):
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
 
+        # Size the height to exactly fit the content at 600px wide. Word-wrapped
+        # labels report their sizeHint at their own natural width, which would
+        # otherwise leave blank space once the dialog is widened to 600.
+        layout.activate()
+        h = layout.heightForWidth(600)
+        if h > 0:
+            self.setFixedHeight(h)
+
     def changeEvent(self, event):
         if event.type() == QEvent.Type.PaletteChange:
             for w in self.findChildren(QLabel | QGroupBox):
@@ -107,6 +131,7 @@ class SettingsDialog(QDialog):
         self._settings["autoplay_last"] = self._autoplay_last.isChecked()
         self._settings["station_limit"] = self._limit.currentData()
         self._settings["notifications"] = self._notifications.isChecked()
+        self._settings["show_album_art"] = self._show_album_art.isChecked()
         self._settings.save()
         self.accept()
 

@@ -10,6 +10,7 @@ DEFAULTS: dict = {
     "volume": 80,
     "station_limit": 100,
     "notifications": True,
+    "show_album_art": True,
     "last_view": "all",
     "window_size": [960, 620],
     "sort": {

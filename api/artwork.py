@@ -27,7 +27,9 @@ def parse_now_playing(title: str) -> str | None:
     # Drop a trailing stream-quality/codec suffix some stations append.
     text = re.sub(r"\s*[\(\[][^\)\]]*\b(kbps|aac|mp3)\b[^\)\]]*[\)\]]\s*$", "", text, flags=re.IGNORECASE)
     text = re.sub(r"\s+", " ", text).strip(" -–—")
-    if len(text) < 3 or not re.search(r"[A-Za-z0-9]", text):
+    # Require at least one alphanumeric char (Unicode-aware, so Cyrillic, Greek,
+    # CJK, etc. all qualify) to skip strings that are only punctuation/symbols.
+    if len(text) < 3 or not any(ch.isalnum() for ch in text):
         return None
     if _JUNK.match(text):
         return None

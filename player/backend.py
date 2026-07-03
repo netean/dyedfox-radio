@@ -32,14 +32,9 @@ class GStreamerBackend(QObject):
                 "Make sure gstreamer and gst-plugins-good are installed."
             )
 
-        # pulsesink first for compatibility: it drives both PulseAudio and
-        # PipeWire (via pipewire-pulse) and follows default-device changes, and
-        # unlike pipewiresink it needs no gst-plugins-bad — which some distros
-        # (Fedora/Nobara, CachyOS) don't ship by default, where pipewiresink
-        # otherwise grabbed the device exclusively and produced no output.
-        # pipewiresink is kept as an option for pure-PipeWire setups without the
-        # pulse shim; autoaudiosink is the last resort (it locks to the device at
-        # play-start, so it can't follow output changes mid-session).
+        # pulsesink is preferred for compatibility; it works reliably with both
+        # PulseAudio and PipeWire (via pipewire-pulse). pipewiresink can have
+        # issues on some Fedora/Arch setups. autoaudiosink is the final fallback.
         audio_sink = None
         for sink_name in ("pulsesink", "pipewiresink", "autoaudiosink"):
             audio_sink = Gst.ElementFactory.make(sink_name, "audio_sink")
@@ -47,7 +42,7 @@ class GStreamerBackend(QObject):
                 self._tag_sink_for_mixer(audio_sink)
                 self._player.set_property("audio-sink", audio_sink)
                 break
-
+        
         if audio_sink is None:
             raise RuntimeError(
                 "Failed to create any GStreamer audio sink. Make sure the "

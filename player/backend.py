@@ -32,15 +32,22 @@ class GStreamerBackend(QObject):
                 "Make sure gstreamer and gst-plugins-good are installed."
             )
 
-        # pipewiresink lets WirePlumber reroute the stream to the current default
-        # device dynamically (e.g. Bluetooth headphones connected mid-session).
-        # pulsesink is a fallback for non-PipeWire setups; autoaudiosink locks
-        # to the device at play-start so it is the last resort.
-        for sink_name in ("pipewiresink", "pulsesink"):
+        # pulsesink is preferred for compatibility; it works reliably with both
+        # PulseAudio and PipeWire (via pipewire-pulse). pipewiresink can have
+        # issues on some Fedora/Arch setups. autoaudiosink is the final fallback.
+        audio_sink = None
+        for sink_name in ("pulsesink", "pipewiresink", "autoaudiosink"):
             audio_sink = Gst.ElementFactory.make(sink_name, "audio_sink")
             if audio_sink is not None:
                 self._player.set_property("audio-sink", audio_sink)
                 break
+        
+        if audio_sink is None:
+            raise RuntimeError(
+                "Failed to create any audio sink element. "
+                "Make sure gstreamer audio plugins are installed "
+                "(gst-plugins-good, gst-plugins-base, or gst-plugins-bad)."
+            )
 
         self._bus = self._player.get_bus()
         self._last_url: str | None = None

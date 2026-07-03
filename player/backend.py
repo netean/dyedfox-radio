@@ -39,6 +39,7 @@ class GStreamerBackend(QObject):
         for sink_name in ("pipewiresink", "pulsesink"):
             audio_sink = Gst.ElementFactory.make(sink_name, "audio_sink")
             if audio_sink is not None:
+                self._tag_sink_for_mixer(audio_sink)
                 self._player.set_property("audio-sink", audio_sink)
                 break
 
@@ -72,6 +73,38 @@ class GStreamerBackend(QObject):
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._poll_bus)
         self._timer.start(200)
+
+    @staticmethod
+    def _tag_sink_for_mixer(audio_sink):
+        """Label the audio stream so KDE's volume mixer shows the app name and
+        icon instead of the process name ("python3.14").
+
+        Verified against pw-dump: plasma-pa shows a node's node.description /
+        media.name (not application.name), and those default to the process name
+        unless set. So the display-name fields go in 'stream-properties'.
+        'client-properties' carries the client-level application.name (grouping),
+        and pulsesink uses 'client-name' for the same. Skip absent properties."""
+        if audio_sink.find_property("client-properties") is not None:
+            # application.process.binary defaults to the interpreter ("python3.14")
+            # and plasma-pa uses it as the client-name prefix, so override it too.
+            cp = Gst.Structure.new_from_string(
+                'client-properties,application.name="Dyedfox Radio",'
+                'application.process.binary=dyedfox-radio,'
+                'application.icon_name=dyedfox-radio'
+            )
+            if cp is not None:
+                audio_sink.set_property("client-properties", cp)
+        elif audio_sink.find_property("client-name") is not None:
+            audio_sink.set_property("client-name", "Dyedfox Radio")
+        if audio_sink.find_property("stream-properties") is not None:
+            props = Gst.Structure.new_from_string(
+                'stream-properties,media.role=music,'
+                'application.name="Dyedfox Radio",application.icon_name=dyedfox-radio,'
+                'media.name="Dyedfox Radio",node.name=dyedfox-radio,'
+                'node.description="Dyedfox Radio"'
+            )
+            if props is not None:
+                audio_sink.set_property("stream-properties", props)
 
     def _submit(self, action: str, url: str | None = None):
         # Hand a transition to the worker thread; latest request wins.

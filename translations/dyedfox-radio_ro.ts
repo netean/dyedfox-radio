@@ -114,145 +114,149 @@ Funcționează cu radio-browser.info.</translation>
 </context><context>
     <name>InfoPanel</name>
     <message>
-        <location filename="../ui/info_panel.py" line="115" />
-        <source>Click to enlarge</source>
-        <translation>Faceți clic pentru a mări</translation>
+        <location filename="../ui/info_panel.py" line="154" />
+        <source>Click to enlarge (right-click the image to save)</source>
+        <translation>Faceți clic pentru a mări (clic dreapta pe imagine pentru a o salva)</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="138" />
+        <location filename="../ui/info_panel.py" line="177" />
         <source>Copy station name</source>
         <translation>Copiază numele postului</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="155" />
+        <location filename="../ui/info_panel.py" line="194" />
         <source>Open station website</source>
         <translation>Deschide site-ul postului</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="169" />
+        <location filename="../ui/info_panel.py" line="208" />
         <source>Open on radio-browser.info</source>
         <translation>Deschide pe radio-browser.info</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="204" />
+        <location filename="../ui/info_panel.py" line="243" />
         <source>Copy song info</source>
         <translation>Copiază informațiile melodiei</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="328" />
+        <location filename="../ui/info_panel.py" line="367" />
         <source>Show station logo</source>
         <translation>Afișează sigla postului</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="333" />
+        <location filename="../ui/info_panel.py" line="372" />
         <source>Show album art</source>
         <translation>Afișează coperta albumului</translation>
+    </message>
+    <message>
+        <source>Click to enlarge</source>
+        <translation type="vanished">Faceți clic pentru a mări</translation>
     </message>
 </context><context>
     <name>MainWindow</name>
     <message>
-        <location filename="../ui/main_window.py" line="161" />
+        <location filename="../ui/main_window.py" line="169" />
         <source>LIBRARY</source>
         <translation>BIBLIOTECĂ</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="162" />
+        <location filename="../ui/main_window.py" line="170" />
         <source>All stations</source>
         <translation>Toate posturile</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="163" />
+        <location filename="../ui/main_window.py" line="171" />
         <source>Favourites</source>
         <translation>Favorite</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="164" />
+        <location filename="../ui/main_window.py" line="172" />
         <source>Custom</source>
         <translation>Personalizate</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="165" />
+        <location filename="../ui/main_window.py" line="173" />
         <source>History</source>
         <translation>Istoric</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="168" />
+        <location filename="../ui/main_window.py" line="176" />
         <source>DISCOVER</source>
         <translation>DESCOPERĂ</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="169" />
+        <location filename="../ui/main_window.py" line="177" />
         <source>New</source>
         <translation>Noi</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="170" />
+        <location filename="../ui/main_window.py" line="178" />
         <source>Random</source>
         <translation>Aleatorii</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="171" />
+        <location filename="../ui/main_window.py" line="179" />
         <source>Trending</source>
         <translation>În tendințe</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="172" />
+        <location filename="../ui/main_window.py" line="180" />
         <source>Now Listening</source>
         <translation>Se ascultă acum</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="179" />
+        <location filename="../ui/main_window.py" line="187" />
         <source>Settings</source>
         <translation>Setări</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="188" />
+        <location filename="../ui/main_window.py" line="196" />
         <source>About</source>
         <translation>Despre</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="366" />
-        <location filename="../ui/main_window.py" line="257" />
+        <location filename="../ui/main_window.py" line="374" />
+        <location filename="../ui/main_window.py" line="265" />
         <source>Could not load stations — check your connection</source>
         <translation>Posturile nu au putut fi încărcate — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="312" />
+        <location filename="../ui/main_window.py" line="320" />
         <source>Could not load favourites — check your connection</source>
         <translation>Favoritele nu au putut fi încărcate — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="332" />
+        <location filename="../ui/main_window.py" line="340" />
         <source>Could not load history — check your connection</source>
         <translation>Istoricul nu a putut fi încărcat — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="350" />
+        <location filename="../ui/main_window.py" line="358" />
         <source>Could not load new stations — check your connection</source>
         <translation>Posturile noi nu au putut fi încărcate — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="382" />
+        <location filename="../ui/main_window.py" line="390" />
         <source>Could not load trending stations — check your connection</source>
         <translation>Posturile în tendințe nu au putut fi încărcate — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="398" />
+        <location filename="../ui/main_window.py" line="406" />
         <source>Could not load now listening stations — check your connection</source>
         <translation>Posturile ascultate acum nu au putut fi încărcate — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="525" />
+        <location filename="../ui/main_window.py" line="563" />
         <source>Could not connect to {0}. The stream may be down or unavailable.</source>
         <translation>Conectarea la {0} a eșuat. Fluxul ar putea fi indisponibil.</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="664" />
+        <location filename="../ui/main_window.py" line="732" />
         <source>Delete station</source>
         <translation>Șterge postul</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="665" />
+        <location filename="../ui/main_window.py" line="733" />
         <source>Delete “{0}” from your custom stations?</source>
         <translation>Ștergi „{0}” din posturile tale personalizate?</translation>
     </message>
@@ -347,64 +351,64 @@ Funcționează cu radio-browser.info.</translation>
         <translation>Coperta este căutată pe Deezer după titlul melodiei. Dacă nu se găsește nicio potrivire, se afișează sigla postului.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="171" />
-        <location filename="../ui/settings_dialog.py" line="167" />
-        <location filename="../ui/settings_dialog.py" line="152" />
-        <location filename="../ui/settings_dialog.py" line="150" />
-        <location filename="../ui/settings_dialog.py" line="88" />
+        <location filename="../ui/settings_dialog.py" line="170" />
+        <location filename="../ui/settings_dialog.py" line="166" />
+        <location filename="../ui/settings_dialog.py" line="151" />
+        <location filename="../ui/settings_dialog.py" line="149" />
+        <location filename="../ui/settings_dialog.py" line="87" />
         <source>Backup</source>
         <translation>Copie de rezervă</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="91" />
+        <location filename="../ui/settings_dialog.py" line="90" />
         <source>Back up and restore your favourites, custom stations, history, and settings.</source>
         <translation>Creează copii de rezervă și restaurează favoritele, posturile personalizate, istoricul și setările.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="97" />
+        <location filename="../ui/settings_dialog.py" line="96" />
         <source>Export…</source>
         <translation>Exportă…</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="99" />
+        <location filename="../ui/settings_dialog.py" line="98" />
         <source>Import…</source>
         <translation>Importă…</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="142" />
+        <location filename="../ui/settings_dialog.py" line="141" />
         <source>Export backup</source>
         <translation>Exportă copia de rezervă</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="159" />
-        <location filename="../ui/settings_dialog.py" line="144" />
+        <location filename="../ui/settings_dialog.py" line="158" />
+        <location filename="../ui/settings_dialog.py" line="143" />
         <source>Zip files (*.zip)</source>
         <translation>Fișiere ZIP (*.zip)</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="150" />
+        <location filename="../ui/settings_dialog.py" line="149" />
         <source>Backup exported successfully.</source>
         <translation>Copia de rezervă a fost exportată cu succes.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="152" />
+        <location filename="../ui/settings_dialog.py" line="151" />
         <source>Export failed: {0}</source>
         <translation>Exportul a eșuat: {0}</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="157" />
+        <location filename="../ui/settings_dialog.py" line="156" />
         <source>Import backup</source>
         <translation>Importă copia de rezervă</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="168" />
+        <location filename="../ui/settings_dialog.py" line="167" />
         <source>Restored: {0}.
 Restart the app to apply changes.</source>
         <translation>Restaurat: {0}.
 Reporneşte aplicația pentru a aplica modificările.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="171" />
+        <location filename="../ui/settings_dialog.py" line="170" />
         <source>Import failed: {0}</source>
         <translation>Importul a eșuat: {0}</translation>
     </message>
@@ -544,5 +548,28 @@ Reporneşte aplicația pentru a aplica modificările.</translation>
         <location filename="../tray/tray_icon.py" line="36" />
         <source>Stop</source>
         <translation>Oprește</translation>
+    </message>
+</context><context>
+    <name>_ImagePopup</name>
+    <message>
+        <location filename="../ui/info_panel.py" line="86" />
+        <source>Save image as…</source>
+        <translation>Salvați imaginea ca…</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="107" />
+        <location filename="../ui/info_panel.py" line="95" />
+        <source>Save image</source>
+        <translation>Salvați imaginea</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="96" />
+        <source>PNG image (*.png);;JPEG image (*.jpg *.jpeg)</source>
+        <translation>Imagine PNG (*.png);;Imagine JPEG (*.jpg *.jpeg)</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="107" />
+        <source>Could not save the image.</source>
+        <translation>Imaginea nu a putut fi salvată.</translation>
     </message>
 </context></TS>

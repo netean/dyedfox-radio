@@ -1,10 +1,20 @@
+import re
 from pathlib import Path
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QPushButton, QApplication, QDialog
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QPushButton, QApplication,
+    QDialog, QMenu, QFileDialog, QMessageBox,
+)
 from PyQt6.QtCore import Qt, QUrl, pyqtSignal
 from PyQt6.QtGui import QIcon, QPalette, QPixmap, QDesktopServices
 
 _NO_LOGO_PATH = str(Path(__file__).parent.parent / "assets" / "icons" / "no_logo-256x256.png")
 _default_logo: QPixmap | None = None
+
+
+def _sanitize_filename(name: str) -> str:
+    """Strip characters that are invalid in filenames on common platforms."""
+    name = re.sub(r'[\\/:*?"<>|]', "", name or "").strip()
+    return name or "image"
 
 
 class _ClickableLabel(QLabel):
@@ -20,10 +30,11 @@ class _ImagePopup(QDialog):
     """Resizable popup showing the active image; the image scales to fit the
     window (never upscaled past its source). Click the image to close."""
 
-    def __init__(self, pix: QPixmap, title: str, parent=None):
+    def __init__(self, pix: QPixmap, title: str, default_name: str = "", parent=None):
         super().__init__(parent)
         self.setWindowTitle(title or "Dyedfox Radio")
         self._src = pix
+        self._default_name = default_name
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         self._label = _ClickableLabel()
@@ -67,6 +78,34 @@ class _ImagePopup(QDialog):
                 Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation,
             )
         )
+
+    def contextMenuEvent(self, event):
+        if self._src.isNull():
+            return
+        menu = QMenu(self)
+        save = menu.addAction(QIcon.fromTheme("document-save"), self.tr("Save image as…"))
+        save.triggered.connect(self._save_image)
+        menu.exec(event.globalPos())
+
+    def _save_image(self):
+        if self._src.isNull():
+            return
+        start = str(Path.home() / f"{_sanitize_filename(self._default_name)}.png")
+        path, selected = QFileDialog.getSaveFileName(
+            self, self.tr("Save image"), start,
+            self.tr("PNG image (*.png);;JPEG image (*.jpg *.jpeg)"),
+        )
+        if not path:
+            return
+        ext = Path(path).suffix.lower()
+        if ext not in (".png", ".jpg", ".jpeg"):
+            path += ".jpg" if "jpeg" in selected.lower() else ".png"
+            ext = Path(path).suffix.lower()
+        fmt = "JPEG" if ext in (".jpg", ".jpeg") else "PNG"
+        if not self._src.save(path, fmt):
+            QMessageBox.critical(
+                self, self.tr("Save image"), self.tr("Could not save the image."),
+            )
 
 
 def _default_logo_pixmap() -> QPixmap:
@@ -112,7 +151,7 @@ class InfoPanel(QWidget):
             "QLabel { background: palette(mid); border-radius: 6px; }"
         )
         self._logo.setCursor(Qt.CursorShape.PointingHandCursor)
-        self._logo.setToolTip(self.tr("Click to enlarge"))
+        self._logo.setToolTip(self.tr("Click to enlarge (right-click the image to save)"))
         self._logo.setPixmap(_default_logo_pixmap())
         self._logo.clicked.connect(self._open_image_popup)
         layout.addWidget(self._logo)
@@ -342,11 +381,14 @@ class InfoPanel(QWidget):
     def _open_image_popup(self):
         if self._prefer_art and self._art_pix is not None:
             pix = self._art_pix
+            default_name = self._now_playing_text or self._station_name
         elif self._favicon_pix is not None:
             pix = self._favicon_pix
+            default_name = self._station_name
         else:
             pix = _default_logo_pixmap()
-        _ImagePopup(pix, self._station_name, self).exec()
+            default_name = self._station_name
+        _ImagePopup(pix, self._station_name, default_name, self).exec()
 
     def set_now_playing(self, title: str):
         if title:

@@ -17,6 +17,7 @@ from ui.now_playing import NowPlayingBar
 from ui.controls import ControlBar
 from ui.settings_dialog import SettingsDialog
 from ui.about_dialog import AboutDialog
+from ui.notifier import DBusNotifier
 from ui.add_station_dialog import AddStationDialog
 from player.backend import GStreamerBackend
 from api.radio_browser import RadioBrowserClient
@@ -53,6 +54,10 @@ class MainWindow(QMainWindow):
         self._last_title: str = ""
         self._tray = None
         self._mpris = None
+        # Send song notifications over D-Bus so their body is clickable (raises
+        # the window). Falls back to notify-send/tray when D-Bus is unavailable.
+        self._notifier = DBusNotifier(parent=self)
+        self._notifier.clicked.connect(self._raise_window)
         self._panel_favicon_loaders: set = set()  # keep-alive until run() finishes
         self._current_favicon: QIcon | None = None
         self._pending_notification: tuple[str, str, int] | None = None  # (station, title, art_token)
@@ -614,22 +619,36 @@ class MainWindow(QMainWindow):
         self._notify_await_art = False
         self._show_notification(station, title, icon_path)
 
+    def _raise_window(self):
+        """Bring the main window to the front (from a clicked notification)."""
+        if self.isMinimized():
+            self.showNormal()
+        else:
+            self.show()
+        self.raise_()
+        self.activateWindow()
+
     def _show_notification(self, station: str, title: str, icon_path: str | None = None):
+        if icon_path and Path(icon_path).exists():
+            icon = icon_path
+        elif self._current_favicon and _NOTIF_ICON_PATH.exists():
+            icon = str(_NOTIF_ICON_PATH)
+        else:
+            icon = "dyedfox-radio"
+        # Prefer D-Bus so the notification is clickable (opens the window).
+        if self._notifier.notify(station, title, icon):
+            return
+        # Fallback 1: notify-send. Fallback 2: the tray bubble.
         try:
-            cmd = ["notify-send", "-a", "Dyedfox Radio", "-t", "3000"]
-            if icon_path and Path(icon_path).exists():
-                cmd.extend(["-i", icon_path])
-            elif self._current_favicon and _NOTIF_ICON_PATH.exists():
-                cmd.extend(["-i", str(_NOTIF_ICON_PATH)])
-            else:
-                cmd.extend(["-i", "dyedfox-radio"])
-            cmd.extend(["--", station, title])
-            subprocess.Popen(cmd)
+            subprocess.Popen(
+                ["notify-send", "-a", "Dyedfox Radio", "-t", "3000", "-i", icon, "--", station, title]
+            )
         except FileNotFoundError:
-            if icon_path and Path(icon_path).exists():
-                self._tray.showMessage(station, title, QIcon(icon_path), 3000)
-            else:
-                self._tray.showMessage(station, title, QSystemTrayIcon.MessageIcon.NoIcon, 3000)
+            if self._tray:
+                if icon_path and Path(icon_path).exists():
+                    self._tray.showMessage(station, title, QIcon(icon_path), 3000)
+                else:
+                    self._tray.showMessage(station, title, QSystemTrayIcon.MessageIcon.NoIcon, 3000)
 
     def _on_clear_recent(self):
         self._recent.clear()

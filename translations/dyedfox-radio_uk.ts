@@ -114,145 +114,149 @@ Powered by radio-browser.info.</source>
 </context><context>
     <name>InfoPanel</name>
     <message>
-        <location filename="../ui/info_panel.py" line="115" />
-        <source>Click to enlarge</source>
-        <translation>Натисніть, щоб збільшити</translation>
+        <location filename="../ui/info_panel.py" line="154" />
+        <source>Click to enlarge (right-click the image to save)</source>
+        <translation>Натисніть, щоб збільшити (клацніть правою кнопкою по зображенню, щоб зберегти)</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="138" />
+        <location filename="../ui/info_panel.py" line="177" />
         <source>Copy station name</source>
         <translation>Копіювати назву станції</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="155" />
+        <location filename="../ui/info_panel.py" line="194" />
         <source>Open station website</source>
         <translation>Відкрити сайт станції</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="169" />
+        <location filename="../ui/info_panel.py" line="208" />
         <source>Open on radio-browser.info</source>
         <translation>Відкрити на radio-browser.info</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="204" />
+        <location filename="../ui/info_panel.py" line="243" />
         <source>Copy song info</source>
         <translation>Копіювати інформацію про пісню</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="328" />
+        <location filename="../ui/info_panel.py" line="367" />
         <source>Show station logo</source>
         <translation>Показати логотип станції</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="333" />
+        <location filename="../ui/info_panel.py" line="372" />
         <source>Show album art</source>
         <translation>Показати обкладинку альбому</translation>
+    </message>
+    <message>
+        <source>Click to enlarge</source>
+        <translation type="vanished">Натисніть, щоб збільшити</translation>
     </message>
 </context><context>
     <name>MainWindow</name>
     <message>
-        <location filename="../ui/main_window.py" line="161" />
+        <location filename="../ui/main_window.py" line="169" />
         <source>LIBRARY</source>
         <translation>БІБЛІОТЕКА</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="162" />
+        <location filename="../ui/main_window.py" line="170" />
         <source>All stations</source>
         <translation>Усі станції</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="163" />
+        <location filename="../ui/main_window.py" line="171" />
         <source>Favourites</source>
         <translation>Вподобані</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="164" />
+        <location filename="../ui/main_window.py" line="172" />
         <source>Custom</source>
         <translation>Власні</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="165" />
+        <location filename="../ui/main_window.py" line="173" />
         <source>History</source>
         <translation>Історія</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="168" />
+        <location filename="../ui/main_window.py" line="176" />
         <source>DISCOVER</source>
         <translation>ДОСЛІДИТИ</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="169" />
+        <location filename="../ui/main_window.py" line="177" />
         <source>New</source>
         <translation>Нові</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="170" />
+        <location filename="../ui/main_window.py" line="178" />
         <source>Random</source>
         <translation>Випадкові</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="171" />
+        <location filename="../ui/main_window.py" line="179" />
         <source>Trending</source>
         <translation>Популярні</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="172" />
+        <location filename="../ui/main_window.py" line="180" />
         <source>Now Listening</source>
         <translation>Зараз слухають</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="179" />
+        <location filename="../ui/main_window.py" line="187" />
         <source>Settings</source>
         <translation>Параметри</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="188" />
+        <location filename="../ui/main_window.py" line="196" />
         <source>About</source>
         <translation>Про застосунок</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="366" />
-        <location filename="../ui/main_window.py" line="257" />
+        <location filename="../ui/main_window.py" line="374" />
+        <location filename="../ui/main_window.py" line="265" />
         <source>Could not load stations — check your connection</source>
         <translation>Не вдалося завантажити станції — перевірте з'єднання</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="312" />
+        <location filename="../ui/main_window.py" line="320" />
         <source>Could not load favourites — check your connection</source>
         <translation>Не вдалося завантажити улюблені — перевірте з'єднання</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="332" />
+        <location filename="../ui/main_window.py" line="340" />
         <source>Could not load history — check your connection</source>
         <translation>Не вдалося завантажити історію — перевірте з'єднання</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="350" />
+        <location filename="../ui/main_window.py" line="358" />
         <source>Could not load new stations — check your connection</source>
         <translation>Не вдалося завантажити нові станції — перевірте з'єднання</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="382" />
+        <location filename="../ui/main_window.py" line="390" />
         <source>Could not load trending stations — check your connection</source>
         <translation>Не вдалося завантажити популярні станції — перевірте з'єднання</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="398" />
+        <location filename="../ui/main_window.py" line="406" />
         <source>Could not load now listening stations — check your connection</source>
         <translation>Не вдалося завантажити станції, які зараз слухають — перевірте з'єднання</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="525" />
+        <location filename="../ui/main_window.py" line="563" />
         <source>Could not connect to {0}. The stream may be down or unavailable.</source>
         <translation>Не вдалося підключитися до {0}. Потік може бути недоступний.</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="664" />
+        <location filename="../ui/main_window.py" line="732" />
         <source>Delete station</source>
         <translation>Видалити станцію</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="665" />
+        <location filename="../ui/main_window.py" line="733" />
         <source>Delete “{0}” from your custom stations?</source>
         <translation>Видалити «{0}» з власних станцій?</translation>
     </message>
@@ -355,64 +359,64 @@ Powered by radio-browser.info.</source>
         <translation>Пошук обкладинки на Deezer за назвою пісні. Якщо збігів не знайдено, буде показано логотип станції.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="171" />
-        <location filename="../ui/settings_dialog.py" line="167" />
-        <location filename="../ui/settings_dialog.py" line="152" />
-        <location filename="../ui/settings_dialog.py" line="150" />
-        <location filename="../ui/settings_dialog.py" line="88" />
+        <location filename="../ui/settings_dialog.py" line="170" />
+        <location filename="../ui/settings_dialog.py" line="166" />
+        <location filename="../ui/settings_dialog.py" line="151" />
+        <location filename="../ui/settings_dialog.py" line="149" />
+        <location filename="../ui/settings_dialog.py" line="87" />
         <source>Backup</source>
         <translation>Резервна копія</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="91" />
+        <location filename="../ui/settings_dialog.py" line="90" />
         <source>Back up and restore your favourites, custom stations, history, and settings.</source>
         <translation>Резервне копіювання та відновлення улюблених, власних станцій, історії та налаштувань.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="97" />
+        <location filename="../ui/settings_dialog.py" line="96" />
         <source>Export…</source>
         <translation>Експортувати…</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="99" />
+        <location filename="../ui/settings_dialog.py" line="98" />
         <source>Import…</source>
         <translation>Імпортувати…</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="142" />
+        <location filename="../ui/settings_dialog.py" line="141" />
         <source>Export backup</source>
         <translation>Експорт резервної копії</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="159" />
-        <location filename="../ui/settings_dialog.py" line="144" />
+        <location filename="../ui/settings_dialog.py" line="158" />
+        <location filename="../ui/settings_dialog.py" line="143" />
         <source>Zip files (*.zip)</source>
         <translation>ZIP-файли (*.zip)</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="150" />
+        <location filename="../ui/settings_dialog.py" line="149" />
         <source>Backup exported successfully.</source>
         <translation>Резервну копію успішно експортовано.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="152" />
+        <location filename="../ui/settings_dialog.py" line="151" />
         <source>Export failed: {0}</source>
         <translation>Помилка експорту: {0}</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="157" />
+        <location filename="../ui/settings_dialog.py" line="156" />
         <source>Import backup</source>
         <translation>Імпорт резервної копії</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="168" />
+        <location filename="../ui/settings_dialog.py" line="167" />
         <source>Restored: {0}.
 Restart the app to apply changes.</source>
         <translation>Відновлено: {0}.
 Перезапустіть застосунок для застосування змін.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="171" />
+        <location filename="../ui/settings_dialog.py" line="170" />
         <source>Import failed: {0}</source>
         <translation>Помилка імпорту: {0}</translation>
     </message>
@@ -552,5 +556,28 @@ Restart the app to apply changes.</source>
         <location filename="../tray/tray_icon.py" line="36" />
         <source>Stop</source>
         <translation>Зупинити</translation>
+    </message>
+</context><context>
+    <name>_ImagePopup</name>
+    <message>
+        <location filename="../ui/info_panel.py" line="86" />
+        <source>Save image as…</source>
+        <translation>Зберегти зображення як…</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="107" />
+        <location filename="../ui/info_panel.py" line="95" />
+        <source>Save image</source>
+        <translation>Зберегти зображення</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="96" />
+        <source>PNG image (*.png);;JPEG image (*.jpg *.jpeg)</source>
+        <translation>Зображення PNG (*.png);;Зображення JPEG (*.jpg *.jpeg)</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="107" />
+        <source>Could not save the image.</source>
+        <translation>Не вдалося зберегти зображення.</translation>
     </message>
 </context></TS>

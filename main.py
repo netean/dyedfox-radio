@@ -3,7 +3,7 @@ import sys
 
 import gi
 gi.require_version('Gst', '1.0')
-from gi.repository import Gst
+from gi.repository import Gst, GLib
 
 # Must be called before QApplication and any dbus connection.
 try:
@@ -51,6 +51,12 @@ def _migrate_config():
 
 def main():
     _migrate_config()
+
+    # GStreamer's audio sinks report this to PulseAudio/PipeWire as the client
+    # name; without it KDE's volume mixer labels the stream by the process name
+    # ("python3.14") instead of the app.
+    GLib.set_prgname("dyedfox-radio")
+    GLib.set_application_name("Dyedfox Radio")
     Gst.init(None)
 
     # Load settings before QApplication so we can suppress the KDE startup

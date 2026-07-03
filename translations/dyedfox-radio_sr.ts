@@ -114,145 +114,149 @@ Powered by radio-browser.info.</source>
 </context><context>
     <name>InfoPanel</name>
     <message>
-        <location filename="../ui/info_panel.py" line="115" />
-        <source>Click to enlarge</source>
-        <translation>Кликните за увећање</translation>
+        <location filename="../ui/info_panel.py" line="154" />
+        <source>Click to enlarge (right-click the image to save)</source>
+        <translation>Кликните за увећање (десни клик на слику за чување)</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="138" />
+        <location filename="../ui/info_panel.py" line="177" />
         <source>Copy station name</source>
         <translation>Копирај назив станице</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="155" />
+        <location filename="../ui/info_panel.py" line="194" />
         <source>Open station website</source>
         <translation>Отвори веб-сајт станице</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="169" />
+        <location filename="../ui/info_panel.py" line="208" />
         <source>Open on radio-browser.info</source>
         <translation>Отвори на radio-browser.info</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="204" />
+        <location filename="../ui/info_panel.py" line="243" />
         <source>Copy song info</source>
         <translation>Копирај информације о песми</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="328" />
+        <location filename="../ui/info_panel.py" line="367" />
         <source>Show station logo</source>
         <translation>Прикажи логотип станице</translation>
     </message>
     <message>
-        <location filename="../ui/info_panel.py" line="333" />
+        <location filename="../ui/info_panel.py" line="372" />
         <source>Show album art</source>
         <translation>Прикажи омот албума</translation>
+    </message>
+    <message>
+        <source>Click to enlarge</source>
+        <translation type="vanished">Кликните за увећање</translation>
     </message>
 </context><context>
     <name>MainWindow</name>
     <message>
-        <location filename="../ui/main_window.py" line="161" />
+        <location filename="../ui/main_window.py" line="169" />
         <source>LIBRARY</source>
         <translation>БИБЛИОТЕКА</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="162" />
+        <location filename="../ui/main_window.py" line="170" />
         <source>All stations</source>
         <translation>Све станице</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="163" />
+        <location filename="../ui/main_window.py" line="171" />
         <source>Favourites</source>
         <translation>Омиљене</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="164" />
+        <location filename="../ui/main_window.py" line="172" />
         <source>Custom</source>
         <translation>Прилагођене</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="165" />
+        <location filename="../ui/main_window.py" line="173" />
         <source>History</source>
         <translation>Историја</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="168" />
+        <location filename="../ui/main_window.py" line="176" />
         <source>DISCOVER</source>
         <translation>ОТКРИЈ</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="169" />
+        <location filename="../ui/main_window.py" line="177" />
         <source>New</source>
         <translation>Нове</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="170" />
+        <location filename="../ui/main_window.py" line="178" />
         <source>Random</source>
         <translation>Насумичне</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="171" />
+        <location filename="../ui/main_window.py" line="179" />
         <source>Trending</source>
         <translation>У тренду</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="172" />
+        <location filename="../ui/main_window.py" line="180" />
         <source>Now Listening</source>
         <translation>Тренутно се слуша</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="179" />
+        <location filename="../ui/main_window.py" line="187" />
         <source>Settings</source>
         <translation>Подешавања</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="188" />
+        <location filename="../ui/main_window.py" line="196" />
         <source>About</source>
         <translation>О програму</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="366" />
-        <location filename="../ui/main_window.py" line="257" />
+        <location filename="../ui/main_window.py" line="374" />
+        <location filename="../ui/main_window.py" line="265" />
         <source>Could not load stations — check your connection</source>
         <translation>Није могуће учитати станице — проверите везу</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="312" />
+        <location filename="../ui/main_window.py" line="320" />
         <source>Could not load favourites — check your connection</source>
         <translation>Није могуће учитати омиљене — проверите везу</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="332" />
+        <location filename="../ui/main_window.py" line="340" />
         <source>Could not load history — check your connection</source>
         <translation>Није могуће учитати историју — проверите везу</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="350" />
+        <location filename="../ui/main_window.py" line="358" />
         <source>Could not load new stations — check your connection</source>
         <translation>Није могуће учитати нове станице — проверите везу</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="382" />
+        <location filename="../ui/main_window.py" line="390" />
         <source>Could not load trending stations — check your connection</source>
         <translation>Није могуће учитати станице у тренду — проверите везу</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="398" />
+        <location filename="../ui/main_window.py" line="406" />
         <source>Could not load now listening stations — check your connection</source>
         <translation>Није могуће учитати станице које се тренутно слушају — проверите везу</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="525" />
+        <location filename="../ui/main_window.py" line="563" />
         <source>Could not connect to {0}. The stream may be down or unavailable.</source>
         <translation>Повезивање са {0} није успело. Стрим можда није доступан.</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="664" />
+        <location filename="../ui/main_window.py" line="732" />
         <source>Delete station</source>
         <translation>Обриши станицу</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="665" />
+        <location filename="../ui/main_window.py" line="733" />
         <source>Delete “{0}” from your custom stations?</source>
         <translation>Обрисати „{0}“ из ваших прилагођених станица?</translation>
     </message>
@@ -347,64 +351,64 @@ Powered by radio-browser.info.</source>
         <translation>Омот се тражи на Deezer-у према наслову песме. Ако се не пронађе подударање, приказује се логотип станице.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="171" />
-        <location filename="../ui/settings_dialog.py" line="167" />
-        <location filename="../ui/settings_dialog.py" line="152" />
-        <location filename="../ui/settings_dialog.py" line="150" />
-        <location filename="../ui/settings_dialog.py" line="88" />
+        <location filename="../ui/settings_dialog.py" line="170" />
+        <location filename="../ui/settings_dialog.py" line="166" />
+        <location filename="../ui/settings_dialog.py" line="151" />
+        <location filename="../ui/settings_dialog.py" line="149" />
+        <location filename="../ui/settings_dialog.py" line="87" />
         <source>Backup</source>
         <translation>Резервна копија</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="91" />
+        <location filename="../ui/settings_dialog.py" line="90" />
         <source>Back up and restore your favourites, custom stations, history, and settings.</source>
         <translation>Направите резервну копију и вратите своје омиљене, прилагођене станице, историју и подешавања.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="97" />
+        <location filename="../ui/settings_dialog.py" line="96" />
         <source>Export…</source>
         <translation>Извези…</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="99" />
+        <location filename="../ui/settings_dialog.py" line="98" />
         <source>Import…</source>
         <translation>Увези…</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="142" />
+        <location filename="../ui/settings_dialog.py" line="141" />
         <source>Export backup</source>
         <translation>Извоз резервне копије</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="159" />
-        <location filename="../ui/settings_dialog.py" line="144" />
+        <location filename="../ui/settings_dialog.py" line="158" />
+        <location filename="../ui/settings_dialog.py" line="143" />
         <source>Zip files (*.zip)</source>
         <translation>ZIP датотеке (*.zip)</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="150" />
+        <location filename="../ui/settings_dialog.py" line="149" />
         <source>Backup exported successfully.</source>
         <translation>Резервна копија је успешно извезена.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="152" />
+        <location filename="../ui/settings_dialog.py" line="151" />
         <source>Export failed: {0}</source>
         <translation>Извоз није успео: {0}</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="157" />
+        <location filename="../ui/settings_dialog.py" line="156" />
         <source>Import backup</source>
         <translation>Увоз резервне копије</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="168" />
+        <location filename="../ui/settings_dialog.py" line="167" />
         <source>Restored: {0}.
 Restart the app to apply changes.</source>
         <translation>Враћено: {0}.
 Поново покрените апликацију да бисте применили промене.</translation>
     </message>
     <message>
-        <location filename="../ui/settings_dialog.py" line="171" />
+        <location filename="../ui/settings_dialog.py" line="170" />
         <source>Import failed: {0}</source>
         <translation>Увоз није успео: {0}</translation>
     </message>
@@ -544,5 +548,28 @@ Restart the app to apply changes.</source>
         <location filename="../tray/tray_icon.py" line="36" />
         <source>Stop</source>
         <translation>Заустави</translation>
+    </message>
+</context><context>
+    <name>_ImagePopup</name>
+    <message>
+        <location filename="../ui/info_panel.py" line="86" />
+        <source>Save image as…</source>
+        <translation>Сачувај слику као…</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="107" />
+        <location filename="../ui/info_panel.py" line="95" />
+        <source>Save image</source>
+        <translation>Сачувај слику</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="96" />
+        <source>PNG image (*.png);;JPEG image (*.jpg *.jpeg)</source>
+        <translation>PNG слика (*.png);;JPEG слика (*.jpg *.jpeg)</translation>
+    </message>
+    <message>
+        <location filename="../ui/info_panel.py" line="107" />
+        <source>Could not save the image.</source>
+        <translation>Није могуће сачувати слику.</translation>
     </message>
 </context></TS>

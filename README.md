@@ -85,7 +85,17 @@ git clone https://github.com/dyedfox/dyedfox-radio.git && cd dyedfox-radio && ba
 
 Requires Python 3.10+, GStreamer, `python3-dbus`, and `python3-gi` from your distro's package manager.
 
-To upgrade, clone the latest version and run the script:
+To upgrade, pull the latest changes and re-run the script.
+
+If you already have the repository cloned locally:
+
+```bash
+cd dyedfox-radio
+git pull
+bash install.sh
+```
+
+Otherwise, clone it first:
 
 ```bash
 git clone https://github.com/dyedfox/dyedfox-radio.git

@@ -13,6 +13,7 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 - [Build from source (PKGBUILD)](#build-from-source-pkgbuild)
 - [Install on other Linux distros](#install-on-other-linux-distros)
 - [Manual installation](#manual-installation)
+- [Known quirks](#known-quirks)
 - [Localization](#localization)
 - [Paths](#paths)
 - [Dependencies](#dependencies)
@@ -137,6 +138,10 @@ sudo cp dyedfox-radio.desktop /usr/share/applications/
 echo -e '#!/bin/sh\nexec python3 /usr/lib/dyedfox-radio/main.py "$@"' | sudo tee /usr/bin/dyedfox-radio > /dev/null
 sudo chmod 755 /usr/bin/dyedfox-radio
 ```
+
+## Known quirks
+
+- **Bluetooth on cold start:** if you connect a Bluetooth device while playback is stopped, the next stream may start on your previous output — switch it in KDE's audio menu (tray → speaker icon) or simply restart the app. Streams already playing follow Bluetooth automatically. This is a side effect of defaulting to the PulseAudio output (`pulsesink`), which we prefer for reliable sound across distros that don't ship the native PipeWire GStreamer plugin.
 
 ## Localization
 

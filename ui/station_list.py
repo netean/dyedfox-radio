@@ -5,7 +5,7 @@ import requests
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem,
     QLineEdit, QPushButton, QLabel, QSizePolicy, QApplication, QComboBox,
-    QStyle, QStyleOption,
+    QStyle, QStyleOption, QMenu, QInputDialog,
 )
 from PyQt6.QtCore import Qt, QSize, QTimer, QRunnable, QObject, pyqtSignal, QThreadPool, QEvent
 from PyQt6.QtGui import QIcon, QPalette, QPixmap, QPainter, QColor, QBrush
@@ -172,10 +172,12 @@ class _FaviconLoader(QRunnable):
 class StationRowWidget(QWidget):
     play_requested = pyqtSignal(dict)
     favourite_toggled = pyqtSignal(str, bool)  # uuid, new state
+    label_toggled = pyqtSignal(str, str, bool)  # uuid, label, new state
 
     def __init__(self, station: dict, favourites: FavouritesManager, parent=None, on_delete=None, on_edit=None, on_remove=None):
         super().__init__(parent)
         self._station = station
+        self._favourites = favourites
         uuid = station.get("stationuuid", "")
 
         layout = QHBoxLayout(self)
@@ -259,6 +261,10 @@ class StationRowWidget(QWidget):
             self._heart_btn.toggled.connect(lambda checked, u=uuid: self._on_heart(u, checked))
             layout.addWidget(self._heart_btn)
 
+            # Right-click any favouritable row to manage its labels.
+            self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+            self.customContextMenuRequested.connect(self._show_label_menu)
+
             # History rows keep the heart but add a remove-from-history button
             # to the right of it (these are real stations, unlike Custom rows).
             if on_remove is not None:
@@ -317,6 +323,36 @@ class StationRowWidget(QWidget):
         self._update_heart(checked)
         self.favourite_toggled.emit(uuid, checked)
 
+    def _show_label_menu(self, pos):
+        uuid = self._station.get("stationuuid", "")
+        menu = QMenu(self)
+        if not self._favourites.is_favourite(uuid):
+            action = menu.addAction(self.tr("Favourite this station to add labels"))
+            action.setEnabled(False)
+            menu.exec(self.mapToGlobal(pos))
+            return
+
+        current = set(self._favourites.labels_for(uuid))
+        all_labels = self._favourites.all_labels()
+        if not all_labels:
+            action = menu.addAction(self.tr("No labels yet"))
+            action.setEnabled(False)
+        for label in all_labels:
+            action = menu.addAction(label)
+            action.setCheckable(True)
+            action.setChecked(label in current)
+            action.toggled.connect(lambda checked, l=label: self.label_toggled.emit(uuid, l, checked))
+        menu.addSeparator()
+        new_action = menu.addAction(self.tr("New label…"))
+        new_action.triggered.connect(lambda: self._create_label(uuid))
+        menu.exec(self.mapToGlobal(pos))
+
+    def _create_label(self, uuid: str):
+        text, ok = QInputDialog.getText(self, self.tr("New label"), self.tr("Label name:"))
+        text = text.strip()
+        if ok and text:
+            self.label_toggled.emit(uuid, text, True)
+
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
             self.play_requested.emit(self._station)
@@ -346,6 +382,7 @@ class _LimitOverlay(QWidget):
 class StationListWidget(QWidget):
     station_play_requested = pyqtSignal(dict)
     favourite_toggled = pyqtSignal(str, bool)
+    label_toggled = pyqtSignal(str, str, bool)  # uuid, label, new state
     search_params_changed = pyqtSignal(str, str, str, str)  # name, country, tag, language
     station_delete_requested = pyqtSignal(str)
     station_edit_requested = pyqtSignal(str)
@@ -364,6 +401,7 @@ class StationListWidget(QWidget):
         self._limit_reached: bool = False
         self._fav_uuids: set[str] = set()
         self._recent_uuids: list[str] = []
+        self._label_filter: str | None = None
         self._row_widgets: dict[str, StationRowWidget] = {}
         self._item_map: dict[str, QListWidgetItem] = {}
         self._playing_uuid: str | None = None
@@ -622,6 +660,7 @@ class StationListWidget(QWidget):
         row.play_requested.connect(lambda s=station, i=item: self._on_row_play(s, i))
         if not self._deletable:
             row.favourite_toggled.connect(self.favourite_toggled)
+            row.label_toggled.connect(self.label_toggled)
 
         favicon_url = station.get("favicon", "")
         if favicon_url:
@@ -730,10 +769,11 @@ class StationListWidget(QWidget):
 
     _NO_SORT_VIEWS = {"recent", "new", "random", "trending", "now_listening"}
 
-    def set_view(self, view: str, fav_uuids: set[str], recent_uuids: list[str]):
+    def set_view(self, view: str, fav_uuids: set[str], recent_uuids: list[str], label_filter: str | None = None):
         self._current_view = view
         self._fav_uuids = fav_uuids
         self._recent_uuids = recent_uuids
+        self._label_filter = label_filter
         self._limit_reached = False
         self._clear_history_btn.setVisible(view == "recent")
         self._add_station_btn.setVisible(view == "custom")
@@ -767,6 +807,11 @@ class StationListWidget(QWidget):
         self._is_playing = True
         if self._playing_uuid and self._playing_uuid in self._row_widgets:
             self._row_widgets[self._playing_uuid].set_playing(True)
+
+    def refresh_filter(self):
+        """Re-apply the current view's visibility rules without resetting any
+        other state (e.g. after a label is toggled on/off for a station)."""
+        self._apply_filter()
 
     def update_favourite(self, uuid: str, is_fav: bool):
         if uuid in self._row_widgets:
@@ -811,6 +856,8 @@ class StationListWidget(QWidget):
             visible = True
             if self._current_view == "favourites":
                 visible = uuid in self._fav_uuids
+                if visible and self._label_filter:
+                    visible = self._favourites.has_label(uuid, self._label_filter)
             elif self._current_view == "recent":
                 visible = uuid in recent_set
 

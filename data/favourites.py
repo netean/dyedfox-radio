@@ -5,6 +5,7 @@ from pathlib import Path
 _CONFIG = Path.home() / ".config" / "dyedfox-radio"
 _FAV_FILE = _CONFIG / "favourites.json"
 _FAV_CACHE_FILE = _CONFIG / "favourites_cache.json"
+_LABELS_FILE = _CONFIG / "favourite_labels.json"
 _RECENT_FILE = _CONFIG / "recent.json"
 _RECENT_CACHE_FILE = _CONFIG / "recent_cache.json"
 _NEW_CACHE_FILE = _CONFIG / "new_cache.json"
@@ -17,6 +18,7 @@ class FavouritesManager:
     def __init__(self):
         _CONFIG.mkdir(parents=True, exist_ok=True)
         self._uuids: set[str] = set(self._load(_FAV_FILE))
+        self._labels: dict[str, list[str]] = self._load_labels()
 
     def is_favourite(self, uuid: str) -> bool:
         return uuid in self._uuids
@@ -26,10 +28,53 @@ class FavouritesManager:
             self._uuids.add(uuid)
         else:
             self._uuids.discard(uuid)
+            # Labels only make sense for current favourites; drop them so an
+            # unfavourited-then-refavourited station doesn't resurface stale tags.
+            if self._labels.pop(uuid, None) is not None:
+                self._save_labels()
         self._save(_FAV_FILE, list(self._uuids))
 
     def uuids(self) -> set[str]:
         return set(self._uuids)
+
+    def labels_for(self, uuid: str) -> list[str]:
+        return list(self._labels.get(uuid, []))
+
+    def has_label(self, uuid: str, label: str) -> bool:
+        return label in self._labels.get(uuid, [])
+
+    def set_label(self, uuid: str, label: str, on: bool):
+        labels = self._labels.setdefault(uuid, [])
+        if on:
+            if label not in labels:
+                labels.append(label)
+        else:
+            if label in labels:
+                labels.remove(label)
+            if not labels:
+                self._labels.pop(uuid, None)
+        self._save_labels()
+
+    def all_labels(self) -> list[str]:
+        names: set[str] = set()
+        for labels in self._labels.values():
+            names.update(labels)
+        return sorted(names, key=str.lower)
+
+    def uuids_for_label(self, label: str) -> set[str]:
+        return {uuid for uuid, labels in self._labels.items() if label in labels}
+
+    def _load_labels(self) -> dict:
+        try:
+            return json.loads(_LABELS_FILE.read_text())
+        except Exception:
+            return {}
+
+    def _save_labels(self):
+        try:
+            _LABELS_FILE.write_text(json.dumps(self._labels, indent=2))
+        except Exception as e:
+            print(f"dyedfox-radio: failed to save favourite labels: {e}", flush=True)
 
     def cached_stations(self) -> list[dict]:
         try:

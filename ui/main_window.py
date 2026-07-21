@@ -169,6 +169,14 @@ class MainWindow(QMainWindow):
         layout.addWidget(_section(self.tr("LIBRARY")))
         layout.addWidget(_nav_btn(self.tr("All stations"), "all",        "network-wireless"))
         layout.addWidget(_nav_btn(self.tr("Favourites"),   "favourites", "emblem-favorite"))
+
+        # Populated by _rebuild_label_nav() with one indented entry per favourite
+        # label, so it must stay directly under the Favourites button.
+        self._label_nav_layout = QVBoxLayout()
+        self._label_nav_layout.setContentsMargins(0, 0, 0, 0)
+        self._label_nav_layout.setSpacing(2)
+        layout.addLayout(self._label_nav_layout)
+
         layout.addWidget(_nav_btn(self.tr("Custom"),       "custom",     "document-edit"))
         layout.addWidget(_nav_btn(self.tr("History"), "recent", "document-open-recent"))
 
@@ -202,7 +210,36 @@ class MainWindow(QMainWindow):
         self._about_btn.clicked.connect(self._open_about)
         layout.addWidget(self._about_btn)
 
+        self._rebuild_label_nav()
+
         return sidebar
+
+    def _rebuild_label_nav(self):
+        """Refresh the indented label entries under Favourites to match the
+        current set of favourite labels (labels with no favourites left just
+        disappear)."""
+        while self._label_nav_layout.count():
+            item = self._label_nav_layout.takeAt(0)
+            widget = item.widget()
+            if widget is None:
+                continue
+            for view, btn in list(self._nav_btns.items()):
+                if btn is widget:
+                    del self._nav_btns[view]
+            widget.deleteLater()
+
+        for label in self._favourites.all_labels():
+            view = f"label:{label}"
+            btn = QPushButton(label)
+            btn.setFlat(True)
+            btn.setCheckable(True)
+            btn.setStyleSheet(
+                "QPushButton { text-align: left; padding: 4px 8px 4px 26px; color: palette(placeholder-text); }"
+            )
+            btn.setChecked(view == self._current_view)
+            btn.clicked.connect(lambda _, v=view: self._switch_view(v))
+            self._nav_btns[view] = btn
+            self._label_nav_layout.addWidget(btn)
 
     def _connect_signals(self):
         self._backend.metadata_changed.connect(self._on_metadata)
@@ -213,6 +250,7 @@ class MainWindow(QMainWindow):
 
         self._station_list.station_play_requested.connect(self._on_station_play)
         self._station_list.favourite_toggled.connect(self._on_favourite_toggled)
+        self._station_list.label_toggled.connect(self._on_label_toggled)
         self._station_list.search_params_changed.connect(self._on_search_params_changed)
         self._station_list.station_delete_requested.connect(self._on_custom_delete)
         self._station_list.station_edit_requested.connect(self._on_custom_edit)
@@ -295,14 +333,20 @@ class MainWindow(QMainWindow):
         for v, btn in self._nav_btns.items():
             btn.setChecked(v == view)
 
-        # Set the filter mode first so it's in place when async stations arrive.
-        self._station_list.set_view(view, self._favourites.uuids(), self._recent.uuids())
+        # A label view ("label:<name>") browses the same favourites data as the
+        # Favourites view, just narrowed by label — see StationListWidget's
+        # label_filter handling in _apply_filter.
+        label_filter = view[6:] if view.startswith("label:") else None
+        data_view = "favourites" if label_filter else view
 
-        if view == "custom":
+        # Set the filter mode first so it's in place when async stations arrive.
+        self._station_list.set_view(data_view, self._favourites.uuids(), self._recent.uuids(), label_filter=label_filter)
+
+        if data_view == "custom":
             self._station_list.set_stations(self._custom.all(), deletable=True)
             return
 
-        if view == "favourites":
+        if data_view == "favourites":
             cached = self._favourites.cached_stations()
             self._station_list.start_loading()
             if cached:
@@ -318,10 +362,10 @@ class MainWindow(QMainWindow):
                 on_result=_on_fav_loaded,
                 on_error=lambda e: self._station_list.set_error(
                     self.tr("Could not load favourites — check your connection"),
-                    on_retry=lambda: self._switch_view("favourites"),
+                    on_retry=lambda: self._switch_view(view),
                 ) if not cached else None,
             )
-        elif view == "recent":
+        elif data_view == "recent":
             uuids = self._recent.uuids()
             if uuids:
                 cached = self._recent.cached_stations()
@@ -343,7 +387,7 @@ class MainWindow(QMainWindow):
                 )
             else:
                 self._station_list.set_stations([])
-        elif view == "new":
+        elif data_view == "new":
             self._station_list.start_loading()
             if self._new_stations_cache:
                 self._station_list.set_stations(self._new_stations_cache)
@@ -359,7 +403,7 @@ class MainWindow(QMainWindow):
                     on_retry=lambda: self._switch_view("new"),
                 ) if not self._new_stations_cache else None,
             )
-        elif view == "random":
+        elif data_view == "random":
             self._station_list.start_loading()
             if self._random_stations_cache:
                 self._station_list.set_stations(self._random_stations_cache)
@@ -375,7 +419,7 @@ class MainWindow(QMainWindow):
                     on_retry=lambda: self._switch_view("random"),
                 ) if not self._random_stations_cache else None,
             )
-        elif view == "trending":
+        elif data_view == "trending":
             self._station_list.start_loading()
             if self._trending_stations_cache:
                 self._station_list.set_stations(self._trending_stations_cache)
@@ -391,7 +435,7 @@ class MainWindow(QMainWindow):
                     on_retry=lambda: self._switch_view("trending"),
                 ) if not self._trending_stations_cache else None,
             )
-        elif view == "now_listening":
+        elif data_view == "now_listening":
             self._station_list.start_loading()
             if self._now_listening_stations_cache:
                 self._station_list.set_stations(self._now_listening_stations_cache)
@@ -665,6 +709,24 @@ class MainWindow(QMainWindow):
         self._station_list.update_favourite(uuid, is_fav)
         if self._current_station and self._current_station.get("stationuuid") == uuid:
             self._info_panel.set_favourite(is_fav)
+        if not is_fav:
+            # Unfavouriting drops the station's labels too (see FavouritesManager.set),
+            # which can empty a label and remove its entry from the sidebar.
+            self._rebuild_label_nav()
+            active_label = self._current_view[6:] if self._current_view.startswith("label:") else None
+            if active_label and active_label not in self._favourites.all_labels():
+                self._switch_view("favourites")
+
+    def _on_label_toggled(self, uuid: str, label: str, on: bool):
+        self._favourites.set_label(uuid, label, on)
+        self._rebuild_label_nav()
+        active_label = self._current_view[6:] if self._current_view.startswith("label:") else None
+        if active_label and active_label not in self._favourites.all_labels():
+            # The label we were browsing has no favourites left; it just
+            # vanished from the sidebar, so fall back to plain Favourites.
+            self._switch_view("favourites")
+        elif self._current_view == "favourites" or active_label:
+            self._station_list.refresh_filter()
 
     def _on_search_params_changed(self, name: str, country: str, tag: str, language: str):
         if not name and not country and not tag and not language:

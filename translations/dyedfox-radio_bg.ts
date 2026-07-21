@@ -512,14 +512,39 @@ Restart the app to apply changes.</source>
 </context><context>
     <name>StationRowWidget</name>
     <message>
-        <location filename="../ui/station_list.py" line="243" />
+        <location filename="../ui/station_list.py" line="245" />
         <source>Delete station</source>
         <translation>Изтриване на станция</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="268" />
+        <location filename="../ui/station_list.py" line="274" />
         <source>Remove from history</source>
         <translation>Премахване от историята</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="330" />
+        <source>Favourite this station to add labels</source>
+        <translation>Отбележете тази станция като любима, за да добавите етикети</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="338" />
+        <source>No labels yet</source>
+        <translation>Все още няма етикети</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="346" />
+        <source>New label…</source>
+        <translation>Нов етикет…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>New label</source>
+        <translation>Нов етикет</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>Label name:</source>
+        <translation>Име на етикета:</translation>
     </message>
 </context><context>
     <name>SystemTrayIcon</name>

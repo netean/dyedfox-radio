@@ -512,14 +512,39 @@ Start appen på nytt for å bruke endringene.</translation>
 </context><context>
     <name>StationRowWidget</name>
     <message>
-        <location filename="../ui/station_list.py" line="243" />
+        <location filename="../ui/station_list.py" line="245" />
         <source>Delete station</source>
         <translation>Slett stasjon</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="268" />
+        <location filename="../ui/station_list.py" line="274" />
         <source>Remove from history</source>
         <translation>Fjern fra historikken</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="330" />
+        <source>Favourite this station to add labels</source>
+        <translation>Legg denne stasjonen til favoritter for å legge til etiketter</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="338" />
+        <source>No labels yet</source>
+        <translation>Ingen etiketter ennå</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="346" />
+        <source>New label…</source>
+        <translation>Ny etikett…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>New label</source>
+        <translation>Ny etikett</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>Label name:</source>
+        <translation>Etikettnavn:</translation>
     </message>
 </context><context>
     <name>SystemTrayIcon</name>

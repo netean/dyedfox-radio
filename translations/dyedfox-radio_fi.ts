@@ -512,14 +512,39 @@ Ota muutokset käyttöön käynnistämällä sovellus uudelleen.</translation>
 </context><context>
     <name>StationRowWidget</name>
     <message>
-        <location filename="../ui/station_list.py" line="243" />
+        <location filename="../ui/station_list.py" line="245" />
         <source>Delete station</source>
         <translation>Poista asema</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="268" />
+        <location filename="../ui/station_list.py" line="274" />
         <source>Remove from history</source>
         <translation>Poista historiasta</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="330" />
+        <source>Favourite this station to add labels</source>
+        <translation>Lisää tämä asema suosikkeihin lisätäksesi tunnisteita</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="338" />
+        <source>No labels yet</source>
+        <translation>Ei vielä tunnisteita</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="346" />
+        <source>New label…</source>
+        <translation>Uusi tunniste…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>New label</source>
+        <translation>Uusi tunniste</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>Label name:</source>
+        <translation>Tunnisteen nimi:</translation>
     </message>
 </context><context>
     <name>SystemTrayIcon</name>

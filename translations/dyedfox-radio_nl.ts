@@ -519,14 +519,39 @@ Herstart het programma om de wijzigingen toe te passen.</translation>
 </context><context>
     <name>StationRowWidget</name>
     <message>
-        <location filename="../ui/station_list.py" line="243" />
+        <location filename="../ui/station_list.py" line="245" />
         <source>Delete station</source>
         <translation>Radiostation verwijderen</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="268" />
+        <location filename="../ui/station_list.py" line="274" />
         <source>Remove from history</source>
         <translation>Uit geschiedenis verwijderen</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="330" />
+        <source>Favourite this station to add labels</source>
+        <translation>Voeg dit station toe aan favorieten om labels toe te voegen</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="338" />
+        <source>No labels yet</source>
+        <translation>Nog geen labels</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="346" />
+        <source>New label…</source>
+        <translation>Nieuw label…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>New label</source>
+        <translation>Nieuw label</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>Label name:</source>
+        <translation>Labelnaam:</translation>
     </message>
 </context><context>
     <name>SystemTrayIcon</name>

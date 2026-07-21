@@ -512,14 +512,39 @@ Restart the app to apply changes.</source>
 </context><context>
     <name>StationRowWidget</name>
     <message>
-        <location filename="../ui/station_list.py" line="243" />
+        <location filename="../ui/station_list.py" line="245" />
         <source>Delete station</source>
         <translation>Διαγραφή σταθμού</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="268" />
+        <location filename="../ui/station_list.py" line="274" />
         <source>Remove from history</source>
         <translation>Κατάργηση από το ιστορικό</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="330" />
+        <source>Favourite this station to add labels</source>
+        <translation>Προσθέστε αυτόν τον σταθμό στα αγαπημένα για να προσθέσετε ετικέτες</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="338" />
+        <source>No labels yet</source>
+        <translation>Δεν υπάρχουν ακόμη ετικέτες</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="346" />
+        <source>New label…</source>
+        <translation>Νέα ετικέτα…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>New label</source>
+        <translation>Νέα ετικέτα</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>Label name:</source>
+        <translation>Όνομα ετικέτας:</translation>
     </message>
 </context><context>
     <name>SystemTrayIcon</name>

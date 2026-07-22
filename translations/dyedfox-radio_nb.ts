@@ -155,108 +155,118 @@ Drevet av radio-browser.info.</translation>
 </context><context>
     <name>MainWindow</name>
     <message>
-        <location filename="../ui/main_window.py" line="169" />
+        <location filename="../ui/main_window.py" line="201" />
         <source>LIBRARY</source>
         <translation>BIBLIOTEK</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="170" />
+        <location filename="../ui/main_window.py" line="202" />
         <source>All stations</source>
         <translation>Alle stasjoner</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="171" />
+        <location filename="../ui/main_window.py" line="210" />
         <source>Favourites</source>
         <translation>Favoritter</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="172" />
+        <location filename="../ui/main_window.py" line="228" />
         <source>Custom</source>
         <translation>Tilpassede</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="173" />
+        <location filename="../ui/main_window.py" line="229" />
         <source>History</source>
         <translation>Historikk</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="176" />
+        <location filename="../ui/main_window.py" line="232" />
         <source>DISCOVER</source>
         <translation>OPPDAG</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="177" />
+        <location filename="../ui/main_window.py" line="233" />
         <source>New</source>
         <translation>Nye</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="178" />
+        <location filename="../ui/main_window.py" line="234" />
         <source>Random</source>
         <translation>Tilfeldige</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="179" />
+        <location filename="../ui/main_window.py" line="235" />
         <source>Trending</source>
         <translation>Populære</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="180" />
+        <location filename="../ui/main_window.py" line="236" />
         <source>Now Listening</source>
         <translation>Lyttes til nå</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="187" />
+        <location filename="../ui/main_window.py" line="257" />
         <source>Settings</source>
         <translation>Innstillinger</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="196" />
+        <location filename="../ui/main_window.py" line="266" />
         <source>About</source>
         <translation>Om</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="374" />
-        <location filename="../ui/main_window.py" line="265" />
+        <location filename="../ui/main_window.py" line="307" />
+        <source>Hide labels</source>
+        <translation>Skjul etiketter</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="307" />
+        <source>Show labels</source>
+        <translation>Vis etiketter</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="505" />
+        <location filename="../ui/main_window.py" line="383" />
         <source>Could not load stations — check your connection</source>
         <translation>Kunne ikke laste inn stasjoner — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="320" />
+        <location filename="../ui/main_window.py" line="451" />
         <source>Could not load favourites — check your connection</source>
         <translation>Kunne ikke laste inn favoritter — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="340" />
+        <location filename="../ui/main_window.py" line="471" />
         <source>Could not load history — check your connection</source>
         <translation>Kunne ikke laste inn historikk — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="358" />
+        <location filename="../ui/main_window.py" line="489" />
         <source>Could not load new stations — check your connection</source>
         <translation>Kunne ikke laste inn nye stasjoner — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="390" />
+        <location filename="../ui/main_window.py" line="521" />
         <source>Could not load trending stations — check your connection</source>
         <translation>Kunne ikke laste inn populære stasjoner — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="406" />
+        <location filename="../ui/main_window.py" line="537" />
         <source>Could not load now listening stations — check your connection</source>
         <translation>Kunne ikke laste inn stasjoner som lyttes til nå — sjekk tilkoblingen</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="563" />
+        <location filename="../ui/main_window.py" line="694" />
         <source>Could not connect to {0}. The stream may be down or unavailable.</source>
         <translation>Kunne ikke koble til {0}. Strømmen kan være utilgjengelig.</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="732" />
+        <location filename="../ui/main_window.py" line="881" />
         <source>Delete station</source>
         <translation>Slett stasjon</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="733" />
+        <location filename="../ui/main_window.py" line="882" />
         <source>Delete “{0}” from your custom stations?</source>
         <translation>Slette «{0}» fra dine tilpassede stasjoner?</translation>
     </message>
@@ -415,97 +425,97 @@ Start appen på nytt for å bruke endringene.</translation>
 </context><context>
     <name>StationListWidget</name>
     <message>
-        <location filename="../ui/station_list.py" line="390" />
+        <location filename="../ui/station_list.py" line="428" />
         <source>Search stations…</source>
         <translation>Søk etter stasjoner…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="407" />
+        <location filename="../ui/station_list.py" line="445" />
         <source>Clear history</source>
         <translation>Tøm historikk</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="408" />
+        <location filename="../ui/station_list.py" line="446" />
         <source>Remove all stations from history</source>
         <translation>Fjern alle stasjoner fra historikken</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="417" />
+        <location filename="../ui/station_list.py" line="455" />
         <source>+ Add station</source>
         <translation>+ Legg til stasjon</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="418" />
+        <location filename="../ui/station_list.py" line="456" />
         <source>Add a custom station</source>
         <translation>Legg til en tilpasset stasjon</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="435" />
+        <location filename="../ui/station_list.py" line="473" />
         <source>Name</source>
         <translation>Navn</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="436" />
+        <location filename="../ui/station_list.py" line="474" />
         <source>Country</source>
         <translation>Land</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="437" />
+        <location filename="../ui/station_list.py" line="475" />
         <source>Bitrate</source>
         <translation>Bitrate</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="438" />
+        <location filename="../ui/station_list.py" line="476" />
         <source>Votes</source>
         <translation>Stemmer</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="439" />
+        <location filename="../ui/station_list.py" line="477" />
         <source>Language</source>
         <translation>Språk</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="440" />
+        <location filename="../ui/station_list.py" line="478" />
         <source>Codec</source>
         <translation>Kodek</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="445" />
+        <location filename="../ui/station_list.py" line="483" />
         <source>Country…</source>
         <translation>Land…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="449" />
+        <location filename="../ui/station_list.py" line="487" />
         <source>Genre / tag…</source>
         <translation>Sjanger / tagg…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="453" />
+        <location filename="../ui/station_list.py" line="491" />
         <source>Language…</source>
         <translation>Språk…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="460" />
+        <location filename="../ui/station_list.py" line="498" />
         <source>Toggle sort direction</source>
         <translation>Bytt sorteringsretning</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="476" />
+        <location filename="../ui/station_list.py" line="514" />
         <source>Result limit reached · narrow your search to see more</source>
         <translation>Resultatgrense nådd · avgrens søket for å se flere</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="491" />
+        <location filename="../ui/station_list.py" line="529" />
         <source>This may be a temporary server-side issue.</source>
         <translation>Dette kan være et midlertidig problem på serversiden.</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="497" />
+        <location filename="../ui/station_list.py" line="535" />
         <source>Retry</source>
         <translation>Prøv igjen</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="847" />
+        <location filename="../ui/station_list.py" line="894" />
         <source>{0} stations</source>
         <translation>{0} stasjoner</translation>
     </message>

@@ -155,108 +155,118 @@ Pokreće radio-browser.info.</translation>
 </context><context>
     <name>MainWindow</name>
     <message>
-        <location filename="../ui/main_window.py" line="169" />
+        <location filename="../ui/main_window.py" line="201" />
         <source>LIBRARY</source>
         <translation>KNJIŽNICA</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="170" />
+        <location filename="../ui/main_window.py" line="202" />
         <source>All stations</source>
         <translation>Sve stanice</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="171" />
+        <location filename="../ui/main_window.py" line="210" />
         <source>Favourites</source>
         <translation>Favoriti</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="172" />
+        <location filename="../ui/main_window.py" line="228" />
         <source>Custom</source>
         <translation>Prilagođene</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="173" />
+        <location filename="../ui/main_window.py" line="229" />
         <source>History</source>
         <translation>Povijest</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="176" />
+        <location filename="../ui/main_window.py" line="232" />
         <source>DISCOVER</source>
         <translation>OTKRIJ</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="177" />
+        <location filename="../ui/main_window.py" line="233" />
         <source>New</source>
         <translation>Nove</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="178" />
+        <location filename="../ui/main_window.py" line="234" />
         <source>Random</source>
         <translation>Nasumično</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="179" />
+        <location filename="../ui/main_window.py" line="235" />
         <source>Trending</source>
         <translation>U trendu</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="180" />
+        <location filename="../ui/main_window.py" line="236" />
         <source>Now Listening</source>
         <translation>Trenutno se sluša</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="187" />
+        <location filename="../ui/main_window.py" line="257" />
         <source>Settings</source>
         <translation>Postavke</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="196" />
+        <location filename="../ui/main_window.py" line="266" />
         <source>About</source>
         <translation>O programu</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="374" />
-        <location filename="../ui/main_window.py" line="265" />
+        <location filename="../ui/main_window.py" line="307" />
+        <source>Hide labels</source>
+        <translation>Sakrij oznake</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="307" />
+        <source>Show labels</source>
+        <translation>Prikaži oznake</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="505" />
+        <location filename="../ui/main_window.py" line="383" />
         <source>Could not load stations — check your connection</source>
         <translation>Nije moguće učitati stanice — provjerite vezu</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="320" />
+        <location filename="../ui/main_window.py" line="451" />
         <source>Could not load favourites — check your connection</source>
         <translation>Nije moguće učitati favorite — provjerite vezu</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="340" />
+        <location filename="../ui/main_window.py" line="471" />
         <source>Could not load history — check your connection</source>
         <translation>Nije moguće učitati povijest — provjerite vezu</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="358" />
+        <location filename="../ui/main_window.py" line="489" />
         <source>Could not load new stations — check your connection</source>
         <translation>Nije moguće učitati nove stanice — provjerite vezu</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="390" />
+        <location filename="../ui/main_window.py" line="521" />
         <source>Could not load trending stations — check your connection</source>
         <translation>Nije moguće učitati stanice u trendu — provjerite vezu</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="406" />
+        <location filename="../ui/main_window.py" line="537" />
         <source>Could not load now listening stations — check your connection</source>
         <translation>Nije moguće učitati stanice koje se trenutno slušaju — provjerite vezu</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="563" />
+        <location filename="../ui/main_window.py" line="694" />
         <source>Could not connect to {0}. The stream may be down or unavailable.</source>
         <translation>Povezivanje s {0} nije uspjelo. Stream je možda nedostupan.</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="732" />
+        <location filename="../ui/main_window.py" line="881" />
         <source>Delete station</source>
         <translation>Izbriši stanicu</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="733" />
+        <location filename="../ui/main_window.py" line="882" />
         <source>Delete “{0}” from your custom stations?</source>
         <translation>Izbrisati „{0}“ iz vaših prilagođenih stanica?</translation>
     </message>
@@ -415,97 +425,97 @@ Ponovno pokrenite aplikaciju da biste primijenili promjene.</translation>
 </context><context>
     <name>StationListWidget</name>
     <message>
-        <location filename="../ui/station_list.py" line="390" />
+        <location filename="../ui/station_list.py" line="428" />
         <source>Search stations…</source>
         <translation>Pretraži stanice…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="407" />
+        <location filename="../ui/station_list.py" line="445" />
         <source>Clear history</source>
         <translation>Očisti povijest</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="408" />
+        <location filename="../ui/station_list.py" line="446" />
         <source>Remove all stations from history</source>
         <translation>Ukloni sve stanice iz povijesti</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="417" />
+        <location filename="../ui/station_list.py" line="455" />
         <source>+ Add station</source>
         <translation>+ Dodaj stanicu</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="418" />
+        <location filename="../ui/station_list.py" line="456" />
         <source>Add a custom station</source>
         <translation>Dodaj prilagođenu stanicu</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="435" />
+        <location filename="../ui/station_list.py" line="473" />
         <source>Name</source>
         <translation>Naziv</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="436" />
+        <location filename="../ui/station_list.py" line="474" />
         <source>Country</source>
         <translation>Država</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="437" />
+        <location filename="../ui/station_list.py" line="475" />
         <source>Bitrate</source>
         <translation>Brzina prijenosa</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="438" />
+        <location filename="../ui/station_list.py" line="476" />
         <source>Votes</source>
         <translation>Glasovi</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="439" />
+        <location filename="../ui/station_list.py" line="477" />
         <source>Language</source>
         <translation>Jezik</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="440" />
+        <location filename="../ui/station_list.py" line="478" />
         <source>Codec</source>
         <translation>Kodek</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="445" />
+        <location filename="../ui/station_list.py" line="483" />
         <source>Country…</source>
         <translation>Država…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="449" />
+        <location filename="../ui/station_list.py" line="487" />
         <source>Genre / tag…</source>
         <translation>Žanr / oznaka…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="453" />
+        <location filename="../ui/station_list.py" line="491" />
         <source>Language…</source>
         <translation>Jezik…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="460" />
+        <location filename="../ui/station_list.py" line="498" />
         <source>Toggle sort direction</source>
         <translation>Promijeni smjer sortiranja</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="476" />
+        <location filename="../ui/station_list.py" line="514" />
         <source>Result limit reached · narrow your search to see more</source>
         <translation>Dosegnuto ograničenje rezultata · suzite pretragu za više rezultata</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="491" />
+        <location filename="../ui/station_list.py" line="529" />
         <source>This may be a temporary server-side issue.</source>
         <translation>Možda je riječ o privremenom problemu na poslužitelju.</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="497" />
+        <location filename="../ui/station_list.py" line="535" />
         <source>Retry</source>
         <translation>Pokušaj ponovno</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="847" />
+        <location filename="../ui/station_list.py" line="894" />
         <source>{0} stations</source>
         <translation>{0} stanica</translation>
     </message>

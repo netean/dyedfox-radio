@@ -34,6 +34,7 @@ Inspired by [Shortwave](https://github.com/maunalinux/shortwave), with a native 
 - Discover lists: New, Random, Trending, and Now Listening (what others are tuning into right now)
 - Sort by name, country, bitrate, votes, language, or codec, and filter by country, tag, or language
 - Favourites, History, and custom stations (add any stream by URL)
+- Organize favourite stations with custom labels
 - Editable History — remove single stations or clear the whole list
 - Station info panel with logo, codec, bitrate, and tags
 - Per-song album art for the current track (looked up from Deezer, falls back to the station logo) — click the artwork to enlarge, or toggle between cover art and station logo

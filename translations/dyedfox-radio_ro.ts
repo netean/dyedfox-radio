@@ -155,108 +155,118 @@ Funcționează cu radio-browser.info.</translation>
 </context><context>
     <name>MainWindow</name>
     <message>
-        <location filename="../ui/main_window.py" line="169" />
+        <location filename="../ui/main_window.py" line="201" />
         <source>LIBRARY</source>
         <translation>BIBLIOTECĂ</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="170" />
+        <location filename="../ui/main_window.py" line="202" />
         <source>All stations</source>
         <translation>Toate posturile</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="171" />
+        <location filename="../ui/main_window.py" line="210" />
         <source>Favourites</source>
         <translation>Favorite</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="172" />
+        <location filename="../ui/main_window.py" line="228" />
         <source>Custom</source>
         <translation>Personalizate</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="173" />
+        <location filename="../ui/main_window.py" line="229" />
         <source>History</source>
         <translation>Istoric</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="176" />
+        <location filename="../ui/main_window.py" line="232" />
         <source>DISCOVER</source>
         <translation>DESCOPERĂ</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="177" />
+        <location filename="../ui/main_window.py" line="233" />
         <source>New</source>
         <translation>Noi</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="178" />
+        <location filename="../ui/main_window.py" line="234" />
         <source>Random</source>
         <translation>Aleatorii</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="179" />
+        <location filename="../ui/main_window.py" line="235" />
         <source>Trending</source>
         <translation>În tendințe</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="180" />
+        <location filename="../ui/main_window.py" line="236" />
         <source>Now Listening</source>
         <translation>Se ascultă acum</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="187" />
+        <location filename="../ui/main_window.py" line="257" />
         <source>Settings</source>
         <translation>Setări</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="196" />
+        <location filename="../ui/main_window.py" line="266" />
         <source>About</source>
         <translation>Despre</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="374" />
-        <location filename="../ui/main_window.py" line="265" />
+        <location filename="../ui/main_window.py" line="307" />
+        <source>Hide labels</source>
+        <translation>Ascunde etichetele</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="307" />
+        <source>Show labels</source>
+        <translation>Arată etichetele</translation>
+    </message>
+    <message>
+        <location filename="../ui/main_window.py" line="505" />
+        <location filename="../ui/main_window.py" line="383" />
         <source>Could not load stations — check your connection</source>
         <translation>Posturile nu au putut fi încărcate — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="320" />
+        <location filename="../ui/main_window.py" line="451" />
         <source>Could not load favourites — check your connection</source>
         <translation>Favoritele nu au putut fi încărcate — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="340" />
+        <location filename="../ui/main_window.py" line="471" />
         <source>Could not load history — check your connection</source>
         <translation>Istoricul nu a putut fi încărcat — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="358" />
+        <location filename="../ui/main_window.py" line="489" />
         <source>Could not load new stations — check your connection</source>
         <translation>Posturile noi nu au putut fi încărcate — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="390" />
+        <location filename="../ui/main_window.py" line="521" />
         <source>Could not load trending stations — check your connection</source>
         <translation>Posturile în tendințe nu au putut fi încărcate — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="406" />
+        <location filename="../ui/main_window.py" line="537" />
         <source>Could not load now listening stations — check your connection</source>
         <translation>Posturile ascultate acum nu au putut fi încărcate — verifică conexiunea</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="563" />
+        <location filename="../ui/main_window.py" line="694" />
         <source>Could not connect to {0}. The stream may be down or unavailable.</source>
         <translation>Conectarea la {0} a eșuat. Fluxul ar putea fi indisponibil.</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="732" />
+        <location filename="../ui/main_window.py" line="881" />
         <source>Delete station</source>
         <translation>Șterge postul</translation>
     </message>
     <message>
-        <location filename="../ui/main_window.py" line="733" />
+        <location filename="../ui/main_window.py" line="882" />
         <source>Delete “{0}” from your custom stations?</source>
         <translation>Ștergi „{0}” din posturile tale personalizate?</translation>
     </message>
@@ -415,111 +425,136 @@ Reporneşte aplicația pentru a aplica modificările.</translation>
 </context><context>
     <name>StationListWidget</name>
     <message>
-        <location filename="../ui/station_list.py" line="390" />
+        <location filename="../ui/station_list.py" line="428" />
         <source>Search stations…</source>
         <translation>Caută posturi…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="407" />
+        <location filename="../ui/station_list.py" line="445" />
         <source>Clear history</source>
         <translation>Șterge istoricul</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="408" />
+        <location filename="../ui/station_list.py" line="446" />
         <source>Remove all stations from history</source>
         <translation>Elimină toate posturile din istoric</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="417" />
+        <location filename="../ui/station_list.py" line="455" />
         <source>+ Add station</source>
         <translation>+ Adaugă post</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="418" />
+        <location filename="../ui/station_list.py" line="456" />
         <source>Add a custom station</source>
         <translation>Adaugă un post personalizat</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="435" />
+        <location filename="../ui/station_list.py" line="473" />
         <source>Name</source>
         <translation>Nume</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="436" />
+        <location filename="../ui/station_list.py" line="474" />
         <source>Country</source>
         <translation>Țară</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="437" />
+        <location filename="../ui/station_list.py" line="475" />
         <source>Bitrate</source>
         <translation>Rată de biți</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="438" />
+        <location filename="../ui/station_list.py" line="476" />
         <source>Votes</source>
         <translation>Voturi</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="439" />
+        <location filename="../ui/station_list.py" line="477" />
         <source>Language</source>
         <translation>Limbă</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="440" />
+        <location filename="../ui/station_list.py" line="478" />
         <source>Codec</source>
         <translation>Codec</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="445" />
+        <location filename="../ui/station_list.py" line="483" />
         <source>Country…</source>
         <translation>Țară…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="449" />
+        <location filename="../ui/station_list.py" line="487" />
         <source>Genre / tag…</source>
         <translation>Gen / etichetă…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="453" />
+        <location filename="../ui/station_list.py" line="491" />
         <source>Language…</source>
         <translation>Limbă…</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="460" />
+        <location filename="../ui/station_list.py" line="498" />
         <source>Toggle sort direction</source>
         <translation>Comută direcția de sortare</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="476" />
+        <location filename="../ui/station_list.py" line="514" />
         <source>Result limit reached · narrow your search to see more</source>
         <translation>Limita de rezultate a fost atinsă · restrânge căutarea pentru a vedea mai multe</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="491" />
+        <location filename="../ui/station_list.py" line="529" />
         <source>This may be a temporary server-side issue.</source>
         <translation>Aceasta poate fi o problemă temporară de pe server.</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="497" />
+        <location filename="../ui/station_list.py" line="535" />
         <source>Retry</source>
         <translation>Reîncearcă</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="847" />
+        <location filename="../ui/station_list.py" line="894" />
         <source>{0} stations</source>
         <translation>{0} posturi</translation>
     </message>
 </context><context>
     <name>StationRowWidget</name>
     <message>
-        <location filename="../ui/station_list.py" line="243" />
+        <location filename="../ui/station_list.py" line="245" />
         <source>Delete station</source>
         <translation>Șterge postul</translation>
     </message>
     <message>
-        <location filename="../ui/station_list.py" line="268" />
+        <location filename="../ui/station_list.py" line="274" />
         <source>Remove from history</source>
         <translation>Elimină din istoric</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="330" />
+        <source>Favourite this station to add labels</source>
+        <translation>Adaugă acest post la favorite pentru a adăuga etichete</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="338" />
+        <source>No labels yet</source>
+        <translation>Nicio etichetă încă</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="346" />
+        <source>New label…</source>
+        <translation>Etichetă nouă…</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>New label</source>
+        <translation>Etichetă nouă</translation>
+    </message>
+    <message>
+        <location filename="../ui/station_list.py" line="351" />
+        <source>Label name:</source>
+        <translation>Numele etichetei:</translation>
     </message>
 </context><context>
     <name>SystemTrayIcon</name>

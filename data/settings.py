@@ -12,6 +12,8 @@ DEFAULTS: dict = {
     "notifications": True,
     "show_album_art": True,
     "last_view": "all",
+    "labels_expanded": True,
+    "sidebar_width": 168,
     "window_size": [960, 620],
     "sort": {
         "all":        {"field": "votes", "ascending": False},

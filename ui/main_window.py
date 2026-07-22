@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
     QPushButton, QFrame, QSystemTrayIcon, QApplication, QMessageBox,
+    QScrollArea, QToolButton, QSplitter,
 )
 from pathlib import Path
 import subprocess
@@ -10,6 +11,8 @@ from PyQt6.QtGui import QIcon, QShortcut, QKeySequence, QPixmap
 _NOTIF_ICON_PATH = Path.home() / ".config" / "dyedfox-radio" / "notif_icon.png"
 _ART_NOTIF_ICON_PATH = Path.home() / ".config" / "dyedfox-radio" / "notif_art.png"
 _NOTIFY_ART_TIMEOUT_MS = 9000  # backstop: release a held notification if a cover lookup stalls
+_SIDEBAR_MIN_W = 148  # narrowest the nav entries stay readable
+_SIDEBAR_MAX_W = 400
 
 from ui.station_list import StationListWidget
 from ui.info_panel import InfoPanel
@@ -22,7 +25,7 @@ from ui.add_station_dialog import AddStationDialog
 from player.backend import GStreamerBackend
 from api.radio_browser import RadioBrowserClient
 from data.favourites import FavouritesManager, RecentManager, new_cache, trending_cache, random_cache, now_listening_cache
-from data.settings import Settings
+from data.settings import Settings, DEFAULTS
 from data.custom_stations import CustomStationsManager
 
 
@@ -88,6 +91,12 @@ class MainWindow(QMainWindow):
         self._size_save_timer.setInterval(500)
         self._size_save_timer.timeout.connect(self._save_window_size)
 
+        # Same deal for the sidebar width, which the user can drag.
+        self._sidebar_save_timer = QTimer(self)
+        self._sidebar_save_timer.setSingleShot(True)
+        self._sidebar_save_timer.setInterval(500)
+        self._sidebar_save_timer.timeout.connect(self._save_sidebar_width)
+
         self._restore_window_size()
         self._setup_ui()
         self._connect_signals()
@@ -107,14 +116,23 @@ class MainWindow(QMainWindow):
         root_layout.setContentsMargins(0, 0, 0, 0)
         root_layout.setSpacing(0)
 
-        content = QWidget()
-        content_layout = QHBoxLayout(content)
-        content_layout.setContentsMargins(0, 0, 0, 0)
-        content_layout.setSpacing(0)
-        root_layout.addWidget(content, 1)
+        # The sidebar is drag-resizable, so it sits in a splitter. The handle is
+        # transparent and slightly wider than the divider line it replaces —
+        # a 1px grab target is too fiddly — with the visible line kept as the
+        # first child on the right so the look matches the other dividers.
+        self._content_splitter = QSplitter(Qt.Orientation.Horizontal)
+        self._content_splitter.setChildrenCollapsible(False)
+        self._content_splitter.setHandleWidth(4)
+        self._content_splitter.setStyleSheet("QSplitter::handle { background: transparent; }")
+        root_layout.addWidget(self._content_splitter, 1)
 
         self._sidebar = self._build_sidebar()
-        content_layout.addWidget(self._sidebar)
+        self._content_splitter.addWidget(self._sidebar)
+
+        main_area = QWidget()
+        content_layout = QHBoxLayout(main_area)
+        content_layout.setContentsMargins(0, 0, 0, 0)
+        content_layout.setSpacing(0)
 
         content_layout.addWidget(self._sep(vertical=True))
 
@@ -126,6 +144,12 @@ class MainWindow(QMainWindow):
         self._info_panel = InfoPanel()
         self._info_panel.set_album_art_enabled(self._settings["show_album_art"])
         content_layout.addWidget(self._info_panel)
+
+        self._content_splitter.addWidget(main_area)
+        self._content_splitter.setStretchFactor(0, 0)  # sidebar keeps its width
+        self._content_splitter.setStretchFactor(1, 1)  # station list absorbs resizes
+        self._content_splitter.splitterMoved.connect(lambda *_: self._sidebar_save_timer.start())
+        self._restore_sidebar_width()
 
         root_layout.addWidget(self._sep())
 
@@ -140,8 +164,16 @@ class MainWindow(QMainWindow):
     def _build_sidebar(self) -> QWidget:
         from PyQt6.QtWidgets import QLabel
         sidebar = QWidget()
-        sidebar.setFixedWidth(148)
-        layout = QVBoxLayout(sidebar)
+        sidebar.setMinimumWidth(_SIDEBAR_MIN_W)
+        sidebar.setMaximumWidth(_SIDEBAR_MAX_W)
+        outer = QVBoxLayout(sidebar)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
+
+        # Navigation scrolls on its own so a long label list can't squeeze the
+        # entries; Settings/About stay pinned below it.
+        nav = QWidget()
+        layout = QVBoxLayout(nav)
         layout.setContentsMargins(4, 8, 4, 8)
         layout.setSpacing(2)
 
@@ -168,7 +200,31 @@ class MainWindow(QMainWindow):
         # --- LIBRARY ---
         layout.addWidget(_section(self.tr("LIBRARY")))
         layout.addWidget(_nav_btn(self.tr("All stations"), "all",        "network-wireless"))
-        layout.addWidget(_nav_btn(self.tr("Favourites"),   "favourites", "emblem-favorite"))
+        # Favourites carries a disclosure arrow that folds its label sub-menu
+        # away; the arrow is a separate button so clicking the row still
+        # navigates rather than collapsing.
+        fav_row = QWidget()
+        fav_row_layout = QHBoxLayout(fav_row)
+        fav_row_layout.setContentsMargins(0, 0, 0, 0)
+        fav_row_layout.setSpacing(0)
+        fav_row_layout.addWidget(_nav_btn(self.tr("Favourites"), "favourites", "emblem-favorite"), 1)
+
+        self._labels_toggle = QToolButton()
+        self._labels_toggle.setAutoRaise(True)
+        self._labels_toggle.setFixedWidth(16)
+        self._labels_toggle.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self._labels_toggle.clicked.connect(self._toggle_labels)
+        fav_row_layout.addWidget(self._labels_toggle)
+        layout.addWidget(fav_row)
+
+        # Populated by _rebuild_label_nav() with one indented entry per favourite
+        # label, so it must stay directly under the Favourites row.
+        self._label_nav = QWidget()
+        self._label_nav_layout = QVBoxLayout(self._label_nav)
+        self._label_nav_layout.setContentsMargins(0, 0, 0, 0)
+        self._label_nav_layout.setSpacing(2)
+        layout.addWidget(self._label_nav)
+
         layout.addWidget(_nav_btn(self.tr("Custom"),       "custom",     "document-edit"))
         layout.addWidget(_nav_btn(self.tr("History"), "recent", "document-open-recent"))
 
@@ -182,7 +238,21 @@ class MainWindow(QMainWindow):
         self._nav_btns["all"].setChecked(True)
 
         layout.addStretch()
-        layout.addWidget(self._sep())
+
+        scroll = QScrollArea()
+        scroll.setWidget(nav)
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        outer.addWidget(scroll, 1)
+
+        outer.addWidget(self._sep())
+
+        footer = QWidget()
+        footer_layout = QVBoxLayout(footer)
+        footer_layout.setContentsMargins(4, 4, 4, 8)
+        footer_layout.setSpacing(2)
 
         self._settings_btn = QPushButton(self.tr("Settings"))
         self._settings_btn.setFlat(True)
@@ -191,7 +261,7 @@ class MainWindow(QMainWindow):
         self._settings_btn.setIconSize(QSize(16, 16))
         self._settings_btn.setStyleSheet("QPushButton { text-align: left; padding: 4px 8px; }")
         self._settings_btn.clicked.connect(self._open_settings)
-        layout.addWidget(self._settings_btn)
+        footer_layout.addWidget(self._settings_btn)
 
         self._about_btn = QPushButton(self.tr("About"))
         self._about_btn.setFlat(True)
@@ -200,9 +270,56 @@ class MainWindow(QMainWindow):
         self._about_btn.setIconSize(QSize(16, 16))
         self._about_btn.setStyleSheet("QPushButton { text-align: left; padding: 4px 8px; }")
         self._about_btn.clicked.connect(self._open_about)
-        layout.addWidget(self._about_btn)
+        footer_layout.addWidget(self._about_btn)
+
+        outer.addWidget(footer)
+
+        self._rebuild_label_nav()
 
         return sidebar
+
+    def _toggle_labels(self):
+        self._settings["labels_expanded"] = not self._settings["labels_expanded"]
+        self._settings.save()
+        self._rebuild_label_nav()
+
+    def _rebuild_label_nav(self):
+        """Refresh the indented label entries under Favourites to match the
+        current set of favourite labels (labels with no favourites left just
+        disappear)."""
+        while self._label_nav_layout.count():
+            item = self._label_nav_layout.takeAt(0)
+            widget = item.widget()
+            if widget is None:
+                continue
+            for view, btn in list(self._nav_btns.items()):
+                if btn is widget:
+                    del self._nav_btns[view]
+            widget.deleteLater()
+
+        labels = self._favourites.all_labels()
+        expanded = self._settings["labels_expanded"]
+        self._labels_toggle.setVisible(bool(labels))
+        self._labels_toggle.setArrowType(
+            Qt.ArrowType.DownArrow if expanded else Qt.ArrowType.RightArrow
+        )
+        self._labels_toggle.setToolTip(
+            self.tr("Hide labels") if expanded else self.tr("Show labels")
+        )
+        self._label_nav.setVisible(bool(labels) and expanded)
+
+        for label in labels:
+            view = f"label:{label}"
+            btn = QPushButton(label)
+            btn.setFlat(True)
+            btn.setCheckable(True)
+            btn.setStyleSheet(
+                "QPushButton { text-align: left; padding: 4px 8px 4px 26px; color: palette(placeholder-text); }"
+            )
+            btn.setChecked(view == self._current_view)
+            btn.clicked.connect(lambda _, v=view: self._switch_view(v))
+            self._nav_btns[view] = btn
+            self._label_nav_layout.addWidget(btn)
 
     def _connect_signals(self):
         self._backend.metadata_changed.connect(self._on_metadata)
@@ -213,6 +330,7 @@ class MainWindow(QMainWindow):
 
         self._station_list.station_play_requested.connect(self._on_station_play)
         self._station_list.favourite_toggled.connect(self._on_favourite_toggled)
+        self._station_list.label_toggled.connect(self._on_label_toggled)
         self._station_list.search_params_changed.connect(self._on_search_params_changed)
         self._station_list.station_delete_requested.connect(self._on_custom_delete)
         self._station_list.station_edit_requested.connect(self._on_custom_edit)
@@ -295,14 +413,27 @@ class MainWindow(QMainWindow):
         for v, btn in self._nav_btns.items():
             btn.setChecked(v == view)
 
-        # Set the filter mode first so it's in place when async stations arrive.
-        self._station_list.set_view(view, self._favourites.uuids(), self._recent.uuids())
+        # A label view ("label:<name>") browses the same favourites data as the
+        # Favourites view, just narrowed by label — see StationListWidget's
+        # label_filter handling in _apply_filter.
+        label_filter = view[6:] if view.startswith("label:") else None
+        data_view = "favourites" if label_filter else view
 
-        if view == "custom":
+        # Navigating into a label implies its group is open — otherwise the
+        # active entry would stay hidden (e.g. restoring last_view at startup).
+        if label_filter and not self._settings["labels_expanded"]:
+            self._settings["labels_expanded"] = True
+            self._settings.save()
+            self._rebuild_label_nav()
+
+        # Set the filter mode first so it's in place when async stations arrive.
+        self._station_list.set_view(data_view, self._favourites.uuids(), self._recent.uuids(), label_filter=label_filter)
+
+        if data_view == "custom":
             self._station_list.set_stations(self._custom.all(), deletable=True)
             return
 
-        if view == "favourites":
+        if data_view == "favourites":
             cached = self._favourites.cached_stations()
             self._station_list.start_loading()
             if cached:
@@ -318,10 +449,10 @@ class MainWindow(QMainWindow):
                 on_result=_on_fav_loaded,
                 on_error=lambda e: self._station_list.set_error(
                     self.tr("Could not load favourites — check your connection"),
-                    on_retry=lambda: self._switch_view("favourites"),
+                    on_retry=lambda: self._switch_view(view),
                 ) if not cached else None,
             )
-        elif view == "recent":
+        elif data_view == "recent":
             uuids = self._recent.uuids()
             if uuids:
                 cached = self._recent.cached_stations()
@@ -343,7 +474,7 @@ class MainWindow(QMainWindow):
                 )
             else:
                 self._station_list.set_stations([])
-        elif view == "new":
+        elif data_view == "new":
             self._station_list.start_loading()
             if self._new_stations_cache:
                 self._station_list.set_stations(self._new_stations_cache)
@@ -359,7 +490,7 @@ class MainWindow(QMainWindow):
                     on_retry=lambda: self._switch_view("new"),
                 ) if not self._new_stations_cache else None,
             )
-        elif view == "random":
+        elif data_view == "random":
             self._station_list.start_loading()
             if self._random_stations_cache:
                 self._station_list.set_stations(self._random_stations_cache)
@@ -375,7 +506,7 @@ class MainWindow(QMainWindow):
                     on_retry=lambda: self._switch_view("random"),
                 ) if not self._random_stations_cache else None,
             )
-        elif view == "trending":
+        elif data_view == "trending":
             self._station_list.start_loading()
             if self._trending_stations_cache:
                 self._station_list.set_stations(self._trending_stations_cache)
@@ -391,7 +522,7 @@ class MainWindow(QMainWindow):
                     on_retry=lambda: self._switch_view("trending"),
                 ) if not self._trending_stations_cache else None,
             )
-        elif view == "now_listening":
+        elif data_view == "now_listening":
             self._station_list.start_loading()
             if self._now_listening_stations_cache:
                 self._station_list.set_stations(self._now_listening_stations_cache)
@@ -665,6 +796,24 @@ class MainWindow(QMainWindow):
         self._station_list.update_favourite(uuid, is_fav)
         if self._current_station and self._current_station.get("stationuuid") == uuid:
             self._info_panel.set_favourite(is_fav)
+        if not is_fav:
+            # Unfavouriting drops the station's labels too (see FavouritesManager.set),
+            # which can empty a label and remove its entry from the sidebar.
+            self._rebuild_label_nav()
+            active_label = self._current_view[6:] if self._current_view.startswith("label:") else None
+            if active_label and active_label not in self._favourites.all_labels():
+                self._switch_view("favourites")
+
+    def _on_label_toggled(self, uuid: str, label: str, on: bool):
+        self._favourites.set_label(uuid, label, on)
+        self._rebuild_label_nav()
+        active_label = self._current_view[6:] if self._current_view.startswith("label:") else None
+        if active_label and active_label not in self._favourites.all_labels():
+            # The label we were browsing has no favourites left; it just
+            # vanished from the sidebar, so fall back to plain Favourites.
+            self._switch_view("favourites")
+        elif self._current_view == "favourites" or active_label:
+            self._station_list.refresh_filter()
 
     def _on_search_params_changed(self, name: str, country: str, tag: str, language: str):
         if not name and not country and not tag and not language:
@@ -756,6 +905,18 @@ class MainWindow(QMainWindow):
         if self.isMaximized() or self.isMinimized() or self.isFullScreen():
             return
         self._settings["window_size"] = [self.width(), self.height()]
+        self._settings.save()
+
+    def _restore_sidebar_width(self):
+        try:
+            w = int(self._settings["sidebar_width"])
+        except (TypeError, ValueError):
+            w = DEFAULTS["sidebar_width"]
+        w = max(_SIDEBAR_MIN_W, min(w, _SIDEBAR_MAX_W))
+        self._content_splitter.setSizes([w, max(1, self.width() - w)])
+
+    def _save_sidebar_width(self):
+        self._settings["sidebar_width"] = self._sidebar.width()
         self._settings.save()
 
     def resizeEvent(self, event):

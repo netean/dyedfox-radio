@@ -58,6 +58,7 @@ class GStreamerBackend(QObject):
         # the worker thread since it needs the pipeline torn down (see below).
         self._output_device = ""
         self._pending_device: str | None = None
+        self._devices: dict = {}
 
         self._bus = self._player.get_bus()
         self._last_url: str | None = None
@@ -199,42 +200,42 @@ class GStreamerBackend(QObject):
 
     # --- Output device selection ---
 
-    @property
-    def supports_output_selection(self) -> bool:
-        # autoaudiosink picks its own device, so there's nothing to retarget.
+    def _native_selection(self) -> bool:
+        # pulsesink and pipewiresink can be pointed at a sink by name. Anything
+        # else (autoaudiosink, older pipewiresink) gets its sink element swapped
+        # for one built by the device itself (see _apply_device).
         if self._sink_factory == "pulsesink":
-            return True
+            return self._audio_sink.find_property("device") is not None
         if self._sink_factory == "pipewiresink":
             return self._audio_sink.find_property("target-object") is not None
         return False
 
     def list_output_devices(self) -> list[tuple[str, str]]:
-        """Return (device_id, display_name) for each available audio output.
-
-        device_id is the PulseAudio/PipeWire sink name, which is what both
-        pulsesink's 'device' and pipewiresink's 'target-object' accept."""
-        if not self.supports_output_selection:
-            return []
+        """Return (device_id, display_name) for each available audio output."""
         if self._device_monitor is None:
             self._device_monitor = Gst.DeviceMonitor.new()
             self._device_monitor.add_filter("Audio/Sink", None)
         devices = []
-        seen = set()
+        found = {}
         # get_devices() probes the providers directly when the monitor isn't
         # started, so there's no need to keep a running monitor around.
         for device in self._device_monitor.get_devices() or []:
             device_id = self._device_id(device)
-            if not device_id or device_id in seen:
+            if not device_id or device_id in found:
                 continue
-            seen.add(device_id)
+            found[device_id] = device
             devices.append((device_id, device.get_display_name() or device_id))
+        # Kept so the worker can build a sink from the Gst.Device when the
+        # current sink can't be retargeted by name. Replaced, never mutated.
+        self._devices = found
         return devices
 
     @staticmethod
     def _device_id(device) -> str:
         # pulsedeviceprovider exposes the sink name as 'internal-name';
         # pipewiredeviceprovider puts it in the node.name property. Under
-        # pipewire-pulse the two are the same string.
+        # pipewire-pulse the two are the same string. Other providers (ALSA)
+        # have neither, so fall back to the display name.
         if device.find_property("internal-name") is not None:
             name = device.get_property("internal-name")
             if name:
@@ -244,12 +245,12 @@ class GStreamerBackend(QObject):
             name = props.get_string("node.name")
             if name:
                 return name
-        return ""
+        return device.get_display_name() or ""
 
     def set_output_device(self, device_id: str):
         """Route audio to device_id ("" = system default). Takes effect
         immediately, briefly restarting the stream if one is playing."""
-        if not self.supports_output_selection or device_id == self._output_device:
+        if device_id == self._output_device:
             return
         self._output_device = device_id
         with self._cmd_lock:
@@ -257,13 +258,26 @@ class GStreamerBackend(QObject):
             self._cmd_event.set()
 
     def _apply_device(self, device_id: str):
-        # Worker thread only, with the pipeline in NULL. Empty/None clears the
-        # target so the sound server routes to its default output.
-        value = device_id or None
-        if self._sink_factory == "pulsesink":
-            self._audio_sink.set_property("device", value)
-        elif self._sink_factory == "pipewiresink":
-            self._audio_sink.set_property("target-object", value)
+        # Worker thread only, with the pipeline in NULL.
+        if self._native_selection():
+            # None clears the target so the sound server uses its default.
+            value = device_id or None
+            if self._sink_factory == "pulsesink":
+                self._audio_sink.set_property("device", value)
+            else:
+                self._audio_sink.set_property("target-object", value)
+            return
+        if device_id:
+            device = self._devices.get(device_id)
+            sink = device.create_element(None) if device is not None else None
+        else:
+            sink = Gst.ElementFactory.make(self._sink_factory, None)
+        if sink is None:
+            print(f"dyedfox-radio: could not open audio output {device_id!r}", flush=True)
+            return
+        self._tag_sink_for_mixer(sink)
+        self._player.set_property("audio-sink", sink)
+        self._audio_sink = sink
 
     def set_volume(self, value: int):
         self._player.set_property("volume", max(0, min(100, value)) / 100.0)

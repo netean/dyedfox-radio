@@ -96,9 +96,6 @@ class ControlBar(QWidget):
             self._mute_btn.setText("")
             self._mute_btn.setIcon(icon)
 
-    def set_output_selection_available(self, available: bool):
-        self._output_btn.setVisible(available)
-
     def set_output_devices(self, devices: list[tuple[str, str]], current: str):
         """Fill the output menu. devices is [(device_id, display_name)];
         current is the selected device_id ("" = system default)."""
@@ -114,10 +111,12 @@ class ControlBar(QWidget):
             action.triggered.connect(lambda _=False, d=device_id: self.output_device_selected.emit(d))
 
         add("", self.tr("System default"))
-        if devices:
-            self._output_menu.addSeparator()
+        self._output_menu.addSeparator()
         for device_id, name in devices:
             add(device_id, name)
+        if not devices:
+            none = self._output_menu.addAction(self.tr("No other outputs found"))
+            none.setEnabled(False)
         if current and current not in {d for d, _ in devices}:
             # Saved device is unplugged: show it so the choice isn't silently lost.
             add(current, self.tr("{0} (unavailable)").format(current))

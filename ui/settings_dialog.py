@@ -60,7 +60,7 @@ class SettingsDialog(QDialog):
         self._output.setCurrentIndex(max(0, self._output.findData(saved)))
         audio_layout.addRow(self.tr("Output device:"), self._output)
 
-        audio_note = QLabel(self.tr("Also available from the speaker button next to the volume slider."))
+        audio_note = QLabel(self.tr("Also available from the headphones button next to the volume slider."))
         audio_note.setEnabled(False)
         audio_note.setWordWrap(True)
         audio_layout.addRow(audio_note)
